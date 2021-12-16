@@ -142,46 +142,29 @@ public function formatBlock( context : formatContext, block : block ) : div stri
        //"<p>" + formatInline(context.inlineContext,txt) + "</p>"
     }
 
-    Line(txt,_loose,attrs) -> {
-      formatInline(context.inlineContext, txt, attrs)
-    }
+    Line(txt,_loose,attrs) -> formatInline(context.inlineContext, txt, attrs)
 
     Blank -> ""
 
-    Code(txt,_,attrs) -> {
-      attrs.logDataLine
-      context.inlineContext.fmtCode( "pre", txt, attrs )
-    }
+    Code(txt,_,attrs) -> context.inlineContext.fmtCode( "pre", txt, attrs )
 
-    List(tagname,items,attrs) -> {
-      context.fmtEnv(tagname, formatBlocksX(context,items), attrs)
-    }
+    List(tagname,items,attrs) -> context.fmtEnv(tagname, formatBlocksX(context,items), attrs)
 
-    Item(bs,attrs)  -> {
-      context.fmtEnv("li",formatBlocksX(context,bs), attrs)
-    }
+    Item(bs,attrs)  -> context.fmtEnv("li",formatBlocksX(context,bs), attrs)
 
     Heading(d,txt,attrs) -> {
       context.fmtCmd("h" + min(6,max(1, d + context.headingBase -1)).show, formatInline(context.inlineContext,txt,attrs),
                      attrs.addKeyval("data-heading-depth",d.show))
     }
 
-    HLine(attrs) -> {
-      context.fmtCmd("hr", "", attrs)
-    }
+    HLine(attrs) -> context.fmtCmd("hr", "", attrs)
 
     Source(txt,input,parentAttrs) -> {
       parentAttrs.logDataLine
       match(input) {
-        Pre       -> {
-          context.inlineContext.fmtCode("pre",txt)
-        }
-        Math      -> {
-          context.inlineContext.fmtMath(True,txt,parentAttrs.deriveMathAttrs)
-        }
-        MathPre   -> {
-          context.inlineContext.fmtMath(True,txt.mathPreBlock,parentAttrs.deriveMathAttrs)
-        }
+        Pre       -> context.inlineContext.fmtCode("pre",txt)
+        Math      -> context.inlineContext.fmtMath(True,txt,parentAttrs.deriveMathAttrs)
+        MathPre   -> context.inlineContext.fmtMath(True,txt.mathPreBlock,parentAttrs.deriveMathAttrs)
         MathPoly  -> context.inlineContext.fmtPoly(txt, parentAttrs)
         MathDefs  -> txt.escapeMath(context.fmt)
         Markdown  -> context.inlineContext.formatInline(txt,parentAttrs)
@@ -201,9 +184,7 @@ public function formatBlock( context : formatContext, block : block ) : div stri
       }
     }
 
-    Quote(bs,attrs) -> {
-      context.fmtEnv("blockquote", formatBlocksX(context,bs), attrs)
-    }
+    Quote(bs,attrs) -> context.fmtEnv("blockquote", formatBlocksX(context,bs), attrs)
 
     Table(header,colstyles0,cells,attrs) -> {
       val colstyles = colstyles0.map( fun(colstyle) { context.inlineContext.defaults.matchRules("tc",colstyle) } )

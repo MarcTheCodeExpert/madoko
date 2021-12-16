@@ -433,16 +433,7 @@ val rxCmdSpecial = regex(@"[^a-zA-Z0-9]")
 /* --------------------------------------
   Full header
 ---------------------------------------- */
-public function fmtLatexFull(body : string, options : options, metadata : dict<string>) : string {
-  fmtLatexFullX(body,options,metadata)
-}
-
-public function fmtLatexMathFull(body : string, options : options) : string {
-  fmtLatexFullX(body,options,dict())
-}
-
-function fmtLatexFullX(body : string, options : options, metadata1 : dict<string>) : string
-{
+public function fmtLatexFull(body : string, options : options, metadata1 : dict<string>) : string {
   val metadata0 = [("heading-base",options.headingBase.show),
                    ("tex-section-num", options.texSectionNum.show.toLower),
                    ("bib-label", "true"),
@@ -479,6 +470,11 @@ function fmtLatexFullX(body : string, options : options, metadata1 : dict<string
    @"\end{document}",""
    ].join("\n")
 }
+
+public function fmtLatexMathFull(body : string, options : options) : string {
+  fmtLatexFull(body,options,dict())
+}
+
 
 val rxTexFile = regex(@"^[^\n\r\[\]]+?\.tex$",ignoreCase=True)
 

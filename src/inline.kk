@@ -147,27 +147,14 @@ public function copy( self : inlineContext,
                        starBold : bool = self.starBold,
                        sandbox: bool = self.sandbox,
                        prettyAlign : int = self.prettyAlign,
-                       xfmtCmd = self.xfmtCmd,
-                       xfmtEscape = self.xfmtEscape,
-                       xfmtLink = self.xfmtLink,
-                       xfmtFootnote = self.xfmtFootnote,
-                       xfmtTable = self.xfmtTable,
-                       xfmtEnv = self.xfmtEnv,
-                       xfmtCodePlain = self.xfmtCodePlain,
-                       //xfmtCodeHilite = self.xfmtCodeHilite,
-                       xfmtCodeToken = self.xfmtCodeToken,
-                       xfmtLineInfo = self.xfmtLineInfo,
-                       xfmtCodeTable = self.xfmtCodeTable,
-                       xfmtMathCmd = self.xfmtMathCmd,
-                       xfmtMathEnv = self.xfmtMathEnv,
                        fmt : formatter = self.fmt  ) : inlineContext
 {
   InlineContext( grammar,links,labels,footnotes,defaults,metadata,embedinfos,
                  sanitize,bench,verbose,highlight,starBold,sandbox,prettyAlign,
-                 xfmtCmd,xfmtEscape,xfmtLink,xfmtFootnote,xfmtTable,
-                 xfmtEnv, xfmtCodePlain, /* xfmtCodeHilite, */
-                 xfmtCodeToken, xfmtLineInfo, xfmtCodeTable,
-                 xfmtMathCmd, xfmtMathEnv,
+                 self.xfmtCmd, self.xfmtEscape, self.xfmtLink, self.xfmtFootnote, self.xfmtTable,
+                 self.xfmtEnv, self.xfmtCodePlain,
+                 self.xfmtCodeToken, self.xfmtLineInfo, self.xfmtCodeTable,
+                 self.xfmtMathCmd, self.xfmtMathEnv,
                  fmt )
 }
 

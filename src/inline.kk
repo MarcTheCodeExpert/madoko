@@ -42,6 +42,7 @@ public rectype inlineContext {
                  sandbox    : bool,
                  prettyAlign : int,
 
+                 /* all of the following never change! */
                  xfmtCmd : (ctx:inlineContext,cmd:string,body:string,attrs:attrs) -> string,
                  xfmtEscape : (ctx:inlineContext,body:string,allowEntity:bool) -> string,
                  xfmtLink: (ctx:inlineContext,isImage : bool, link : link, content : string ) -> string,
@@ -146,8 +147,7 @@ public function copy( self : inlineContext,
                        highlight : bool = self.highlight,
                        starBold : bool = self.starBold,
                        sandbox: bool = self.sandbox,
-                       prettyAlign : int = self.prettyAlign,
-                       fmt : formatter = self.fmt  ) : inlineContext
+                       prettyAlign : int = self.prettyAlign) : inlineContext
 {
   InlineContext( grammar,links,labels,footnotes,defaults,metadata,embedinfos,
                  sanitize,bench,verbose,highlight,starBold,sandbox,prettyAlign,
@@ -155,7 +155,7 @@ public function copy( self : inlineContext,
                  self.xfmtEnv, self.xfmtCodePlain,
                  self.xfmtCodeToken, self.xfmtLineInfo, self.xfmtCodeTable,
                  self.xfmtMathCmd, self.xfmtMathEnv,
-                 fmt )
+                 self.fmt )
 }
 
 public function sanitize( context : inlineContext ) : bool {

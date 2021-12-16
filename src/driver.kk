@@ -30,13 +30,11 @@ public struct runners()
 val standardTexStyles = ["ellipse.sty","options.sty","longbox.sty","longfbox.sty","madoko2.sty","latex-madoko.sty"]
 
 public function processContent( inName : string, outName : string, content : string,
-                          opts : commandOptions, firstTime : bool = False,
-                          continue : (output:string,inputName:string,outputName:string,options:options) -> io () ) : io ()
+                          opts : commandOptions, firstTime : bool = False) : io (output:string, options:options)
 {
   val styleDir = opts.stylesDir
   val searchDirs = [inName.dirname,outName.dirname,styleDir]
-  val opts0  = if (inName.endsWith(".xmp.html") || inName.endsWith(".xmp"))
-                then (opts.options)(xmp = True,full = opts.options.full.maybe(Just(False),Just)) else opts.options
+  val opts0 = opts.options
   content.include(False, inName, outName, searchDirs, opts0) fun(icontent0,lmap) {
     // remove madoko comments
     val icontent = icontent0.removeMadokoComments
@@ -51,17 +49,13 @@ public function processContent( inName : string, outName : string, content : str
                           ("year",date.year.show),("month",date.month.show2),("day",date.day.show2),
                           ("hours",date.hours.show2),("minutes",date.minutes.show2),("seconds",date.seconds.show2)] )
 
-    val mopts = if (xopts.xmp)
-                  then xopts.parseMeta( FmtHtml, icontent.normalizeSource.extractFirstXmp ).fst
-                  else xopts.parseMeta( FmtHtml, icontent.normalizeSource ).fst  // get bibdata,bibstyle,mathimg
+    val mopts = xopts.parseMeta( FmtHtml, icontent.normalizeSource ).fst  // get bibdata,bibstyle,mathimg
 
     // register languages for highlighting
     registerColorizers(mopts, searchDirs, icontent);
 
     // copy early since async latex may start for math
     if (mopts.copyStyles) {
-      tryCopyTextFileFromNoSandboxTo( "madoko.css", styleDir, outName.dirname )
-
       val isTex2  = match(mopts.metadata.find( fun(md) { md.fst == "tex2" } )) {
                       Just(md) -> md.snd.toLower == "true"
                       _ -> False
@@ -74,27 +68,14 @@ public function processContent( inName : string, outName : string, content : str
       }
     }
 
-    process( inName, outName, searchDirs, content, icontent, xopts, mopts, firstTime)
-      fun(html) {
-        continue(html,inName,outName,mopts)
-      }
+    val out = process( inName, outName, searchDirs, content, icontent, xopts, mopts, firstTime)
+    (out, mopts)
   }
 }
-
-function extractFirstXmp( s : string ) : string {
-  match (s.find(rxXmp)) {
-    Nothing -> ""
-    Just(cap) -> cap.groups[1]
-  }
-}
-val rxXmp = regex(@"<xmp\b.*?>([\s\S]*?)</xmp>")
-
-val rxCurDir = regex(@"^(\.)(?=[\\/])")
 
 function process( inName : string, outName : string, searchDirs : list<string>,
                   content : string, icontent : string,
-                  xopts : options, mopts : options, firstTime : bool,
-                  continue : (string) -> io () ) : io ()
+                  xopts : options, mopts : options, firstTime : bool) : io string
 {
 
   // generate tex
@@ -123,7 +104,7 @@ function process( inName : string, outName : string, searchDirs : list<string>,
 
   texFiles.split("\n").list + texRefer.split("\n").list
 
-  continue(tex)
+  tex
 }
 
 // Fixup locations in warnings:
@@ -195,7 +176,7 @@ function registerColorizers( opts : options, searchDirs : list<string>, content 
 }
 
 public function outputName( inputName : string, options : commandOptions ) : string {
-  val noextName = if (inputName.endsWith(".xmp.html")) then inputName.substr(0,inputName.length-9) else inputName.noext
+  val noextName = inputName.noext
   val outName = if (options.convertTex) then inputName + ".mdk" else noextName + ".html"
   if (options.outputDir=="")
    then outName

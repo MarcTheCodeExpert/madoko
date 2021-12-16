@@ -583,6 +583,7 @@ function expandKeyPattern( name : string, attrs : attrs ) : string {
 }
 
 // expand keys in a string
+// the peano number is fuel.
 private function expandKeys( p0 : peano, txt : string, source : string,
                             attrs : attrs,
                             labels : dict<label>, metadata : dict<string>,

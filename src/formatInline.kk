@@ -631,7 +631,7 @@ public function fmtPoly( context : inlineContext, txt0 : string, attrs : attrs =
   // trace(aligned.show)
 
   // generate layout
-  val txt1 = fmtLatexPolyTable(context, aligned, attrs)
+  val txt1 = fmtPolyTable(context, aligned, attrs)
 
   // perform replacements
   val txt = attrs.transformText(txt1, context.labels, context.metadata)

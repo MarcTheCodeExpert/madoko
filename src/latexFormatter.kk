@@ -29,19 +29,19 @@ function warning( msg : string ) {
   common/warning( msg, "texwarning" );
 }
 
+public function fmtCmd(context : inlineContext, cmd : string, txt : string, attrs : attrs = attrsNone) : string {
+  if (cmd=="") then texText(txt)
+  elif (cmd=="br") then "\\mdbr\n"
+  // elif (cmd=="code") then "\\lstinline|" + txt + "|"
+  else texCmd(cmd,txt,attrs)
+}
+
 public function fmtEnv(context : inlineContext, env : string, txt : string, attrs : attrs = attrsNone) : string {
   if (env=="")
    then texText(txt)
   elif (env=="ul" || env=="ol")
    then texList(env,txt,attrs)
    else texEnv(env,txt,attrs)
-}
-
-public function fmtCmd(context : inlineContext, cmd : string, txt : string, attrs : attrs = attrsNone) : string {
-  if (cmd=="") then texText(txt)
-  elif (cmd=="br") then "\\mdbr\n"
-  // elif (cmd=="code") then "\\lstinline|" + txt + "|"
-  else texCmd(cmd,txt,attrs)
 }
 
 public function fmtText(context : inlineContext, txt : string) : string {
@@ -121,7 +121,7 @@ public function fmtCodeToken(context:inlineContext, classes : list<string>, txt 
   texCmd("span", txt, attrs)
 }
 
-public function preSpace( txt : string, start : bool = True ) : string {
+function preSpace( txt : string, start : bool = True ) : string {
   val txt1 = if (!start) then txt
               else txt.replaceAll(rxIndent, fun(cap) {
                      cap.groups[1] + @"\preindent{" + cap.groups[2].length.show + "}"
@@ -135,7 +135,7 @@ function texLinkText( txt : string ) : string {
   txt.replaceAll( regex(@"([%{}&#\\])"), fun(cap) { cap.matched.list.map( fun(c) { @"\%" + c.int.showHex(2) } ).join })
 }
 
-public function texText( txt : string ) : string {
+function texText( txt : string ) : string {
   txt.replaceAll(rxSpecial,texSpecial).replaceAll(rxEntity,texEntity)
 }
 
@@ -221,22 +221,22 @@ public function fmtTable( context : inlineContext, head : list<row>, body : list
   attrs.cssAttrs(tbody, if (breakable) then [("display","block")] else [])
 }
 
-public function fmtLatexPolyTable( context : inlineContext, ct : codeTable, attrs : attrs ) : string {
+public function fmtPolyTable( context : inlineContext, ct : codeTable, attrs : attrs ) : string {
   val table = attrs.getTableEnv
   val cols = list(1, ct.columns)
   val colDefs = cols.map(fun(col) { "\\column{C" + col.show + "}{l}%mdk\n" })
-  val rowss = ct.rows.map(fun(row) { fmtLatexPolyRow(row, 1) })
+  val rowss = ct.rows.map(fun(row) { fmtPolyRow(row, 1) })
   val content =
       "\\begin{mdmathpre}\\begin{pmboxed}%mdk\n" + colDefs.join("") + rowss.join("\\\\%mdk-2281\n") + "%mdk-2282\n\\end{pmboxed}\\end{mdmathpre}%mdk"
   texEnv("",content,attrs.addClass("para-block"))
 }
 
-function fmtLatexPolyRow(cells: list<ccell>, col: int) : string {
+function fmtPolyRow(cells: list<ccell>, col: int) : string {
   match(cells) {
     Nil -> ""
     Cons(cell, rest) -> {
       val rendered = "\\>[C" + col.show + "][l]" + cell.content
-      rendered + fmtLatexPolyRow(rest, col + cell.span)
+      rendered + fmtPolyRow(rest, col + cell.span)
     }
   }
 }
@@ -328,8 +328,9 @@ function fmtRow( td : string, row : row, colfmts : list<string>, defcolwidth : s
              Just(clr) -> "\\rowcolor" + fmtColorArg(clr)
            }
   rcolor + */
-  zipWith(row.cells,colfmts, fun(cell,colfmt) { fmtCell(td,cell.text.trim,cell.cellAttrs,colfmt,defcolwidth) }).join("&")
-    + "\\\\\n"
+  zipWith(row.cells, colfmts, fun(cell, colfmt) {
+    fmtCell(td, cell.text.trim, cell.cellAttrs, colfmt, defcolwidth)
+  }).join("&") + "\\\\\n"
 }
 
 

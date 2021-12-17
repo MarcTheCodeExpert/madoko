@@ -19,6 +19,8 @@ import block
 import inline
 import formatInline
 
+import latexFormatter
+
 
 public struct formatContext(
   inlineContext : inlineContext,
@@ -36,20 +38,19 @@ public function initialFormatContext( icontext : inlineContext, lineMap: lineMap
   FormatContext(icontext,dict(),Empty,headingBase,"language-",pedantic, lineMap, fmt)
 }
 
+/**
+ * Helper extracting the inline context
+ */
 function fmtEnv( context : formatContext, env : string, txt : string, attrs : attrs = attrsNone ) : string {
   context.inlineContext.fmtEnv(env,txt,attrs)
 }
 
 function fmtCmd( context : formatContext, cmd : string, txt : string, attrs : attrs = attrsNone ) : string {
-  (context.inlineContext.xfmtCmd)(context.inlineContext,cmd,txt,attrs)
-}
-
-function fmtText( context : formatContext, txt : string ) : string {
-  (context.inlineContext.xfmtCmd)(context.inlineContext,"",txt,attrsNone)
+  fmtCmd(context.inlineContext, cmd, txt, attrs)
 }
 
 function fmtTable( context : formatContext, head : list<row>, body : list<row>, colattrs : list<attrs>, attrs : attrs = attrsNone ) : string {
-  (context.inlineContext.xfmtTable)(context.inlineContext,head,body,colattrs,attrs)
+  fmtTable(context.inlineContext, head, body, colattrs, attrs)
 }
 
 function escapeMath( txt : string, fmt : formatter ) : string {

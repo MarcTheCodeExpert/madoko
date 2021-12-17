@@ -44,19 +44,6 @@ public rectype inlineContext {
                  sandbox    : bool,
                  prettyAlign : int,
 
-                 xfmtCmd : (ctx:inlineContext,cmd:string,body:string,attrs:attrs) -> string,
-                 xfmtEscape : (ctx:inlineContext,body:string,allowEntity:bool) -> string,
-                 xfmtLink: (ctx:inlineContext,isImage : bool, link : link, content : string ) -> string,
-                 xfmtFootnote: (context : inlineContext, id : string, fn : footnote ) -> string,
-                 xfmtTable: (context : inlineContext, head : list<row>, body : list<row>, colattrs: list<attrs>, attrs : attrs ) -> string,
-                 xfmtEnv : (context : inlineContext, env : string, txt : string, attrs : attrs ) -> string,
-                 xfmtCodePlain : (context : inlineContext, txt : string, startline : bool ) -> string,
-                 // xfmtCodeHilite : (context : inlineContext, txt : string, startLine: bool ) -> (string),
-                 xfmtCodeToken : (context : inlineContext, classes: list<string>, txt : string, lang : string, attrs : attrs) -> string,
-                 xfmtLineInfo : (context : inlineContext, lineInfo : string ) -> string,
-                 xfmtCodeTable : (context : inlineContext, ct : codeTable, attrs : attrs ) -> string,
-                 xfmtMathCmd : (ctx:inlineContext,cmd:string,body:string,attrs:attrs) -> string,
-                 xfmtMathEnv : (context : inlineContext, env : string, txt : string, attrs : attrs ) -> string,
                  fmt : formatter
                )
 }
@@ -81,58 +68,6 @@ public rectype footnote {
             footnoteCaption : string  )
 }
 
-public function fmtCmd( context : inlineContext, cmd : string, txt : string, attrs : attrs = attrsNone ) : string {
-  (context.xfmtCmd)(context,cmd,txt,attrs)
-}
-
-public function fmtEnv( context : inlineContext, env : string, txt : string, attrs : attrs = attrsNone ) : string {
-  (context.xfmtEnv)(context,env,txt,attrs)
-}
-
-public function fmtMathCmd( context : inlineContext, cmd : string, txt : string, attrs : attrs = attrsNone ) : string {
-  (context.xfmtMathCmd)(context,cmd,txt,attrs)
-}
-
-public function fmtMathEnv( context : inlineContext, env : string, txt : string, attrs : attrs = attrsNone ) : string {
-  (context.xfmtMathEnv)(context,env,txt,attrs)
-}
-
-public function fmtCodePlain( context : inlineContext, txt : string, startline : bool = True ) : string {
-  (context.xfmtCodePlain)(context,txt,startline)
-}
-
-public function fmtCodeToken( context: inlineContext, classes : list<string>, txt : string, lang : string, attrs : attrs ) : string {
-  (context.xfmtCodeToken)(context,classes,txt,lang,attrs)
-}
-
-public function fmtEscapePre( context : inlineContext, txt : string ) : string {
-  (context.xfmtEscape)(context,txt,False)
-}
-
-public function fmtEscape( context : inlineContext, txt : string ) : string {
-  (context.xfmtEscape)(context,txt,True)
-}
-
-public function fmtText( context : inlineContext, txt : string ) : string {
-  (context.xfmtCmd)(context,"",txt,attrsNone)
-}
-
-public function fmtLink( context : inlineContext, isImage : bool, link : link, content : string) : string {
-  (context.xfmtLink)(context,isImage,link,content)
-}
-
-public function fmtFootnote(context : inlineContext, id : string, fn : footnote ) : string {
-  (context.xfmtFootnote)(context,id,fn)
-}
-
-public function fmtLineInfo(context : inlineContext, lineInfo : string ) : string {
-  (context.xfmtLineInfo)(context,lineInfo)
-}
-
-public function fmtCodeTable(context : inlineContext, ct : codeTable, attrs : attrs = attrsNone ) : string {
-  (context.xfmtCodeTable)(context,ct,attrs)
-}
-
 // Copy an ":inlineContext"
 public function copy( self : inlineContext,
                       grammar : grammar<string,inlineContext> = self.grammar,
@@ -146,10 +81,6 @@ public function copy( self : inlineContext,
                  self.metadata, self.embedinfos, self.sanitize, self.bench,
                  self.verbose, self.highlight, self.starBold, self.sandbox, self.prettyAlign,
 
-                 self.xfmtCmd, self.xfmtEscape, self.xfmtLink, self.xfmtFootnote, self.xfmtTable,
-                 self.xfmtEnv, self.xfmtCodePlain,
-                 self.xfmtCodeToken, self.xfmtLineInfo, self.xfmtCodeTable,
-                 self.xfmtMathCmd, self.xfmtMathEnv,
                  self.fmt )
 }
 

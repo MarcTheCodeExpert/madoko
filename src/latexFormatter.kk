@@ -29,7 +29,7 @@ function warning( msg : string ) {
   common/warning( msg, "texwarning" );
 }
 
-public function fmtLatexEnv(context : inlineContext, env : string, txt : string, attrs : attrs ) : string {
+public function fmtEnv(context : inlineContext, env : string, txt : string, attrs : attrs = attrsNone) : string {
   if (env=="")
    then texText(txt)
   elif (env=="ul" || env=="ol")
@@ -37,35 +37,39 @@ public function fmtLatexEnv(context : inlineContext, env : string, txt : string,
    else texEnv(env,txt,attrs)
 }
 
-public function fmtLatexCmd(context : inlineContext, cmd : string, txt : string, attrs : attrs ) : string {
+public function fmtCmd(context : inlineContext, cmd : string, txt : string, attrs : attrs = attrsNone) : string {
   if (cmd=="") then texText(txt)
   elif (cmd=="br") then "\\mdbr\n"
   // elif (cmd=="code") then "\\lstinline|" + txt + "|"
   else texCmd(cmd,txt,attrs)
 }
 
-public function fmtLatexMathEnv(context : inlineContext, env : string, txt : string, attrs : attrs ) : string {
+public function fmtText(context : inlineContext, txt : string) : string {
+  fmtCmd(context, "", txt, attrsNone)
+}
+
+public function fmtMathEnv(context : inlineContext, env : string, txt : string, attrs : attrs = attrsNone ) : string {
   attrs.cssAttrs(txt,[("display","inline")],"span")
 }
 
-public function fmtLatexMathCmd(context : inlineContext, cmd : string, txt : string, attrs : attrs ) : string {
+public function fmtMathCmd(context : inlineContext, cmd : string, txt : string, attrs : attrs = attrsNone ) : string {
   attrs.cssAttrs(txt,[("display","inline")],"span")
 }
 
-public function fmtLatexLineInfo( context : inlineContext, lineInfo : string ) : string {
+public function fmtLineInfo( context : inlineContext, lineInfo : string ) : string {
   //"%mdk-data-line={" + lineInfo + "}\n"
   "\\mdline{fmtLatexLineInfo}"
 }
 
-public function fmtLatexEscape( context : inlineContext, txt : string, allowEntity : bool ) : string {
-  //texText(htmlEscape(txt,allowEntity))
-  if (allowEntity)
-   then texText(htmlEscape(txt,allowEntity))
-   else // we use lstlisting with 'mathescape' and escape just $ and |
-        txt.replaceAll(regex(@"\$"),@"$\mbox{\$}$").replaceAll(regex(@"\|"),@"$\mbox{\char124}$")
+public function fmtEscape( context : inlineContext, txt : string) : string {
+  texText(htmlEscape(txt, True))
 }
 
-public function fmtLatexFootnote(context : inlineContext, id : string, fn : footnote ) : string {
+public function fmtEscapePre( context : inlineContext, txt : string ) : string {
+  txt.replaceAll(regex(@"\$"), @"$\mbox{\$}$").replaceAll(regex(@"\|"), @"$\mbox{\char124}$")
+}
+
+public function fmtFootnote(context : inlineContext, id : string, fn : footnote ) : string {
   texCmdX( "\\mdfootnote" + fn.footnoteNum.braced, ((fn.footnoteContent)(context)).trimLeft, attrsNone, [("id","back-fn-" + id)])
 }
 
@@ -73,7 +77,7 @@ function normalize( sandbox: bool, path : string ) : string {
   if (sandbox) then xnormalize(path) else path
 }
 
-public function fmtLatexLink( context : inlineContext, isImage : bool, link : link, content : string ) {
+public function fmtLink( context : inlineContext, isImage : bool, link : link, content : string ) : string {
   val attrs = if (link.linkid.bool) then link.linkattrs.addKeyval("data-linkid",link.linkid) else link.linkattrs
   val url   = texLinkText(if (link.href.startsWith("#")) then link.href.substr(1) else link.href)
   if (isImage) {
@@ -108,14 +112,13 @@ function extractText( s : string ) : string {
 
 val regxTexCmd = regex(rxTexCmd)
 
-public function fmtLatexCodePlain( context : inlineContext, txt : string, startline : bool ) : string
-{
+
+public function fmtCodePlain( context : inlineContext, txt : string, startline : bool = True ) : string {
   txt.htmlEscape(False).texText.preSpace(startline)
 }
 
-public function fmtLatexCodeToken(context:inlineContext, classes : list<string>, txt : string, lang : string, attrs : attrs ) : string
-{
-    texCmd("span",txt,attrs)
+public function fmtCodeToken(context:inlineContext, classes : list<string>, txt : string, lang : string, attrs : attrs ) : string {
+  texCmd("span", txt, attrs)
 }
 
 public function preSpace( txt : string, start : bool = True ) : string {
@@ -168,8 +171,7 @@ function texSpecial( cap : matched ) : string {
   }
 }
 
-val accents
-  = texAccents.list.map(fun(te) { (te.snd, te.fst ) }).dict
+val accents = texAccents.list.map(fun(te) { (te.snd, te.fst ) }).dict
 
 function texEntity( cap : matched ) {
   match(accents[cap.groups[3]]) {
@@ -185,14 +187,14 @@ function getTableEnv( attrs : attrs ) : string {
    else "tabular"
 }
 
-public function fmtLatexCodeTable( context : inlineContext, ct : codeTable, attrs : attrs ) : string {
+public function fmtCodeTable( context : inlineContext, ct : codeTable, attrs : attrs = attrsNone ) : string {
   val table = attrs.getTableEnv
   val content =
-      "\\begin{mdcodetabular}" + ct.columns.show.braced +
+    "\\begin{mdcodetabular}" + ct.columns.show.braced +
     "\\begin" + table.braced + "{" + list(1,ct.columns).map(fun(_) {"l"}).join("") + "}\n" +
     ct.rows.map( fun(row) { row.map(fmtLatexCodeCell).join("&") }).join("\\\\\n") +
     "\n\\end" + table.braced + "\\end{mdcodetabular}%mdk\n"
-  texEnv("",content,attrs.addClass("para-block"))
+  texEnv("", content, attrs.addClass("para-block"))
 }
 
 function fmtLatexCodeCell( ccell : ccell ) : string {
@@ -200,7 +202,7 @@ function fmtLatexCodeCell( ccell : ccell ) : string {
   if (ccell.span <= 1) then ccell.content else "\\multicolumn{" + ccell.span.show + "}{" + align + "}{" + ccell.content + "}"
 }
 
-public function fmtLatexTable( context : inlineContext, head : list<row>, body : list<row>, colattrs : list<attrs>, attrs : attrs ) : string {
+public function fmtTable( context : inlineContext, head : list<row>, body : list<row>, colattrs : list<attrs>, attrs : attrs ) : string {
   val rows = head + body
   val td = if (attrs.hasClass("columns")) then "column" else "td"
   val breakable = attrs.hasBoolKey("breakable") || attrs.hasClass("long") /* legacy */

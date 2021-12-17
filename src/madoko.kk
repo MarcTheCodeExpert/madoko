@@ -214,18 +214,7 @@ public function inlineContext( fmt : formatter,
 
                  metadata, embedinfos,
                  sanitize, bench, verbose, highlight, starBold, sandbox, prettyAlign,
-                 fmtLatexCmd,
-                 fmtLatexEscape,
-                 fmtLatexLink,
-                 fmtLatexFootnote,
-                 fmtLatexTable,
-                 fmtLatexEnv,
-                 fmtLatexCodePlain,
-                 fmtLatexCodeToken,
-                 fmtLatexLineInfo,
-                 fmtLatexCodeTable,
-                 fmtLatexMathCmd,
-                 fmtLatexMathEnv,
+
                  fmt
                )
 }

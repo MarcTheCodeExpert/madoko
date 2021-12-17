@@ -32,9 +32,11 @@ public rectype inlineContext {
                  labels     : dict<label>,
                  footnotes  : dict<footnote>,
                  defaults   : rules,
+
+                 /* all of the following never change! */
                  metadata   : dict<string>,
                  embedinfos : dict<embedinfo>,
-                 xsanitize  : bool,
+                 sanitize  : bool,
                  bench      : bool,
                  verbose    : int,
                  highlight  : bool,
@@ -42,7 +44,6 @@ public rectype inlineContext {
                  sandbox    : bool,
                  prettyAlign : int,
 
-                 /* all of the following never change! */
                  xfmtCmd : (ctx:inlineContext,cmd:string,body:string,attrs:attrs) -> string,
                  xfmtEscape : (ctx:inlineContext,body:string,allowEntity:bool) -> string,
                  xfmtLink: (ctx:inlineContext,isImage : bool, link : link, content : string ) -> string,
@@ -142,7 +143,7 @@ public function copy( self : inlineContext,
 {
   InlineContext( grammar, links, labels, footnotes, defaults,
 
-                 self.metadata, self.embedinfos, self.xsanitize, self.bench,
+                 self.metadata, self.embedinfos, self.sanitize, self.bench,
                  self.verbose, self.highlight, self.starBold, self.sandbox, self.prettyAlign,
 
                  self.xfmtCmd, self.xfmtEscape, self.xfmtLink, self.xfmtFootnote, self.xfmtTable,
@@ -150,10 +151,6 @@ public function copy( self : inlineContext,
                  self.xfmtCodeToken, self.xfmtLineInfo, self.xfmtCodeTable,
                  self.xfmtMathCmd, self.xfmtMathEnv,
                  self.fmt )
-}
-
-public function sanitize( context : inlineContext ) : bool {
-  context.xsanitize
 }
 
 

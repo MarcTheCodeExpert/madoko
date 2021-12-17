@@ -210,8 +210,8 @@ public function inlineContext( fmt : formatter,
                                sandbox: bool = False,
                                prettyAlign : int = 2 ) : inlineContext
 {
-  InlineContext( inlineGrammar(fmt, bench), dict(), dict(), dict(),
-                 emptyRules,
+  InlineContext( inlineGrammar(fmt, bench), dict(), dict(), dict(), emptyRules,
+
                  metadata, embedinfos,
                  sanitize, bench, verbose, highlight, starBold, sandbox, prettyAlign,
                  fmtLatexCmd,

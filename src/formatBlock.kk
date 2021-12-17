@@ -170,8 +170,7 @@ public function formatBlock( context : formatContext, block : block ) : div stri
         MathDefs  -> txt.escapeMath(context.fmt)
         Markdown  -> context.inlineContext.formatInline(txt,parentAttrs)
         Raw(monly)-> {
-          if (context.inlineContext.sanitize) then ""
-          else match(monly) {
+          match(monly) {
             Nothing -> txt + "\n"
             Just(FmtTex) | context.fmt == FmtTex -> {
               "%mdk-197\n" + txt + "\n"

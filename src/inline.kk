@@ -36,31 +36,15 @@ public rectype inlineContext {
                  /* all of the following never change! */
                  metadata   : dict<string>,
                  embedinfos : dict<embedinfo>,
-                 sanitize  : bool,
                  bench      : bool,
                  verbose    : int,
                  highlight  : bool,
                  starBold   : bool,
-                 sandbox    : bool,
                  prettyAlign : int,
 
                  fmt : formatter
                )
 }
-
-public struct titleinfo (
-  title : string,
-  subtitle : string,
-  authors : list<authorinfo>,
-  note : string
-)
-
-public struct authorinfo (
-  name : string,
-  address : string,
-  email : string,
-  note : string
-)
 
 public rectype footnote {
   Footnote( footnoteNum : string,
@@ -78,8 +62,8 @@ public function copy( self : inlineContext,
 {
   InlineContext( grammar, links, labels, footnotes, defaults,
 
-                 self.metadata, self.embedinfos, self.sanitize, self.bench,
-                 self.verbose, self.highlight, self.starBold, self.sandbox, self.prettyAlign,
+                 self.metadata, self.embedinfos, self.bench,
+                 self.verbose, self.highlight, self.starBold, self.prettyAlign,
 
                  self.fmt )
 }
@@ -119,7 +103,7 @@ function formatInlineAcc( context : inlineContext, acc : builder<h>, txt : strin
 
 
 
-public function mathPreX( txt : string ) : string
+function mathPreX( txt : string ) : string
 {
   val ignorearg = @"(?:mbox|begin|end|(?:text|math|varmath)(?:kw|id|rm|sf|tt|up|it|sl|sc|bf|md|lf|normal|bb|cal|scr|bbm|bbmss|bbmtt|ds|frak|swab|goth)?)"
   txt.replaceAll(regex(@"(\\" + ignorearg + @"{(?:[^\\}]|\\.)*}|\\[a-zA-Z@]+ *|\\[^a-z@])|^( +)|( +)|(\n)",multiline=True), fun(cap) {

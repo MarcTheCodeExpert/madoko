@@ -26,14 +26,13 @@ import texParser
 // Parse source into blocks (see "parseBlocks") and
 // process all definitions (see "parseDefinitions").
 public function parseBody( fcontext : formatContext,
-                           lineNo : int,
                            src : string,
                            metadata : metadata,
                            tocDepth : int,
                            secBase : int,
                            secDepth : int) :  div (list<block>,formatContext)
 {
-  parseDefinitions(fcontext, [Div([],(".madoko; line-adjust:0; line:" + lineNo.show).parseAttrs("body",src))],
+  parseDefinitions(fcontext, [Div([],(".madoko; line-adjust:0; line:0").parseAttrs("body",src))],
                    metadata,tocDepth,secBase,secDepth)
 }
 

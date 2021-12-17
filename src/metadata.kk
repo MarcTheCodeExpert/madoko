@@ -43,9 +43,7 @@ public function parseMeta( options0 : options, fmt : formatter, txt : string ) :
   val options2 = options0.fromMeta(mdataModed)
   val options = options2( metadata = mdataModed )
 
-  if (options.lineNo > 0)
-   then (options(lineNo = options.lineNo + lineCount),rest)
-   else (options,rest)
+  (options, rest)
 }
 val rxMetaSection = regex(@"^<!--meta *\n([\s\S]*?)^-->", multiline=True)
 

@@ -28,8 +28,7 @@ function update( options : options, key : string, xvalue : string, mdata : metad
   val ivalue = value.parseInt.maybe(~1,id)
   val bvalue = (value!="" && value!="0")
 
-  if   (key=="title")  options(title=value)
-  elif (key=="prelude") options(prelude=value)
+  if   (key=="prelude") options(prelude=value)
   elif (key=="package") options(packages=if (value=="") then "" else options.packages + ";" + value)
   elif (key=="package-")  options(packagesx=if (value=="") then "" else options.packagesx + ";" + value)
   elif (key=="toc-depth" && ivalue >= 0) options(tocDepth = ivalue)
@@ -56,8 +55,6 @@ function update( options : options, key : string, xvalue : string, mdata : metad
   elif (key=="highlight-language" || key=="colorizer") options(hilitelang=if (value=="") then "" else options.hilitelang + ";" + value)
   elif (key=="rebuild") options(rebuild=(value != ""))
   elif (key=="star-bold") options(starBold=(value!=""))
-  elif (key=="line-no") options(lineNo=ivalue)
-  elif (key=="line-no-web") options(lineNoWeb = (lvalue=="true"))
   elif (key=="pretty-align") options(prettyAlign=ivalue)
   elif (key=="refer") { log("filesRefer",value); options }
   elif (key=="copy-styles") options(copyStyles=(value!=""))

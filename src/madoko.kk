@@ -103,15 +103,17 @@ public function markdown(
   if (options.citeAll) then log("aux",@"\citation{*}")
 
   // parse definitions
-  val icontext  = inlineContext(fmt,options.metadata.dict,
-                                    options.embedinfos,
-                                    options.sanitize,options.bench,options.verbose,
-                                    options.highlight,options.starBold,options.sandbox,options.prettyAlign)
+  val icontext  = inlineContext(fmt,
+    options.metadata.dict,
+    options.embedinfos,
+    options.bench,options.verbose,
+    options.highlight,
+    options.starBold,
+    options.prettyAlign)
 
   val (fblocks,fcontext)
     = parseBody(initialFormatContext(icontext,options.lineMap,
                                       options.headingBase,options.pedantic,fmt),
-                options.lineNo,
                 src,
                 options.metadata, options.tocDepth,
                 options.sectionBase,options.sectionMax)
@@ -151,7 +153,6 @@ public function analyze(
 
   val options = Options(
     version=version/version,
-    lineNoWeb=True,
     embedLimit=0,
     verbose=1,
     full=Just(False),
@@ -202,18 +203,16 @@ function logMetadata( mdata : metadata ) {
 public function inlineContext( fmt : formatter,
                                metadata : dict<string>,
                                embedinfos : dict<embedinfo>,
-                               sanitize : bool = False,
                                bench: bool = False,
                                verbose : int = 0,
                                highlight : bool = True,
                                starBold : bool = False,
-                               sandbox: bool = False,
                                prettyAlign : int = 2 ) : inlineContext
 {
   InlineContext( inlineGrammar(fmt, bench), dict(), dict(), dict(), emptyRules,
 
                  metadata, embedinfos,
-                 sanitize, bench, verbose, highlight, starBold, sandbox, prettyAlign,
+                 bench, verbose, highlight, starBold, prettyAlign,
 
                  fmt
                )

@@ -196,7 +196,7 @@ function inlineTag( cap : matched, context : inlineContext ) : string {
 }
 
 function inlineTagX( tag : string, context : inlineContext ) : string {
-  if (context.sanitize || !(context.fmt.isFmtHtml))
+  if (!(context.fmt.isFmtHtml))
    then "\\mdline{inlineTagX}"
    else tag
 }
@@ -405,7 +405,6 @@ function inlineEscape( cap : matched, context : inlineContext ) : string {
   if (txt==" ") then context.formatInline("&nbsp;")
   elif (txt=="\n") then inlineBreak(cap,context)
   elif (txt=="/") then ""
-  elif (context.sanitize) then context.fmtEscape(txt)
   else context.fmtText(txt)
 }
 
@@ -602,14 +601,12 @@ function fmtSpan( context : inlineContext, txt0 : string, attrs : attrs ) : stri
     Pre      -> context.fmtCode("", txt, attrsd) // todo: use sname as env name?
     Math     -> context.fmtMath(False,txt.mathUnline,attrsd)
     MathPre  -> context.fmtMath(False,txt.mathUnline.mathPre,attrsd)
-    Raw(monly) -> {
-      if (context.sanitize) then ""
-       else match(monly) {
+    Raw(monly) ->
+      match(monly) {
         Nothing -> context.fmtCmd("span", txt, attrsd )
         Just(f) | f == context.fmt -> context.fmtCmd("span", txt, attrsd )
         _       -> ""
-       }
-    }
+      }
     Markdown(Just(f)) | !(f == context.fmt) -> ""
     Markdown | attrsd.notag -> context.formatInline(txt)
     // MathDefs, Tex, Markdown

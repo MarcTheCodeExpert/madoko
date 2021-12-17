@@ -554,7 +554,7 @@ function applyBlock( body : string, isBlock : bool, attrs : attrs ) : string {
     Just(info) -> "\n%mdk-data-line={" + info + "}"
     Nothing    -> ""
   }
-  if (isBlock) then lineinfo + "\n" + body.trim + "%mdk-565\n" else body
+  if (isBlock) then lineinfo + "\n" + body.trim + "%mdk\n" else body
 }
 
 function applyCmd( body : string, kvs : dict<string>, key : string ) : string {

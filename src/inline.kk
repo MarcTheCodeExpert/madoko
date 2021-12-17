@@ -134,23 +134,17 @@ public function fmtCodeTable(context : inlineContext, ct : codeTable, attrs : at
 
 // Copy an ":inlineContext"
 public function copy( self : inlineContext,
-                       grammar : grammar<string,inlineContext> = self.grammar,
-                       links : dict<link> = self.links,
-                       labels : dict<label> = self.labels,
-                       footnotes : dict<footnote> = self.footnotes,
-                       defaults: rules = self.defaults,
-                       metadata: dict<string> = self.metadata,
-                       embedinfos : dict<embedinfo> = self.embedinfos,
-                       sanitize : bool = self.sanitize,
-                       bench : bool = self.bench,
-                       verbose : int = self.verbose,
-                       highlight : bool = self.highlight,
-                       starBold : bool = self.starBold,
-                       sandbox: bool = self.sandbox,
-                       prettyAlign : int = self.prettyAlign) : inlineContext
+                      grammar : grammar<string,inlineContext> = self.grammar,
+                      links : dict<link> = self.links,
+                      labels : dict<label> = self.labels,
+                      footnotes : dict<footnote> = self.footnotes,
+                      defaults: rules = self.defaults) : inlineContext
 {
-  InlineContext( grammar,links,labels,footnotes,defaults,metadata,embedinfos,
-                 sanitize,bench,verbose,highlight,starBold,sandbox,prettyAlign,
+  InlineContext( grammar, links, labels, footnotes, defaults,
+
+                 self.metadata, self.embedinfos, self.xsanitize, self.bench,
+                 self.verbose, self.highlight, self.starBold, self.sandbox, self.prettyAlign,
+
                  self.xfmtCmd, self.xfmtEscape, self.xfmtLink, self.xfmtFootnote, self.xfmtTable,
                  self.xfmtEnv, self.xfmtCodePlain,
                  self.xfmtCodeToken, self.xfmtLineInfo, self.xfmtCodeTable,

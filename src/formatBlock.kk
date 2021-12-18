@@ -175,7 +175,6 @@ public function formatBlock( context : formatContext, block : block ) : div stri
             Just(FmtTex) | context.fmt == FmtTex -> {
               "%mdk-197\n" + txt + "\n"
             }
-            Just(f) | f == context.fmt -> txt + "\n"
             _       -> "\n"
           }
         }
@@ -241,7 +240,6 @@ public function formatBlock( context : formatContext, block : block ) : div stri
         val blks = context.tocBlocks[value.toLower].maybe([],id)
         linfo + formatBlocksX(context,blks)
       }
-      elif (name.toLower=="footnotes" && context.fmt.isFmtHtml) then linfo + formatBlock(context,context.footnoteBlock)
       else "" // formatBlock(context,Para("[" + name + "]\n"))
     }
 

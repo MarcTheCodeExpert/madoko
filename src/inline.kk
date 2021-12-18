@@ -39,9 +39,7 @@ public rectype inlineContext {
                  verbose    : int,
                  highlight  : bool,
                  starBold   : bool,
-                 prettyAlign : int,
-
-                 fmt : formatter
+                 prettyAlign : int
                )
 }
 
@@ -61,10 +59,8 @@ public function copy( self : inlineContext,
 {
   InlineContext( grammar, links, labels, footnotes, defaults,
 
-                 self.metadata, self.embedinfos, 
-                 self.verbose, self.highlight, self.starBold, self.prettyAlign,
-
-                 self.fmt )
+                 self.metadata, self.embedinfos,
+                 self.verbose, self.highlight, self.starBold, self.prettyAlign)
 }
 
 

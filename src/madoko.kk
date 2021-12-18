@@ -207,12 +207,10 @@ public function inlineContext( fmt : formatter,
                                starBold : bool = False,
                                prettyAlign : int = 2 ) : inlineContext
 {
-  InlineContext( inlineGrammar(fmt), dict(), dict(), dict(), emptyRules,
+  InlineContext( inlineGrammar, dict(), dict(), dict(), emptyRules,
 
                  metadata, embedinfos,
-                 verbose, highlight, starBold, prettyAlign,
-
-                 fmt
+                 verbose, highlight, starBold, prettyAlign
                )
 }
 

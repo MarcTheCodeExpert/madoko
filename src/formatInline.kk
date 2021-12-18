@@ -39,7 +39,7 @@ val linkreg  = linktxt + @"((?:\(" + linkhref + @"\)|\s*\[" + xlinkid + @"\])?(?
 
 public val rxLink = regex(linkreg)
 
-function inlineCoreGrammar( fmt : formatter ) : grammar<string,inlineContext> = [
+public val inlineGrammar : grammar<string,inlineContext> = [
   Rule("itext",     regex(@"^" + normal + "+"), inlineNormal ),
 
   Rule("iquotes",   regex(@"^(?:'(?!\s|s\b|re\b)((?:[^\\'`\$\[<]|\\.|'[a-zA-Z])*)'(?![a-zA-Z])|""((?:[^\\""`\$\[<]|\\.)*)"")"), inlineQuotes ),
@@ -76,10 +76,6 @@ function inlineCoreGrammar( fmt : formatter ) : grammar<string,inlineContext> = 
 
   Rule("other",     regex(@"^[\s\S]"), inlineOther ),
 ]
-
-public function inlineGrammar( fmt : formatter ) {
-  inlineCoreGrammar(fmt)
-}
 
 
 /* --------------------------------------
@@ -145,10 +141,7 @@ function logMathLocation(digest: string, attrs: attrs) {
   else log("math-locations", start + "," + end + "," + digest)
 }
 
-function escapeMath( txt : string, fmt : formatter ) : string {
-  txt
-}
-
+function escapeMath( txt : string ) : string { txt }
 
 function inlineQuot( cap : matched, context ) : string {
   context.formatInline(if (cap.matched=="\"") then "&quot;" else "&apos;")
@@ -596,10 +589,10 @@ function fmtSpan( context : inlineContext, txt0 : string, attrs : attrs ) : stri
     Raw(monly) ->
       match(monly) {
         Nothing -> context.fmtCmd("span", txt, attrsd )
-        Just(f) | f == context.fmt -> context.fmtCmd("span", txt, attrsd )
+        Just(f) | f == FmtTex -> context.fmtCmd("span", txt, attrsd )
         _       -> ""
       }
-    Markdown(Just(f)) | !(f == context.fmt) -> ""
+    Markdown(Just(f)) | !(f == FmtTex) -> ""
     Markdown | attrsd.notag -> context.formatInline(txt)
     // MathDefs, Tex, Markdown
     _  -> context.fmtCmd("span", context.formatInline(txt), attrsd )

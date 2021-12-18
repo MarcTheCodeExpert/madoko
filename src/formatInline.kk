@@ -190,7 +190,7 @@ function stripFancyRules( g : grammar<string,inlineContext> ) : grammar<string,i
 function inlineTagCode( cap : matched, context : inlineContext ) : string {
   // TODO: we do not process fully inside <code> for now; remove this later
   // when koka documentation generates markdown instead of html.
-  val icontext = context.copy(grammar = context.grammar.stripFancyRules)
+  val icontext = context
   inlineTagX(cap.groups[1],context) +
    icontext.formatInline(cap.groups[2]) +
    inlineTagX(cap.groups[3],context)

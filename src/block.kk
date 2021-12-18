@@ -124,6 +124,7 @@ val blockGrammar : grammar<block,blockContext> = [
 val ruleLine = Rule("para-line",  regex(@"^.+(\n|$)"), blockLine)
 val ruleLineX= Rule("parax-line", regex(@"^" + notbspecial + @".*(\n|$)"), blockLine)
 
+// This grammar is actually necessary!
 val blockListGrammar = blockGrammar.ruleReplace( True, ruleLineX )
                                    .ruleReplace( True, ruleLine  )
 
@@ -351,9 +352,9 @@ function blockListX( text : string, context : blockContext,
   val loose = text.contains(blankline)
   // we should merge any text blocks into a paragraph for a loose list
   // in sane mode, we only make text blocks paragraphs if they are followed by a blank line
-  val icontext = context(grammar = // context.grammar.filter( fun(r) { !(r.name.startsWith("paragraph")) }),
-                         context.listGrammar,
-                         loose = loose) // if (context.sane) then False else loose)
+  //
+  // TODO this is the only point where we change the grammar in a BlockContext
+  val icontext = context(grammar = context.listGrammar, loose = loose)
 
 
   val (txt,attrsTxt) = match(text.find(rxlattrs)) {

@@ -27,7 +27,7 @@ public rectype inlineContext {
   // The parse context for inline elements.
   // Contains a dictionary of all define "links", and the current "grammar".
   // If "sanitize" is "True", all (user) html is supressed or escaped.
-  InlineContext( grammar    : grammar<string,inlineContext>,
+  InlineContext( grammar    : grammar<string,inlineContext>, // the grammar never changes for an inline context
                  links      : dict<link>,
                  labels     : dict<label>,
                  footnotes  : dict<footnote>,
@@ -51,13 +51,12 @@ public rectype footnote {
 
 // Copy an ":inlineContext"
 public function copy( self : inlineContext,
-                      grammar : grammar<string,inlineContext> = self.grammar,
                       links : dict<link> = self.links,
                       labels : dict<label> = self.labels,
                       footnotes : dict<footnote> = self.footnotes,
                       defaults: rules = self.defaults) : inlineContext
 {
-  InlineContext( grammar, links, labels, footnotes, defaults,
+  InlineContext( self.grammar, links, labels, footnotes, defaults,
 
                  self.metadata, self.embedinfos,
                  self.verbose, self.highlight, self.starBold, self.prettyAlign)

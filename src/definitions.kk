@@ -73,7 +73,7 @@ public function parseDefinitions(
                   }
 
     // stop processing if display=none or not the right backend
-    if (!attrsd.shouldRender(fcontext.fmt)) return Empty
+    if (!attrsd.shouldRender) return Empty
 
     //adjust counters
     if (bname!="" && attrs.defaults && !attrs.hasClass("clearnum")) counters.adjustCounter(bname,"",nested)
@@ -301,11 +301,11 @@ function setAttrs( block : block, xs : attrs, fcontext : formatContext ) : block
   }
 }
 
-function shouldRender( attrs : attrs, fmt : formatter ) :bool {
+function shouldRender( attrs : attrs ) :bool {
   if (attrs.lookupKey("display","") == "none") then False
   else match (attrs.input) {
-    Markdown(Just(mfmt)) -> mfmt == fmt
-    Raw(Just(mfmt))      -> mfmt == fmt
+    Markdown(Just(mfmt)) -> mfmt == FmtTex
+    Raw(Just(mfmt))      -> mfmt == FmtTex
     _ -> True
   }
 }

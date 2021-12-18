@@ -112,8 +112,7 @@ public function markdown(
     options.prettyAlign)
 
   val (fblocks,fcontext)
-    = parseBody(initialFormatContext(icontext,options.lineMap,
-                                      options.headingBase,options.pedantic,fmt),
+    = parseBody(initialFormatContext(icontext, options.lineMap, options.headingBase, options.pedantic),
                 src,
                 options.metadata, options.tocDepth,
                 options.sectionBase,options.sectionMax)
@@ -129,7 +128,7 @@ public function markdown(
              else body
 
   // emit file references if necessary
-  if (!xfull || !(fmt.isFmtTex))  then fmtLatexFull("",options,fcontext.inlineContext.metadata) else ""
+  if (!xfull)  then fmtLatexFull("",options,fcontext.inlineContext.metadata) else ""
 
   if (options.verbose>=3) then trace("done")
   (res,options,fblocks,fcontext)

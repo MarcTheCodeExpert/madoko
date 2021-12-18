@@ -29,13 +29,12 @@ public struct formatContext(
   headingBase: int,
   langPrefix : string,
   pedantic : bool,
-  lineMap : lineMap,
-  fmt : formatter = FmtHtml
+  lineMap : lineMap
 )
 
 public function initialFormatContext( icontext : inlineContext, lineMap: lineMap,
-                                      headingBase : int, pedantic : bool, fmt : formatter ) {
-  FormatContext(icontext,dict(),Empty,headingBase,"language-",pedantic, lineMap, fmt)
+                                      headingBase : int, pedantic : bool ) {
+  FormatContext(icontext,dict(),Empty,headingBase,"language-",pedantic, lineMap)
 }
 
 /**
@@ -53,9 +52,7 @@ function fmtTable( context : formatContext, head : list<row>, body : list<row>, 
   fmtTable(context.inlineContext, head, body, colattrs, attrs)
 }
 
-function escapeMath( txt : string, fmt : formatter ) : string {
-  txt
-}
+function escapeMath( txt : string ) : string { txt }
 
 /* --------------------------------------
   Process inline text in the blocks
@@ -167,14 +164,12 @@ public function formatBlock( context : formatContext, block : block ) : div stri
         Math      -> context.inlineContext.fmtMath(True,txt,parentAttrs.deriveMathAttrs)
         MathPre   -> context.inlineContext.fmtMath(True,txt.mathPreBlock,parentAttrs.deriveMathAttrs)
         MathPoly  -> context.inlineContext.fmtPoly(txt, parentAttrs)
-        MathDefs  -> txt.escapeMath(context.fmt)
+        MathDefs  -> txt.escapeMath
         Markdown  -> context.inlineContext.formatInline(txt,parentAttrs)
         Raw(monly)-> {
           match(monly) {
             Nothing -> txt + "\n"
-            Just(FmtTex) | context.fmt == FmtTex -> {
-              "%mdk-197\n" + txt + "\n"
-            }
+            Just(FmtTex) -> "%mdk-197\n" + txt + "\n"
             _       -> "\n"
           }
         }
@@ -228,8 +223,7 @@ public function formatBlock( context : formatContext, block : block ) : div stri
         }
         Nothing     -> ()
       }
-      if ((attrs.classes.isNil && attrs.keyvals.isNil && attrs.name=="") || attrs.notag || rnd.isRaw ||
-            (context.fmt==FmtTex && rnd.isMathDefs))
+      if ((attrs.classes.isNil && attrs.keyvals.isNil && attrs.name=="") || attrs.notag || rnd.isRaw || rnd.isMathDefs)
         then txt
         else context.fmtEnv("div",txt,attrs.addInputClass)
     }

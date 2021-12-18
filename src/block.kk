@@ -237,7 +237,7 @@ function blockHLine( cap : matched, _context ) : block {
 function blockHtml( cap : matched, context : blockContext ) :  block  {
   // drop the commented out contents:
   // it would be best to just return Empty here.
-  // however, this eats the whitespaces, leading and trailing the comment.
+  // however, this eats the whitespaces, leading and trailing the comment
   Source(cap.matched, Raw(Just(FmtHtml)),attrsNone)
 }
 

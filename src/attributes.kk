@@ -263,7 +263,6 @@ public function extendAttrs( attrs0 : attrs, attrsStr : string, source : string 
       val r = if (v=="pre") then Pre
               elif (v=="raw") then Raw(Nothing)
               elif (v=="texraw") then Raw(Just(FmtTex))
-              elif (v=="htmlraw") then Raw(Just(FmtHtml))
               elif (v=="tex") then Tex
               elif (v=="math") then Math
               elif (v=="mathpre") then MathPre
@@ -271,7 +270,6 @@ public function extendAttrs( attrs0 : attrs, attrsStr : string, source : string 
               elif (v=="mathpoly") then MathPoly
               elif (v=="normal") then Markdown()
               elif (v=="markdown") then Markdown()
-              elif (v=="htmlonly") then Markdown(Just(FmtHtml))
               elif (v=="texonly") then Markdown(Just(FmtTex))
               else {
                 warning( "unrecognized input value: " + value)

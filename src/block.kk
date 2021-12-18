@@ -233,8 +233,12 @@ function blockHLine( cap : matched, _context ) : block {
   HLine(cap.groups[1].parseAttrs)
 }
 
+// this is only used for block comments
 function blockHtml( cap : matched, context : blockContext ) :  block  {
-  Source(cap.matched,Raw(Just(FmtHtml)),attrsNone)
+  // drop the commented out contents:
+  // it would be best to just return Empty here.
+  // however, this eats the whitespaces, leading and trailing the comment.
+  Source(cap.matched, Raw(Just(FmtHtml)),attrsNone)
 }
 
 function blockHeading( cap : matched, context : blockContext ) : block  {

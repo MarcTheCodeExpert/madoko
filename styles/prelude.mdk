@@ -2,8 +2,8 @@ Package         : [heading-base={&heading-base;},section-num={&tex-section-num;}
 Logo            : False
 Tex2            : True
 Maketitle       : False
-Heading Depth   : 3 
-Toc Depth       : 3 
+Heading Depth   : 3
+Toc Depth       : 3
 Heading Base    : 2
 Tex Section Num : False
 Bib Label       : True
@@ -15,10 +15,10 @@ Bib Search Url  :
 Csl Style       :
 
 <!-- standard elements -->
-Article   { html-elem:article }
-Section   { html-elem:section }
-Aside     { html-elem:aside }
-Nav,.Toc  { html-elem:nav }
+Article   { html-elem: article }
+Section   { html-elem: section }
+Aside     { html-elem: aside }
+Nav,.Toc  { html-elem: nav }
 
 .Framed   { border: solid black 1px }
 Center    { .align-center }
@@ -37,17 +37,6 @@ Comment     { display: none }
 
 Snippet     { input: math; display:block; math-full: true }
 Footnote    { label: "[@footnote]{.footnote-label}"; line-adjust: 0 }
-@if html {
-  Footnote { 
-    before: "[\/^&label;.^]{.footnote-before}";
-    after : "&nl;&&;null;[&#8617;](#back-&id;){.footnote-backref}";
-  }
-}
-
-@if html && (not full) {
-  math svg share paths: false
-  .body.madoko { tag: false; }
-}
 
 <!-- lists -->
 .Ul-Li    { @ul-li; label: "[(@ul-li)]{.ul-li-label}" }
@@ -60,17 +49,20 @@ Dl        { @dl-li: decimal }
 
 <!-- special input -->
 .TexRaw         { input: texraw }
-.HtmlRaw        { input: htmlraw }
 .MathInline     { input: math }
 MathDisplay     { input: math; .para-block }
 MathPre         { input: mathpre; .para-block }
 MathDefs        { input: mathdefs; }
-HtmlOnly        { input: htmlonly; tag: false }
+
 Tex             { input: tex; tag: false }
 TexOnly         { input: texonly; tag: false }
 Bib             { input: tex }
 math-inline     { input: math }
 math-display    { input: math }
+
+<!-- HTML is deprecated in this Madoko fork -->
+.HtmlRaw        { display: none }
+HtmlOnly        { display: none }
 
 .hidden         { display: none }
 .noindent       { text-indent: 0em }
@@ -79,12 +71,12 @@ math-display    { input: math }
 
 .booktable {
   rule-top-width          : 2px;
-  rule-bottom-width       : 2px 
+  rule-bottom-width       : 2px
   rule-mid-width          : 1.35px;
   thead-tr-font-weight    : normal;
   rule-top-sep            : 4pt;
   rule-bottom-sep         : 4pt;
-  rule-mid-sep            : 3pt; 
+  rule-mid-sep            : 3pt;
   thead-tr-1-padding-top  : 3pt;
   thead-tr-padding-bottom : 3pt;
 }
@@ -129,7 +121,7 @@ heading-format   : &label;&heading-endperiod;&ensp;
 }
 
 h1,h2,h3,h4 {
-  toc-line: "&heading-format;&source;"; 
+  toc-line: "&heading-format;&source;";
 }
 
 .tocblock,.tocitem { tight:true }
@@ -190,9 +182,9 @@ Math {
   .para-block
 }
 
-MathPreCenter { 
-  tex-env:mdmathprecenter; 
-  text-align:center; 
+MathPreCenter {
+  tex-env:mdmathprecenter;
+  text-align:center;
 }
 
 theorem-caption-end   : &&;br;
@@ -219,9 +211,9 @@ Lemma {
 }
 Proof {
   before: "[&proof-format;]{.proof-before}";
-  theorem-caption-end: " " 
+  theorem-caption-end: " "
 }
-Proposition { 
+Proposition {
   label: '[@proposition]{.proposition-label}';
   before: '[&proposition-format;]{.proposition-before}';
 }
@@ -258,7 +250,7 @@ WrapFigure {
   .float;
   float: right;
   tex-float: outside;
-  width: 40%;  
+  width: 40%;
 }
 
 floating-endperiod: .
@@ -280,7 +272,7 @@ SubFigure {
   label     : '@Figure@Figure-SubFigure';
   fig-label : '(@Figure-SubFigure)';
   caption   : '';
-  after     : "&nl;~ Begin SubFigureCaption&nl;&toc-line;&nl;~End SubFigureCaption&nl;"; 
+  after     : "&nl;~ Begin SubFigureCaption&nl;&toc-line;&nl;~End SubFigureCaption&nl;";
   vertical-align: bottom;
   padding   : 0.5ex;
   tight     : true;
@@ -337,39 +329,6 @@ Bibitem {
   bibliography { #sec-bibliography; toc; toc-line: "&name-references;"; tex-label-inner-before:"&id;" }
 }
 
-
-<!-------------------------------------------------------------------
-   Bibliography styling in HTML
---------------------------------------------------------------------->
-
-Html Bib Label Width: 2rem
-
-@if html and not(cite-style~~/^(numeric|super|False)\b/i) {
-  .bibitem-before {
-    display: none;
-  }
-  bibitem { 
-    text-indent: -1em;
-    margin-left: 1em;
-  }
-}
-
-@if html and (cite-style~~/^(numeric|super|False)\b/i) {
-  .bibitem-before {
-    padding-right: 0.5em;
-    width        : calc(&html-bib-label-width; - 0.5em);
-    text-align   : right;
-    font-size    : 90%;
-  }
-  bibitem { 
-    text-indent: -&html-bib-label-width;;
-    margin-left: &html-bib-label-width;;
-  }
-}
-
-@if html {
-  .bib-doi { font-size: smaller; }
-}
 
 <!-------------------------------------------------------------------
    Internationalization
@@ -481,13 +440,13 @@ name-inj  : in
 .token.emphasis,.token.italic { font-style: italic }
 .token.strong,.token.bold     { font-weight: bold  }
 
-pre.pretty, code.pretty       { .serif } 
+pre.pretty, code.pretty       { .serif }
 
 .ptoken.identifier    { font-style: italic }
 .ptoken.constructor   { font-style: italic }
 .ptoken.operator      { tex-cmd: "\ppreop" }
 .ptoken.comment       { color: gray }
-.ptoken.keyword       { .sans-serif } 
+.ptoken.keyword       { .sans-serif }
 
 @if not tex {
   pre.pretty, code.pretty { font-size: 100% }
@@ -497,21 +456,8 @@ pre.pretty, code.pretty       { .serif }
   .token.keyword      { color: navy }
 }
 
-
 <!-------------------------------------------------------------------
-   HTML commands 
---------------------------------------------------------------------->
-@if html {
-  abstract  { 
-    before:"**&name-abstract;.** ";
-    margin-left: 3em;
-    margin-right: 3em;
-    font-size: small;
-  }
-}
-
-<!-------------------------------------------------------------------
-   Tex commands 
+   Tex commands
 --------------------------------------------------------------------->
 
 HR         { tex-cmd: "\mdhr"; display: block }
@@ -520,40 +466,40 @@ Pre.pretty { tex-env-outer-postfix: pretty }
 Abstract   { tex-env: abstract }
 
 H0,H1,H2,H3,H4,H5,H6  { display: block; }
-H0.clearnum,H1.clearnum,H2.clearnum,H3.clearnum,H4.clearnum,H5.clearnum,H6.clearnum  { 
+H0.clearnum,H1.clearnum,H2.clearnum,H3.clearnum,H4.clearnum,H5.clearnum,H6.clearnum  {
   tex-cmd-postfix:"*";
   toc-line: "&source;";
 }
 
 @if heading-base<=0 {
   H0     { tex-cmd:"\part" }
-  H1     { tex-cmd:"\part" } 
+  H1     { tex-cmd:"\part" }
   H2     { tex-cmd:"\chapter" }
   H3     { tex-cmd:"\section" }
   H4     { tex-cmd:"\subsection" }
-  H5     { tex-cmd:"\subsubsection" } 
-  H6     { tex-cmd:"\paragraph" } 
+  H5     { tex-cmd:"\subsubsection" }
+  H6     { tex-cmd:"\paragraph" }
 }
 @if heading-base==1 {
   H0     { tex-cmd:"\part" }
-  H1     { tex-cmd:"\chapter" } 
+  H1     { tex-cmd:"\chapter" }
   H2     { tex-cmd:"\section" }
   H3     { tex-cmd:"\subsection" }
   H4     { tex-cmd:"\subsubsection" }
-  H5,H6  { tex-cmd:"\paragraph" } 
+  H5,H6  { tex-cmd:"\paragraph" }
 }
 @if heading-base==2 {
   H0     { tex-cmd:"\chapter" }
-  H1     { tex-cmd:"\section" } 
+  H1     { tex-cmd:"\section" }
   H2     { tex-cmd:"\subsection" }
   H3     { tex-cmd:"\subsubsection" }
-  H4,H5,H6  { tex-cmd:"\paragraph" } 
+  H4,H5,H6  { tex-cmd:"\paragraph" }
 }
 @if heading-base>=3 {
   H0     { tex-cmd:"\section" }
-  H1     { tex-cmd:"\subsection" } 
+  H1     { tex-cmd:"\subsection" }
   H2     { tex-cmd:"\subsubsection" }
-  H3,H4,H5,H6  { tex-cmd:"\paragraph" } 
+  H3,H4,H5,H6  { tex-cmd:"\paragraph" }
 }
 
 Figure          { tex-env-outer: "figure[&tex-float-placement;]"; tex-float-placement: "tbp" }
@@ -581,7 +527,7 @@ BlockQuote{ tex-env: "quote" }
 .Columns  { tex-tabcolsep: "0pt" }
 .Column   { tex-env-outer: "mdcolumn" }
 .inst     { tex-cmd: "\mdinst" }
-.equation-before { tex-cmd: "\mdmathtag" } 
+.equation-before { tex-cmd: "\mdmathtag" }
 
 Bibliography { tex-env: "thebibliography{&caption;}"; tex-cmd-after: "\par"; tex-cmd-outer-before: "\mdsetrefname{&name-references;}%mdk&nl;"  }
 BibItem      { tex-cmd-before:"\bibitem&tex-bibitem-args;"; tex-bibitem-args:"&tex-bibitem-label;{&id;}"; tex-bibitem-label:"" }
@@ -621,7 +567,7 @@ AuthorName,AuthorAddress,AuthorEmail,AuthorNote { tight: true }
 @if Maketitle {
   Author        { display: inline-block  }
   TitleBlock    { display: inline-block;
-                  tex-cmd-inner-after: "\mdtitleauthorrunning{&title-running;}{&author-running;}";  
+                  tex-cmd-inner-after: "\mdtitleauthorrunning{&title-running;}{&author-running;}";
                 }
   TitleHeader,Authors,AuthorRow { tag: false }
   Author        { tex-cmd-before:"\mdxauthorstart"; tex-cmd-after:"\mdxauthorend"; display:table-cell }
@@ -633,7 +579,7 @@ AuthorName,AuthorAddress,AuthorEmail,AuthorNote { tight: true }
   AuthorName    { tex-cmd:"\mdxauthorname" }
   AuthorAddress { tex-cmd:"\mdxauthoraddress" }
   AuthorNote    { tex-cmd:"\mdxauthornote" }
-  AuthorEmail   { tex-cmd:"\mdxauthoremail" }  
+  AuthorEmail   { tex-cmd:"\mdxauthoremail" }
 }
 
 @if not Maketitle {
@@ -641,7 +587,7 @@ AuthorName,AuthorAddress,AuthorEmail,AuthorNote { tight: true }
   TitleBlock,Title,Subtitle,TitleNote         { .para-block }
 
   Authors       { width: 80% }
-  AuthorRow     { .columns; margin-top: 2ex; width: 100% } 
+  AuthorRow     { .columns; margin-top: 2ex; width: 100% }
   Author        { .column; text-align: center }
   .AuthorEmail  { .email }
 

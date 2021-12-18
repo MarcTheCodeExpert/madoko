@@ -185,9 +185,7 @@ function inlineTag( cap : matched, context : inlineContext ) : string {
 }
 
 function inlineTagX( tag : string, context : inlineContext ) : string {
-  if (!(context.fmt.isFmtHtml))
-   then "\\mdline{comment}"
-   else tag
+  "\\mdline{comment}"
 }
 
 function stripFancyRules( g : grammar<string,inlineContext> ) : grammar<string,inlineContext> {

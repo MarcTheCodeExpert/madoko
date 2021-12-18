@@ -221,7 +221,12 @@ function flatten( mdata:cmetadata, modes:mdict<h,constant>, verbose : int ) : <d
 function evaluateBool( cond : string, modes : mdict<h,constant>, mdata : cmetadata, verbose : int  , current : list<string> = []) : <div,st<h>> bool {
   var recursive := False
   function lookup(v,display) {
-    if (current.contains(v)) {
+
+    // TODO actually delete!
+    if (v=="html") {
+      trace("'html' is disabled in this LaTeX version of Madoko; defaults to False.")
+      String("False")
+    } elif (current.contains(v)) {
       recursive := True
       String("False")
     }

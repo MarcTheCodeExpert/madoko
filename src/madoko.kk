@@ -101,7 +101,7 @@ public function markdown(
   if (options.citeAll) then log("aux",@"\citation{*}")
 
   // parse definitions
-  val icontext  = inlineContext(FmtTex,
+  val icontext  = inlineContext(
     options.metadata.dict,
     options.embedinfos,
     options.verbose,
@@ -197,8 +197,7 @@ function logMetadata( mdata : metadata ) {
 
 
 // Create an ":inlineContext"
-public function inlineContext( fmt : formatter,
-                               metadata : dict<string>,
+public function inlineContext( metadata : dict<string>,
                                embedinfos : dict<embedinfo>,
                                verbose : int = 0,
                                highlight : bool = True,

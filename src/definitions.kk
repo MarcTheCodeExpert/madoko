@@ -41,44 +41,10 @@ public function parseBody( fcontext : formatContext,
 public function parseDefinitions(
                      fcontext : formatContext,
                      blocks : list<block>,
-                     metadata : metadata,
+                     mdata : metadata,
                      tocDepth : int = 0,
                      secBase : int = 1,
                      secDepth : int = 6 ) :  div (list<block>,formatContext)
-{
-  if (fcontext.inlineContext.bench)
-    then parseDefinitionsBench(fcontext,blocks)
-    else parseDefinitionsFull(fcontext,blocks,metadata,tocDepth,secBase,secDepth)
-}
-
-// Fast version for benchmarking
-function parseDefinitionsBench(
-                     fcontext : formatContext,
-                     blocks : list<block> ) :  div (list<block>,formatContext)
-{
-  val links  = mdict()
-
-  blocks.foreach fun(block) {
-    match(block) {
-      DefLink(id,link) -> {
-        links[id] := link
-      }
-      _ -> ()
-    }
-  }
-
-  (blocks, fcontext( fcontext.inlineContext.copy( links=links.freeze ), dict(), Empty)  )
-}
-
-
-// Full version that does attribute processing
-function parseDefinitionsFull(
-                     fcontext : formatContext,
-                     blocks : list<block>,
-                     mdata : metadata,
-                     tocDepth : int = 0,
-                     secBase : int,
-                     secDepth : int ) :  div (list<block>,formatContext)
 {
   val counters = mdict()
   val nested   = mdict()

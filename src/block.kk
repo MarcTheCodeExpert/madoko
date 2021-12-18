@@ -138,7 +138,6 @@ rectype blockContext {
   BlockContext( grammar : grammar<block,blockContext>,
                 listGrammar : grammar<block,blockContext>,
                 metadata : dict<string>,
-                bench   : bool,
                 pedantic : bool,
                 loose   : bool = False,
                 lineNo  : int = 0,
@@ -219,7 +218,7 @@ val rxPattrs = regex(@"\n {0,3}" + xattrs + @"\s*$")
 
 function blockDefLink( cap : matched, context : blockContext ) :  block {
   val id = cap.groups[1].definitionId
-  DefLink(id, newLink(cap.groups[2].joinLines, cap.groups[3].joinLines, cap.groups[4].parseAttrs, id, context.bench ))
+  DefLink(id, newLink(cap.groups[2].joinLines, cap.groups[3].joinLines, cap.groups[4].parseAttrs, id))
 }
 
 function blockLine( cap : matched, context : blockContext ) : block {
@@ -254,13 +253,13 @@ function makeHeading(depth:int, source:string, attrStr : string) {
 function blockCode( cap : matched, context : blockContext ) : block  {
   val source = cap.groups[1].replaceAll(rxindent4,"")
   Code(source, "",
-          if (!(context.pedantic || context.bench)) then attrsNone.addClass("pre-indented") else attrsNone)
+          if (!(context.pedantic)) then attrsNone.addClass("pre-indented") else attrsNone)
 }
 
 function blockFencedCode( cap : matched, context : blockContext ) {
   val attrs = cap.groups[3].parseAttrs
   Code(cap.groups[4], cap.groups[2],
-        if (!(context.pedantic || context.bench))
+        if (!(context.pedantic))
           then attrs.addClasses(["pre-fenced","pre-fenced" + cap.groups[1].length.show])
           else attrs)
 }
@@ -482,11 +481,10 @@ function columnStyle( style : string ) : attrs {
 // Parse text into blocks
 public function parseBlocks( src : string, lineNo : int, lineMap : lineMap,
                              mdata : dict<string>,
-                             bench : bool = False,
                              pedantic : bool = False
                              )  : list<block>
 {
-  val bcontext = BlockContext(blockGrammar, blockListGrammar, mdata, bench, pedantic, False, lineNo, lineMap)
+  val bcontext = BlockContext(blockGrammar, blockListGrammar, mdata, pedantic, False, lineNo, lineMap)
   parseBlocks(bcontext,src)
 }
 

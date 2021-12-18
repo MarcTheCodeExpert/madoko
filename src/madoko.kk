@@ -98,7 +98,7 @@ public function markdown(
     }
     trace("parse blocks")
   }
-  //val blocks = parseBlocks(src,options.citestyle,options.bench,options.pedantic )
+  //val blocks = parseBlocks(src,options.citestyle,options.pedantic )
 
   if (options.citeAll) then log("aux",@"\citation{*}")
 
@@ -106,7 +106,7 @@ public function markdown(
   val icontext  = inlineContext(fmt,
     options.metadata.dict,
     options.embedinfos,
-    options.bench,options.verbose,
+    options.verbose,
     options.highlight,
     options.starBold,
     options.prettyAlign)
@@ -203,16 +203,15 @@ function logMetadata( mdata : metadata ) {
 public function inlineContext( fmt : formatter,
                                metadata : dict<string>,
                                embedinfos : dict<embedinfo>,
-                               bench: bool = False,
                                verbose : int = 0,
                                highlight : bool = True,
                                starBold : bool = False,
                                prettyAlign : int = 2 ) : inlineContext
 {
-  InlineContext( inlineGrammar(fmt, bench), dict(), dict(), dict(), emptyRules,
+  InlineContext( inlineGrammar(fmt), dict(), dict(), dict(), emptyRules,
 
                  metadata, embedinfos,
-                 bench, verbose, highlight, starBold, prettyAlign,
+                 verbose, highlight, starBold, prettyAlign,
 
                  fmt
                )

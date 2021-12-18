@@ -99,7 +99,7 @@ function formatBlocksAcc( context : formatContext, blocks : list<block>, acc : b
         }
         // For TeX output, an equation or list environment should be part of a paragraph
         // If a paragraph is followed by a `.para-block` we mark the paragraph as `.para-continue`
-        Para(text,attrs) | !(context.inlineContext.bench) -> {
+        Para(text,attrs) -> {
           match(rest) {
             Cons(Div(_,attrsd),_) | attrsd.hasClass("para-block") -> {
               formatBlocksAcc(context,rest,acc.append(formatBlock(context,Para(text,attrs.addClass("para-continue")))))

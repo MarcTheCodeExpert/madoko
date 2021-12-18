@@ -203,9 +203,9 @@ public function definitionId( s : string ) : string {
 }
 val rxspaces = regex(@"\s+")
 
-public function newLink( href : string, title : string = "", linkattrs : attrs = attrsNone, linkid : string = "", bench : bool ) : link {
+public function newLink( href : string, title : string = "", linkattrs : attrs = attrsNone, linkid : string = "" ) : link {
   Link(href,title,
-       if (!bench && href.startsWith("#"))
+       if (href.startsWith("#"))
         then linkattrs.addClass("localref")
         else linkattrs,
        linkid)

@@ -24,7 +24,6 @@ public alias metadata = list<(string,string)>
 // The options
 public struct options(
   version  : string = "",  // Initialized to the program version
-  bench    : bool = False, // turn off more expensive features for benchmarking
   verbose  : int  = 0,      // be more verbose
   verboseMaxLine : int = 78, // format lines to be no longer than 78 characters
   pedantic : bool = False, // more pedantic list style mode
@@ -98,15 +97,6 @@ function oreq( f : (options,string) -> options, help : string ) : optionArg<comm
   Req(fun(co:commandOptions,v:string) { co(options = f(co.options,v)) },help)
 }
 
-function setbench( o : options, b : bool ) {
-  if (b) {
-    o(tocDepth=0,bench=True)
-  }
-  else {
-    o(tocDepth=3,bench=False)
-  }
-}
-
 val optionsDesc : list<option<commandOptions>>
   = [ Option( "",  ["version"], cflag(fun(co,v) { co(showVersion = v) }),   "Display version information" ),
       Option( "v", ["verbose"], oflag(fun(o,v) { o(verbose = if (v) then o.verbose + 1 else 0) }),     "Be more verbose"),
@@ -114,7 +104,6 @@ val optionsDesc : list<option<commandOptions>>
 
       Option( "f", ["fragment"], oflag(fun(o,v) { o(full=Just(!v)) }), "Generate a fragment instead of a full document"),
       Option( "",  ["pedantic"], oflag(fun(o,v) { o(pedantic = v) }), "Pedantic mode"),
-      Option( "",  ["bench"],    oflag(setbench),                     "For benchmarking: turn off numbering, etc."),
       Option( "",  ["installdir"], creq(fun(co,s) { co(installDir=s) },"DIR"), "Set installation directory explicitly"),
       Option( "",  ["stylesdir"], creq(fun(co,s) { co(stylesDir=s) },"DIR"), "Set the directory of the styles explicitly (defaults to <installDir>/styles)"),
       Option( "r", ["rebuild"],  oflag(fun(o,v) { o(rebuild=v) }),    "Force rebuild bibliography, math, etc."),

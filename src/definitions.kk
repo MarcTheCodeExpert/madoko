@@ -158,7 +158,7 @@ function parseDefinitionsFull(
       _ -> attrsx
     }
 
-    // render
+    // render -- this itself does NOT recursively transform parse blocks!
     val rblock = block.setAttrs(attrsp,fcontext)
 
     // toc
@@ -276,6 +276,8 @@ type parinfo {
   ParBlock
 }
 
+// This function recursively maps `action` over the blocks in `blocks` and all
+// blocks that result from calling `action` itself.
 function mapBlocks( blocks : list<block>,
                     action : (parinfo,block) -> <st<h>,div|e> block  ) : <st<h>,div|e> list<block> {
   var previousPar := ParNone
@@ -310,6 +312,9 @@ function mapBlocks( blocks : list<block>,
 }
 
 // Sets new attributes for a block, and applies conversion to text
+// ------
+// Together with attributes/expandKeys this function is one of the most
+// important ones that define the semantics of Madoko.
 function setAttrs( block : block, xs : attrs, fcontext : formatContext ) : block {
   match(block) {
     HLine(_)            -> HLine(xs)
@@ -547,7 +552,10 @@ function tocItems( headings : list<(int,attrs)>, outerDepth : int, labels : dict
 // counters
 //--------------------------------------------------------
 
-// expand counters in label,
+// Expand counters in label,
+// -------------------------
+// Just like in attributes/expandKeys, expanding here means substitution.
+// That is, counters of the form @myCounter are substituted for their value.
 function expandCounters( attrs : attrs, counters : mdict<h,counter>, metadata : dict<string>, nested : mdict<h,list<string>> ) : st<h> attrs {
   val xlab = attrs.label.expandKeys(attrs.source,attrs,dict(),metadata).expandCounter(counters, nested)
   val attrs1 = if (xlab != attrs.label) then attrs(label=xlab) else attrs

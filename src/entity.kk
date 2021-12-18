@@ -1,12 +1,13 @@
 /*---------------------------------------------------------------------------
   Copyright 2013 Microsoft Corporation.
- 
+
   This is free software; you can redistribute it and/or modify it under the
   terms of the Apache License, Version 2.0. A copy of the License can be
   found in the file "license.txt" at the root of this distribution.
 ---------------------------------------------------------------------------*/
 
 // Parsing and formatting of html entities (for TeX output)
+// TODO why is most of this not part of the prelude instead of being built-in?
 module entity
 
 import common  // warning

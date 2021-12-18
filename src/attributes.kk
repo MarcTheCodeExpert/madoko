@@ -582,8 +582,18 @@ function expandKeyPattern( name : string, attrs : attrs ) : string {
   expandKeys(peanoN,"&" + name + ";",attrs.source,attrs,dict(), dict(), ignoreNotFound)
 }
 
-// expand keys in a string
-// the peano number is fuel.
+// Expand keys in a string
+// -----------------------
+// Keys are references to attributes, like "&title;". Expanding means
+// looking up the attribute and replacing the result in the string "txt".
+//
+// Special keys that are replaced, are:
+//   - &label;
+//   - &id;
+//   - &source;
+//   - &class; (the list of classes, which is joined with whitespaces)
+//
+// The first argument peano number is fuel to ensure termination.
 private function expandKeys( p0 : peano, txt : string, source : string,
                             attrs : attrs,
                             labels : dict<label>, metadata : dict<string>,
@@ -628,6 +638,7 @@ private function expandKeys( p0 : peano, txt : string, source : string,
     }
   }
 }
+// Matches either "\&" or an entity "&name;" or "&;"
 val rxkey = regex(@"\\&|(?:\\/)?&([\w\-:]*|&);(\\/)?")
 
 function keyNotFound( key: string, matched : string ) : string {

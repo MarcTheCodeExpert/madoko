@@ -588,7 +588,7 @@ function adjustCounter(counters : mdict<h,counter>,name : string, value : string
 }
 
 // increment or set a count to a value
-function increment(counter :counter, xvalue : string) : counter {
+function increment(counter : counter, xvalue : string) : counter {
   val v = xvalue.toLower
   if (v=="++" || v=="") then counter(value=counter.value+1)
   elif (v=="--") then counter(value=counter.value-1)

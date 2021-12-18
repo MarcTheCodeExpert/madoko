@@ -83,16 +83,14 @@ public struct blockInfo (
 // Takes source markdown input and returns formatted html
 public function markdown(
   src0 : string,
-  options0 : options = initialOptions0,
-  fmt : formatter = FmtTex ) : pure (string,options,list<block>,formatContext)
+  options0 : options = initialOptions0) : pure (string,options,list<block>,formatContext)
 {
   // first normalize the input: all tabs to 4 spaces.
-  val (options1,src) = parseMeta(options0,fmt,src0.normalizeSource)
+  val (options1,src) = parseMeta(options0,src0.normalizeSource)
   val options = options1(metadata = options1.metadata.completeAuthorKeys)
   val xfull = options.full.maybe(True,id)
 
   if (options.verbose>=4) then {
-    trace("metadata: " + fmt.showFormatter)
     options.metadata.foreach fun(md) {
       trace("  " + md.fst + ": " + md.snd.cutoff(80))
     }
@@ -103,7 +101,7 @@ public function markdown(
   if (options.citeAll) then log("aux",@"\citation{*}")
 
   // parse definitions
-  val icontext  = inlineContext(fmt,
+  val icontext  = inlineContext(FmtTex,
     options.metadata.dict,
     options.embedinfos,
     options.verbose,

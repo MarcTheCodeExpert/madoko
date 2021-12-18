@@ -49,7 +49,7 @@ public function processContent( inName : string, outName : string, content : str
                           ("year",date.year.show),("month",date.month.show2),("day",date.day.show2),
                           ("hours",date.hours.show2),("minutes",date.minutes.show2),("seconds",date.seconds.show2)] )
 
-    val mopts = xopts.parseMeta( FmtHtml, icontent.normalizeSource ).fst  // get bibdata,bibstyle,mathimg
+    val mopts = xopts.parseMeta( icontent.normalizeSource ).fst  // get bibdata,bibstyle,mathimg
 
     // register languages for highlighting
     registerColorizers(mopts, searchDirs, icontent);
@@ -86,7 +86,7 @@ function process( inName : string, outName : string, searchDirs : list<string>,
         = withLog("texwarning", {
             withLog("files", {
               withLog("filesRefer", {
-               markdown(icontent,xopts,FmtTex).fst
+               markdown(icontent,xopts).fst
               })
             })
           })

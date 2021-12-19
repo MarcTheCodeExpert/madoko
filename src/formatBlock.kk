@@ -177,6 +177,9 @@ public function formatBlock( context : formatContext, block : block ) : div stri
       }
     }
 
+    // Block comments are rendered as linebreak.
+    Comment(_) -> "\n"
+
     Quote(bs,attrs) -> context.fmtEnv("blockquote", formatBlocksX(context,bs), attrs)
 
     Table(header,colstyles0,cells,attrs) -> {

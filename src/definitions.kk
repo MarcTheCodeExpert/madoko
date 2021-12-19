@@ -253,8 +253,7 @@ function mapBlocks( blocks : list<block>,
     match(nblock) {
       Para(_,xs)  -> previousPar := (if (xs.hasClass("para-block")) then ParBlock else ParEnded)
       Div(_,xs)   | nblock.blockName == "figure" || xs.hasClass("float") -> ()  // leave as is
-      // TODO add a separate constructor for Comment
-      Source(input,Raw(Just(FmtHtml))) | input.startsWith("<!--") -> () // ignore comments too
+      Comment(_) -> ()
       Div(_,xs)   -> previousPar := (if (xs.hasClass("para-end")) then ParEnded elif (xs.hasClass("para-block")) then ParBlock else ParNone)
       Code(_,_,xs)-> previousPar := (if (xs.hasClass("para-end")) then ParEnded elif (xs.hasClass("para-block")) then ParBlock else ParNone)
       DefFootnote -> ()

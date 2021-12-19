@@ -37,6 +37,7 @@ public type block {
   Empty()
   Div( content : list<block>, attrs : attrs = attrsNone )
   Source( text : string, input : input = Markdown(), parentAttrs : attrs = attrsNone )     // raw content
+  Comment( text : string)
   Special( name : string, value : string = "", attrs : attrs = attrsNone )  // Special blocks, like [TOC] or [FOOTNOTES]
 }
 
@@ -49,11 +50,7 @@ val inlineTags  = [ "a","em","strong","small","s","cite","q","dfn","abbr","data"
                     "var","samp","kbd","sub","sup","i","b","u","mark","ruby","rt","rp","bdi","bdo",
                     "span","br","wbr","ins","del","img" ]
 val atag        = @"(?!(?:" + inlineTags.join("|") + @")\b)\w+(?!:/|@)\b"
-val comment     = @"!--[\s\S]*?-->"
-public val tagContent  = @"(?:""[^""]*""|'[^']*'|[^'"">])*"
-val closedTag   = @"(" + atag + @")[\s\S]+?</\1>"
-val soloTag     = @"" + atag + tagContent + ">"
-val html        = @"<(?:" + [closedTag,soloTag,comment].join("|") + @") *(?:\n+|\s*$)"
+val comment      = @"<(?:!--[\s\S]*?-->) *(?:\n+|\s*$)"
 
 // Attributes: allow escaped newline
 val rattrs      = @"(?:<!--)?\{:?((?:[^\\'""\}\n]|\\[\s\S]|'(?:[^\\']|\\[\s\S])*'|""(?:[^""\\]|\\[\s\S])*"")*)\}(?:-->)?" // allow optional colon for maraku compat
@@ -99,7 +96,7 @@ val blockGrammar : grammar<block,blockContext> = [
   Rule("parax",      regex(@"^(" + notbspecial + @"[^|\n]*?(?:\n|$)(?:(?!" + endpara + @").+(?:\n|$))*)\n*"), blockPara ),
 
   Rule("code",       regex(@"^(    (?:.|\n+    )*)\n*"), blockCode ),
-  Rule("html",       regex(@"^ *" + html), blockHtml ),
+  Rule("comment",    regex(@"^ *" + comment), blockComment ),
   Rule("deflink",    regex(@"^ *\[(?!\^)" + xlinkid + @"\]: *<?((?:[^\\\s>]|\\(?:.|\n *))+)>?(?: +[""(]((?:[^\n\\]|\\(?:.|\n *))+)["")])?(?: |\\\n *)*" +iattrs+ @"(\n+|$)"), blockDefLink ),
   Rule("deffootnote",regex(@"^ *\[\^" + xlinkid + @"\]: *(?:\n {4})?(.*(?:\n+ {4}.*)*)(?:\n+|$)"), blockDefFootnote),
   Rule("hline",      regex(@"^ *" + hr), blockHLine ),
@@ -235,11 +232,8 @@ function blockHLine( cap : matched, _context ) : block {
 }
 
 // this is only used for block comments
-function blockHtml( cap : matched, context : blockContext ) :  block  {
-  // drop the commented out contents:
-  // it would be best to just return Empty here.
-  // however, this eats the whitespaces, leading and trailing the comment
-  Source(cap.matched, Raw(Just(FmtHtml)),attrsNone)
+function blockComment( cap : matched, context : blockContext ) :  block  {
+  Comment(cap.matched)
 }
 
 function blockHeading( cap : matched, context : blockContext ) : block  {

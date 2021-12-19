@@ -158,7 +158,6 @@ public function formatBlock( context : formatContext, block : block ) : div stri
     HLine(attrs) -> context.fmtCmd("hr", "", attrs)
 
     Source(txt,input,parentAttrs) -> {
-      parentAttrs.logDataLine
       match(input) {
         Pre       -> context.inlineContext.fmtCode("pre",txt)
         Math      -> context.inlineContext.fmtMath(True,txt,parentAttrs.deriveMathAttrs)

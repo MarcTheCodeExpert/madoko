@@ -66,13 +66,6 @@ public function copy( self : inlineContext,
   Parse inline text elements
 ---------------------------------------- */
 
-public function logDataLine( attrs ) : () {
-  match(attrs.hasKey("data-line")) {
-    Nothing     -> ()
-    Just(line)  -> logLocation(line)
-  }
-}
-
 // Parse _inline_ markdown elements and return formatted html
 public function formatInline( context : inlineContext, txt : string, attrs : attrs = attrsNone ) : string
 {

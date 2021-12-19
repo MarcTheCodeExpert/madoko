@@ -148,14 +148,14 @@ function inlineQuot( cap : matched, context ) : string {
 }
 
 function inlineStrong( cap : matched, context ) : string {
-  val tag = if (context.starBold && cap.matched.startsWith("_")) then "em" else "strong"
+  val tag = "strong"
   val class = tag + (if (cap.matched.startsWith("*")) then "-star" else "-low") + cap.groups[1].length.show
   val attrs = context.defaults.matchRules( tag, attrsNone.addClass(class) )
   context.fmtCmd(tag, formatInline(context,cap.groups[2]), attrs)
 }
 
 function inlineEmph( cap : matched, context ) : string {
-  val tag = if (context.starBold && cap.matched.startsWith("*")) then "strong" else "em"
+  val tag = "em"
   val class = tag + (if (cap.matched.startsWith("*")) then "-star" else "-low") + cap.groups[1].length.show
   val attrs = context.defaults.matchRules( tag, attrsNone.addClass(class) )
   context.fmtCmd(tag, formatInline(context,cap.groups[2]), attrs )

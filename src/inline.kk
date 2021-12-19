@@ -38,7 +38,6 @@ public rectype inlineContext {
                  embedinfos : dict<embedinfo>,
                  verbose    : int,
                  highlight  : bool,
-                 starBold   : bool,
                  prettyAlign : int
                )
 }
@@ -59,7 +58,7 @@ public function copy( self : inlineContext,
   InlineContext( self.grammar, links, labels, footnotes, defaults,
 
                  self.metadata, self.embedinfos,
-                 self.verbose, self.highlight, self.starBold, self.prettyAlign)
+                 self.verbose, self.highlight, self.prettyAlign)
 }
 
 

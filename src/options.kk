@@ -51,7 +51,6 @@ public struct options(
   headingBase   : int  = 2, // heading level for #
   sectionMax    : int  = 0, // maximal depth for adding sections (0 = disable)
   sectionBase   : int  = 1, // starting section level.
-  starBold      : bool = False, // use * for bold?
   prettyAlign   : int  = 2, // default alignment spaces for .pretty mode
 
   highlight     : bool = True,

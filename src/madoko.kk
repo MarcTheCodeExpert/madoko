@@ -106,7 +106,6 @@ public function markdown(
     options.embedinfos,
     options.verbose,
     options.highlight,
-    options.starBold,
     options.prettyAlign)
 
   val (fblocks,fcontext)
@@ -201,13 +200,12 @@ public function inlineContext( metadata : dict<string>,
                                embedinfos : dict<embedinfo>,
                                verbose : int = 0,
                                highlight : bool = True,
-                               starBold : bool = False,
                                prettyAlign : int = 2 ) : inlineContext
 {
   InlineContext( inlineGrammar, dict(), dict(), dict(), emptyRules,
 
                  metadata, embedinfos,
-                 verbose, highlight, starBold, prettyAlign
+                 verbose, highlight, prettyAlign
                )
 }
 

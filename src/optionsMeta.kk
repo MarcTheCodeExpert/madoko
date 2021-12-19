@@ -54,7 +54,6 @@ function update( options : options, key : string, xvalue : string, mdata : metad
   elif (key=="highlight" || key=="colorize") options(highlight=if (value=="") then False else True)
   elif (key=="highlight-language" || key=="colorizer") options(hilitelang=if (value=="") then "" else options.hilitelang + ";" + value)
   elif (key=="rebuild") options(rebuild=(value != ""))
-  elif (key=="star-bold") options(starBold=(value!=""))
   elif (key=="pretty-align") options(prettyAlign=ivalue)
   elif (key=="refer") { log("filesRefer",value); options }
   elif (key=="copy-styles") options(copyStyles=(value!=""))

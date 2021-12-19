@@ -395,10 +395,6 @@ function texCmdX( cmd : string, body : string, attrs : attrs = attrsNone, extra 
 
 
 function texEnv( env : string, body : string, attrs : attrs = attrsNone ) : string {
-  texEnvPlain(env,body,attrs)
-}
-
-function texEnvPlain( env : string, body : string, attrs : attrs ) : string {
   //val envName = (if (attrs.texelem != "") then attrs.texelem else ("md" + env.normalizeCmd.capitalize))
   val envCmd = // "\\begin{" + envName + "}" + attrs.texAttrsX + "%mdk\n" +
                attrs.cssAttrs(body,[("display","block")],env) // + "%mdk\n" +

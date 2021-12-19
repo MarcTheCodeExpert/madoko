@@ -36,7 +36,9 @@ public type block {
   DefFootnote( id : string, content : list<block> )
   Empty()
   Div( content : list<block>, attrs : attrs = attrsNone )
-  Source( text : string, input : input = Markdown(), parentAttrs : attrs = attrsNone )     // raw content
+  // Used to represent TexRaw, source code, and sometimes MathPre (but I don't know why...)
+  // Markdown is (to the best of my knowledge) never used as input, despite being the default
+  Source( text : string, input : input, parentAttrs : attrs = attrsNone )
   Comment( text : string)
   Special( name : string, value : string = "", attrs : attrs = attrsNone )  // Special blocks, like [TOC] or [FOOTNOTES]
 }

@@ -291,11 +291,7 @@ function setAttrs( block : block, xs : attrs, fcontext : formatContext ) : block
     Item(content)       -> transformItem(content,xs)
     Div( content  )     -> transformDiv(content, xs, fcontext )
     Quote( content )    -> Quote(content, xs)
-    Code( text, lang)   -> {
-      if (lang=="" && !(xs.input.isPre))
-        then transformDiv([Source(text)], xs(source=text,elem="pre"), fcontext )
-        else Code(xs.transformText(text,dict(),fcontext.inlineContext.metadata),lang,xs)
-    }
+    Code( text, lang)   -> Code(xs.transformText(text,dict(),fcontext.inlineContext.metadata),lang,xs)
     _                   -> block
   }
 }
@@ -318,12 +314,21 @@ function transformItem( blocks : list<block>, attrs: attrs ) : block {
 
 function transformDiv( blocks : list<block>, attrs : attrs, fcontext : formatContext )  : block {
   if (attrs.lookupKey("transform","") == "false") return Div(blocks,attrs)
-  match(blocks) {                       // needed for internal divs like definition lists
+
+  // We only perform the transformation, if the Div element does not have any blocks
+  // Divs that contain blocks are internally used to represent elements like definition lists.
+  // Those should not be transformed (Why exactly?)
+  match(blocks) {
     Nil              -> ()
-    Cons(Source,Nil) -> ()              // but with just one Source we should transform (look above for Code transforms)
+    // This was used to represent Code without a lanuage -- dropped this for simplification.
+    //Cons(Source,Nil) -> ()
     _ -> return Div(blocks,attrs)
   }
-  val txt = attrs.transformText(attrs.source,dict(),fcontext.inlineContext.metadata)
+
+  // get the source text of the div
+  val txt = attrs.transformText(attrs.source, dict(), fcontext.inlineContext.metadata)
+
+  // check for the input mode to parse the source
   match(attrs.input) {
     Tex -> {
       Div(txt.parseTex(attrs.name,"",fcontext.inlineContext.verbose >= 3)

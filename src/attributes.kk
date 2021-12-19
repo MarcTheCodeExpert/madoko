@@ -261,19 +261,23 @@ public function extendAttrs( attrs0 : attrs, attrsStr : string, source : string 
     elif (name=="input") {
       val v = kwvalue
       val r = if (v=="pre") then Pre
-              elif (v=="raw") then Raw(Nothing)
-              elif (v=="texraw") then Raw(Just(FmtTex))
+              elif (v=="raw") then Raw
+              // TODO drop texraw
+              elif (v=="texraw") then Raw
               elif (v=="tex") then Tex
               elif (v=="math") then Math
               elif (v=="mathpre") then MathPre
               elif (v=="mathdefs") then MathDefs
               elif (v=="mathpoly") then MathPoly
-              elif (v=="normal") then Markdown()
-              elif (v=="markdown") then Markdown()
-              elif (v=="texonly") then Markdown(Just(FmtTex))
+              elif (v=="normal") then Markdown
+              elif (v=="markdown") then Markdown
+              // TODO deprecate
+              elif (v=="texonly") then Markdown
               else {
-                warning( "unrecognized input value: " + value)
-                Markdown()
+                warning("unrecognized input value: " + value)
+                warning("Maybe you are still using the deprecateed html or htmlraw input directives?")
+                warning("Try searching all uses of HtmlRaw and HtmlOnly in your code and your styles")
+                Markdown
               }
       acc(input=r)
     }

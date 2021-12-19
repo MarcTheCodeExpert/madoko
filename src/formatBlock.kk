@@ -157,21 +157,15 @@ public function formatBlock( context : formatContext, block : block ) : div stri
 
     HLine(attrs) -> context.fmtCmd("hr", "", attrs)
 
-    Source(txt,input,parentAttrs) -> {
-      match(input) {
-        Pre       -> context.inlineContext.fmtCode("pre",txt)
-        Math      -> context.inlineContext.fmtMath(True,txt,parentAttrs.deriveMathAttrs)
-        MathPre   -> context.inlineContext.fmtMath(True,txt.mathPreBlock,parentAttrs.deriveMathAttrs)
+    Source(txt, input, parentAttrs) -> {
+      match (input) {
+        Pre       -> context.inlineContext.fmtCode("pre", txt)
+        Math      -> context.inlineContext.fmtMath(True, txt,parentAttrs.deriveMathAttrs)
+        MathPre   -> context.inlineContext.fmtMath(True, txt.mathPreBlock, parentAttrs.deriveMathAttrs)
         MathPoly  -> context.inlineContext.fmtPoly(txt, parentAttrs)
         MathDefs  -> txt.escapeMath
-        Markdown  -> context.inlineContext.formatInline(txt,parentAttrs)
-        Raw(monly)-> {
-          match(monly) {
-            Nothing -> txt + "\n"
-            Just(FmtTex) -> "%mdk-197\n" + txt + "\n"
-            _       -> "\n"
-          }
-        }
+        Markdown  -> context.inlineContext.formatInline(txt, parentAttrs)
+        Raw       -> txt + "\n"
         // these should not happen by now
         Tex  -> context.inlineContext.fmtEscapePre(txt)
       }

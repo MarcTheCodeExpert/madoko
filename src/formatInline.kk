@@ -586,13 +586,7 @@ function fmtSpan( context : inlineContext, txt0 : string, attrs : attrs ) : stri
     Pre      -> context.fmtCode("", txt, attrsd) // todo: use sname as env name?
     Math     -> context.fmtMath(False,txt.mathUnline,attrsd)
     MathPre  -> context.fmtMath(False,txt.mathUnline.mathPre,attrsd)
-    Raw(monly) ->
-      match(monly) {
-        Nothing -> context.fmtCmd("span", txt, attrsd )
-        Just(f) | f == FmtTex -> context.fmtCmd("span", txt, attrsd )
-        _       -> ""
-      }
-    Markdown(Just(f)) | !(f == FmtTex) -> ""
+    Raw -> context.fmtCmd("span", txt, attrsd )
     Markdown | attrsd.notag -> context.formatInline(txt)
     // MathDefs, Tex, Markdown
     _  -> context.fmtCmd("span", context.formatInline(txt), attrsd )

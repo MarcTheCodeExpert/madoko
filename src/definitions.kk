@@ -297,12 +297,7 @@ function setAttrs( block : block, xs : attrs, fcontext : formatContext ) : block
 }
 
 function shouldRender( attrs : attrs ) :bool {
-  if (attrs.lookupKey("display","") == "none") then False
-  else match (attrs.input) {
-    Markdown(Just(mfmt)) -> mfmt == FmtTex
-    Raw(Just(mfmt))      -> mfmt == FmtTex
-    _ -> True
-  }
+  attrs.lookupKey("display","") != "none"
 }
 
 function transformItem( blocks : list<block>, attrs: attrs ) : block {

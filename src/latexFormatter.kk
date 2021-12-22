@@ -609,6 +609,13 @@ function trimEnv( body : string, env : string, args : string = "" ) {
   body.trim.blockEnv(env,args)
 }
 
+// the unbrace here is used to obtain
+//   braceCmd("\\small", "{my text}")
+//   -->
+//   {\\small my text}
+//
+// instead of
+//   {\\small{my text}}
 function braceCmd( body : string, cmd : string ) : string {
   "{" + cmd.cmdconnect(body.unbrace) + "}"
 }
@@ -625,10 +632,16 @@ function unbrace( s : string ) : string {
 
 val rxCommentEnd = regex(@"(?:^|[^\\])%.*$")
 
+// this function defines how two tex strings are concatenated.
 function cmdconnect( cmd : string, s : string ) : string {
+  // if the first one ends with a "}", then we can safely concat
   if (cmd.isEmpty || s.isEmpty || cmd.endsWith("}")) then cmd + s
+  // the second one starts with a delimiter (that is not a letter, number or space), again safe to concat
   elif (s.contains(rxCmdOk)) then cmd + s
+  // the second one starts with a space, we add a {} to the command
+  // TODO I don't know why this would be necessary and would drop it.
   elif (s.contains(rxCmdSpace)) then cmd + "{}" + s
+  // Otherwise, it is potentially not safe to concatenate two snippets, so we insert a space
   else cmd + " " + s
 }
 val rxCmdOk = regex(@"^[^a-zA-Z0-9\s]")

@@ -9,8 +9,8 @@
 // Syntax highlighting
 module hilite
 
-import std/regex
-import std/path
+import std/text/regex
+import std/os/path
 import common
 
 external import {
@@ -18,27 +18,27 @@ external import {
 }
 
 // hilite mode. abstract.
-public type hilitemode;
+pub type hilitemode;
 
 // struct
 struct hilite( highlighted : string, finalMode : hilitemode )
 
 // Highlight using highlight.js. Use 'auto' for automatic language detection
 external xhilite( src : string, lang : string, mode : hilitemode ) : hilite {
-  js inline "(function(){ var res = monarch.highlightTextFragment(#3,#1); return Hilite(res.html,res.next); })()"
+  js inline "(fun(){ var res = monarch.highlightTextFragment(#3,#1); return Hilite(res.html,res.next); })()"
 } 
 
 external xinitialMode( lang : string) : hilitemode {
-  js inline "(function(){ var res = monarch.getInitialMode(#1); if (!res) throw new Error('unknown language: ' + #1); return res; })()"
+  js inline "(fun(){ var res = monarch.getInitialMode(#1); if (!res) throw new Error('unknown language: ' + #1); return res; })()"
 }
 
 
 // Syntax highlight code. 
 // If "lang" is the empty string, returns Nothing. 
-public function hilite( src : string, lang : string ) : maybe<string> 
+pub fun hilite( src : string, lang : string ) : maybe<string> 
 {
   if (lang=="") return Nothing
-  catch( { Just(xhilite(src,lang.toLower,xinitialMode(lang.toLower)).highlighted)  }, fun(exn) { 
+  catch( { Just(xhilite(src,lang.toLower,xinitialMode(lang.toLower)).highlighted)  }, fn(exn) { 
            warning("could not highlight: " + exn.show)
            Nothing
          })
@@ -48,7 +48,7 @@ public function hilite( src : string, lang : string ) : maybe<string>
 // Syntax highlight code. 
 // If "lang" is the empty string, returns Nothing. 
 // Use `auto` for automatic language detection.
-public function hilitePartial( src : string, lang : string, mbMode : maybe<hilitemode> = Nothing) : maybe<(string,hilitemode)>
+pub fun hilitePartial( src : string, lang : string, mbMode : maybe<hilitemode> = Nothing) : maybe<(string,hilitemode)>
 {
   if (lang=="") return Nothing
   catch( { 
@@ -59,7 +59,7 @@ public function hilitePartial( src : string, lang : string, mbMode : maybe<hilit
     val res = xhilite(src,lang.toLower,mode)
     Just( (res.highlighted,res.finalMode) )
    }, 
-   fun(exn) { 
+   fn(exn) { 
      warning("could not highlight: " + exn.show)
      Nothing
    })
@@ -69,16 +69,16 @@ external xxregisterLanguage( name : string, definition : string ) : io () {
   js inline "monarch.register(#2,#1)"
 }
 
-public function registerLanguage( name : string, definition: string ) : io () {
+pub fun registerLanguage( name : string, definition: string ) : io () {
   catch( { //trace("register: " + name + ": " + fname); 
            xxregisterLanguage(name.toLower,definition) }, 
-         fun(exn) { println("error: could not register language: " + name  + "\n" + exn.show /* + "\n" + fulldef */ ) } )
+         fn(exn) { println("error: could not register language: " + name  + "\n" + exn.show /* + "\n" + fulldef */ ) } )
 }
 
 external xcanHilite( name : string ) : bool {
   js inline "(monarch.getLanguage(#1) != null)"
 }
 
-public function canHilite( name : string ) : bool {
+pub fun canHilite( name : string ) : bool {
   xcanHilite( name.toLower )
 }

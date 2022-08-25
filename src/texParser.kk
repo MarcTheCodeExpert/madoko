@@ -13,11 +13,11 @@
 // recognized in order to allow author names with correct accent characters.
 module texParser
 
-import std/dict
-import std/string
-import std/regex
-import std/crypto
-import std/path
+import std/data/dict
+import v1/std/text/string
+import std/text/regex
+import v1/std/crypto
+import std/os/path
 import common
 import entity
 import texCommon
@@ -230,7 +230,7 @@ val texGrammar : grammar<string,texContext> = [
 
 
 // Parse TeX elements and return Markdown
-public function parseTex( txt : string, id: string = "", bststyle: string = "", verbose : bool = False, ignore : bool = True  ) : string
+pub fun parseTex( txt : string, id: string = "", bststyle: string = "", verbose : bool = False, ignore : bool = True  ) : string
 {
   val normTxt = txt.replaceAll(regex(@"\r\n?"),"\n").replaceAll(regex(@"\t"),"   ")
   val md = contextParse(TexContext(texGrammar,bststyle,ignore,id,contextParse), normTxt)
@@ -238,13 +238,13 @@ public function parseTex( txt : string, id: string = "", bststyle: string = "", 
   md
 }
 
-function contextParse( context : texContext, txt : string ) : string {
+fun contextParse( context : texContext, txt : string ) : string {
   if (txt=="") then "" else {
     parseTexAcc(context,builder(), txt.unbrace)
   }
 }
 
-function parseTexAcc( context : texContext, acc : builder<h>, txt : string ) : st<h> string
+fun parseTexAcc( context : texContext, acc : builder<h>, txt : string ) : st<h> string
 {
   if (txt=="") return acc.build
   val (s,next,_) = matchRules(context.grammar,context,txt,id)

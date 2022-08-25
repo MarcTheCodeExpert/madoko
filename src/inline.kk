@@ -9,21 +9,21 @@
 // Defines the context for _inline_ elements.
 module inline
 
-import std/dict
-import std/string
-import std/regex
-import std/log
+import std/data/dict
+import v1/std/text/string
+import std/text/regex
+import v1/std/log
 import common
 import attributes  // rules
 import codeAlign  // codeTable
 import hilite  // hilitemode
 
-public alias cells = list<list<(string,attrs)>>
+pub alias cells = list<list<(string,attrs)>>
 
 /* --------------------------------------
  The context for inline elements
 ---------------------------------------- */
-public rectype inlineContext {
+pub rectype inlineContext {
   // The parse context for inline elements.
   // Contains a dictionary of all define "links", and the current "grammar".
   // If "sanitize" is "True", all (user) html is supressed or escaped.
@@ -59,80 +59,80 @@ public rectype inlineContext {
                )
 }
 
-public struct titleinfo (
+pub struct titleinfo (
   title : string,
   subtitle : string,
   authors : list<authorinfo>,
   note : string
 )
 
-public struct authorinfo (
+pub struct authorinfo (
   name : string,
   address : string,
   email : string,
   note : string
 )
 
-public rectype footnote {
+pub rectype footnote {
   Footnote( footnoteNum : string,
             footnoteContent : (inlineContext) -> string,
             footnoteCaption : string  )
 }
 
-public function fmtCmd( context : inlineContext, cmd : string, txt : string, attrs : attrs = attrsNone ) : string {
+pub fun fmtCmd( context : inlineContext, cmd : string, txt : string, attrs : attrs = attrsNone ) : string {
   (context.xfmtCmd)(context,cmd,txt,attrs)
 }
 
-public function fmtEnv( context : inlineContext, env : string, txt : string, attrs : attrs = attrsNone ) : string {
+pub fun fmtEnv( context : inlineContext, env : string, txt : string, attrs : attrs = attrsNone ) : string {
   (context.xfmtEnv)(context,env,txt,attrs)
 }
 
-public function fmtMathCmd( context : inlineContext, cmd : string, txt : string, attrs : attrs = attrsNone ) : string {
+pub fun fmtMathCmd( context : inlineContext, cmd : string, txt : string, attrs : attrs = attrsNone ) : string {
   (context.xfmtMathCmd)(context,cmd,txt,attrs)
 }
 
-public function fmtMathEnv( context : inlineContext, env : string, txt : string, attrs : attrs = attrsNone ) : string {
+pub fun fmtMathEnv( context : inlineContext, env : string, txt : string, attrs : attrs = attrsNone ) : string {
   (context.xfmtMathEnv)(context,env,txt,attrs)
 }
 
-public function fmtCodePlain( context : inlineContext, txt : string, startline : bool = True ) : string {
+pub fun fmtCodePlain( context : inlineContext, txt : string, startline : bool = True ) : string {
   (context.xfmtCodePlain)(context,txt,startline)
 }
 
-public function fmtCodeToken( context: inlineContext, classes : list<string>, txt : string, lang : string, attrs : attrs ) : string {
+pub fun fmtCodeToken( context: inlineContext, classes : list<string>, txt : string, lang : string, attrs : attrs ) : string {
   (context.xfmtCodeToken)(context,classes,txt,lang,attrs)
 }
 
-public function fmtEscapePre( context : inlineContext, txt : string ) : string {
+pub fun fmtEscapePre( context : inlineContext, txt : string ) : string {
   (context.xfmtEscape)(context,txt,False)
 }
 
-public function fmtEscape( context : inlineContext, txt : string ) : string {
+pub fun fmtEscape( context : inlineContext, txt : string ) : string {
   (context.xfmtEscape)(context,txt,True)
 }
 
-public function fmtText( context : inlineContext, txt : string ) : string {
+pub fun fmtText( context : inlineContext, txt : string ) : string {
   (context.xfmtCmd)(context,"",txt,attrsNone)
 }
 
-public function fmtLink( context : inlineContext, isImage : bool, link : link, content : string) : string {
+pub fun fmtLink( context : inlineContext, isImage : bool, link : link, content : string) : string {
   (context.xfmtLink)(context,isImage,link,content)
 }
 
-public function fmtFootnote(context : inlineContext, id : string, fn : footnote ) : string {
+pub fun fmtFootnote(context : inlineContext, id : string, fn : footnote ) : string {
   (context.xfmtFootnote)(context,id,fn)
 }
 
-public function fmtLineInfo(context : inlineContext, lineInfo : string ) : string {
+pub fun fmtLineInfo(context : inlineContext, lineInfo : string ) : string {
   (context.xfmtLineInfo)(context,lineInfo)
 }
 
-public function fmtCodeTable(context : inlineContext, ct : codeTable, attrs : attrs = attrsNone ) : string {
+pub fun fmtCodeTable(context : inlineContext, ct : codeTable, attrs : attrs = attrsNone ) : string {
   (context.xfmtCodeTable)(context,ct,attrs)
 }
 
 // Copy an ":inlineContext"
-public function copy( self : inlineContext,
+pub fun copy( self : inlineContext,
                        grammar : grammar<string,inlineContext> = self.grammar,
                        links : dict<link> = self.links,
                        labels : dict<label> = self.labels,
@@ -171,7 +171,7 @@ public function copy( self : inlineContext,
                  fmt )
 }
 
-public function sanitize( context : inlineContext ) : bool {
+pub fun sanitize( context : inlineContext ) : bool {
   context.xsanitize
 }
 
@@ -180,7 +180,7 @@ public function sanitize( context : inlineContext ) : bool {
   Parse inline text elements
 ---------------------------------------- */
 
-public function logDataLine( attrs ) : () {
+pub fun logDataLine( attrs ) : () {
   match(attrs.hasKey("data-line")) {
     Nothing     -> ()
     Just(line)  -> logLocation(line)
@@ -188,12 +188,12 @@ public function logDataLine( attrs ) : () {
 }
 
 // Parse _inline_ markdown elements and return formatted html
-public function formatInline( context : inlineContext, txt : string, attrs : attrs = attrsNone ) : string
+pub fun formatInline( context : inlineContext, txt : string, attrs : attrs = attrsNone ) : string
 {
   formatInlineAcc(context,builder(), txt)
 }
 
-public function parseLineInfo( lineInfo : string ) : (string,int) {
+pub fun parseLineInfo( lineInfo : string ) : (string,int) {
   match (lineInfo.find(rxDataLine)) {
     Nothing   -> ("",0)
     Just(cap) -> (cap.groups[1],cap.groups[2].parseIntDefault(0))
@@ -201,7 +201,7 @@ public function parseLineInfo( lineInfo : string ) : (string,int) {
 }
 val rxDataLine = regex( @"^(.*:)?(\d+)$")
 
-function formatInlineAcc( context : inlineContext, acc : builder<h>, txt : string) : st<h> string
+fun formatInlineAcc( context : inlineContext, acc : builder<h>, txt : string) : st<h> string
 {
   if (txt=="") return acc.build
   val (s,next,_) = matchRules(context.grammar,context,txt,id)
@@ -210,17 +210,17 @@ function formatInlineAcc( context : inlineContext, acc : builder<h>, txt : strin
 
 
 
-public function mathPreX( txt : string ) : string
+pub fun mathPreX( txt : string ) : string
 {
   val ignorearg = @"(?:mbox|begin|end|(?:text|math|varmath)(?:kw|id|rm|sf|tt|up|it|sl|sc|bf|md|lf|normal|bb|cal|scr|bbm|bbmss|bbmtt|ds|frak|swab|goth)?)"
-  txt.replaceAll(regex(@"(\\" + ignorearg + @"{(?:[^\\}]|\\.)*}|\\[a-zA-Z@]+ *|\\[^a-z@])|^( +)|( +)|(\n)",multiline=True), fun(cap) {
+  txt.replaceAll(regex(@"(\\" + ignorearg + @"{(?:[^\\}]|\\.)*}|\\[a-zA-Z@]+ *|\\[^a-z@])|^( +)|( +)|(\n)",multiline=True), fn(cap) {
         val n = cap.matched.length
         if (cap.groups.matchedOn(2)) then @"\mdmathindent{" + n.show + "}"
         elif (cap.groups.matchedOn(3)) then string(n,'~') // @"\mdMathspace{" + cap.matched.length.show + "}"
         elif (cap.groups.matchedOn(4)) then "\\\\\n" // \\mdMathbr{}\n"
         else cap.matched
       })
-     .replaceAll(regex(@"(\\" + ignorearg + @"{(?:[^\\}]|\\.)*}|\\[a-z@]+(?![a-z@]))|#([a-z][a-z\d]*(?![a-z\d]))|([a-z][a-z\d]*(?![a-z\d]))|@([a-z][a-z\d]*(?![a-z\d]))", ignoreCase=True), fun(cap) {
+     .replaceAll(regex(@"(\\" + ignorearg + @"{(?:[^\\}]|\\.)*}|\\[a-z@]+(?![a-z@]))|#([a-z][a-z\d]*(?![a-z\d]))|([a-z][a-z\d]*(?![a-z\d]))|@([a-z][a-z\d]*(?![a-z\d]))", ignoreCase=True), fn(cap) {
         val grp = cap.groups.firstMatchedOn
         if (grp==2) then cap.groups[2]
         elif (grp < 2) then cap.matched
@@ -236,11 +236,11 @@ public function mathPreX( txt : string ) : string
       })
 }
 
-public function mathPre( txt : string ) : string {
+pub fun mathPre( txt : string ) : string {
   "\\mathpre{" + txt.mathPreX + "}"
 }
 
-public function mathPreBlock( txt : string) : string
+pub fun mathPreBlock( txt : string) : string
 {
   val pre = mathPreX(txt)
   "\\begin{mdmathpre}%mdk\n" + pre + "\n\\end{mdmathpre}%mdk\n"

@@ -1,0 +1,67 @@
+// Options from metadata
+module interface optionsMeta
+ 
+//------------------------------
+//#kki: import declarations
+ 
+import std/core/types = std/core/types = "";
+import std/core = std/core = "";
+import compat/dict = compat/dict = "";
+import compat = compat = "";
+import compat/log = compat/log = "";
+import common = common = "";
+import compat/path = compat/path = "";
+import options = options = "";
+ 
+//------------------------------
+//#kki: external imports
+ 
+ 
+//------------------------------
+//#kki: fixity declarations
+ 
+ 
+//------------------------------
+//#kki: local imported aliases
+ 
+// Metadata is just a string to string map.
+local alias options/metadata = (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)> = 1;
+ 
+//------------------------------
+//#kki: type declarations
+ 
+ 
+//------------------------------
+//#kki: declarations
+ 
+fun appendNL : (s : std/core/types/string, t : std/core/types/string) -> std/core/types/string;
+fun appendValue : (xs : (std/core/list :: V -> V)<std/core/types/string>, x : std/core/types/string, sep : (std/core/types/optional :: V -> V)<std/core/types/string>) -> (std/core/list :: V -> V)<std/core/types/string>;
+fun update : (options : options/options, key : std/core/types/string, xvalue : std/core/types/string, mdata : options/metadata) -> options/options;
+pub fun fromMeta : (opts : options/options, mdata : options/metadata) -> options/options;
+ 
+//------------------------------
+//#kki: external declarations
+ 
+ 
+//------------------------------
+//#kki: inline definitions
+ 
+//.inline-section
+specialize "_*" fun fromMeta // inline size: 1
+  = fn(opts: options/options, mdata: options/metadata){
+    std/core/foldl<(std/core/types/string, std/core/types/string),options/options,(std/core/types/(<>) :: E)>(mdata, opts, (fn(options: options/options, kv: (std/core/types/string, std/core/types/string)){
+        (match (kv) {
+          ((.skip std/core/types/(,)((key: std/core/types/string) : std/core/types/string, (xvalue: std/core/types/string) : std/core/types/string) : (std/core/types/string, std/core/types/string) ) as .pat: (std/core/types/string, std/core/types/string))
+             -> optionsMeta/update(options, key, xvalue, mdata);
+        });
+      }));
+  };
+fun fromMeta // inline size: 2
+  = fn(opts: options/options, mdata: options/metadata){
+    std/core/foldl<(std/core/types/string, std/core/types/string),options/options,(std/core/types/(<>) :: E)>(mdata, opts, (fn(options: options/options, kv: (std/core/types/string, std/core/types/string)){
+        (match (kv) {
+          ((.skip std/core/types/(,)((key: std/core/types/string) : std/core/types/string, (xvalue: std/core/types/string) : std/core/types/string) : (std/core/types/string, std/core/types/string) ) as .pat: (std/core/types/string, std/core/types/string))
+             -> optionsMeta/update(options, key, xvalue, mdata);
+        });
+      }));
+  };

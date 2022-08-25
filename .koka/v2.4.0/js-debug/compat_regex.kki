@@ -1,0 +1,347 @@
+/* This module supports JavaScriptStyle regular expressions.
+
+   The regular expressions conform to the regular expressions of JavaScript
+   as described at <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions>
+*/
+module interface compat/regex
+ 
+//------------------------------
+//#kki: import declarations
+ 
+import std/core/types = std/core/types = "";
+import std/core = std/core = "";
+import compat = compat = "";
+ 
+//------------------------------
+//#kki: external imports
+ 
+ 
+//------------------------------
+//#kki: fixity declarations
+ 
+ 
+//------------------------------
+//#kki: local imported aliases
+ 
+ 
+//------------------------------
+//#kki: type declarations
+ 
+pub value{0,1} type groups {
+  con Groups(grp: std/core/types/any) : (grp : std/core/types/any) -> groups;
+};
+// The result of a regular expression match, where "index" is the index in the
+// original source string where the match begins, "next" is the index just after
+// this match ("next == index + min(1,matched.length)"), "matched" is the content that
+// was matched, and "groups" is a vector that contains the content for each 
+// capture group (where "groups[0] == matched").
+pub type matched {
+  // The result of a regular expression match, where "index" is the index in the
+// original source string where the match begins, "next" is the index just after
+// this match ("next == index + min(1,matched.length)"), "matched" is the content that
+// was matched, and "groups" is a vector that contains the content for each 
+// capture group (where "groups[0] == matched").
+  pub con Matched(index: std/core/types/int, next: std/core/types/int, matched: std/core/types/string, groups: groups) : (index : std/core/types/int, next : std/core/types/int, matched : std/core/types/string, groups : groups) -> matched;
+};
+// Abstract type of a regular expression object
+pub value{0,1} type regex {
+  // Abstract type of a regular expression object
+  con Regex(obj: std/core/types/any) : (obj : std/core/types/any) -> regex;
+};
+ 
+//------------------------------
+//#kki: declarations
+ 
+// Automatically generated. Retrieves the `grp` constructor field of the `:groups` type.
+fun grp : (^ groups : groups) -> std/core/types/any;
+pub fun .copy : (.this : groups, grp : (std/core/types/optional :: V -> V)<std/core/types/any>) -> groups;
+// Automatically generated. Retrieves the `index` constructor field of the `:matched` type.
+pub fun index : (^ matched : matched) -> std/core/types/int;
+// Automatically generated. Retrieves the `next` constructor field of the `:matched` type.
+pub fun next : (^ matched : matched) -> std/core/types/int;
+// Automatically generated. Retrieves the `matched` constructor field of the `:matched` type.
+pub fun matched : (^ matched : matched) -> std/core/types/string;
+// Automatically generated. Retrieves the `groups` constructor field of the `:matched` type.
+pub fun groups : (^ matched : matched) -> groups;
+pub fun .copy.1 : (.this : matched, index : (std/core/types/optional :: V -> V)<std/core/types/int>, next : (std/core/types/optional :: V -> V)<std/core/types/int>, matched : (std/core/types/optional :: V -> V)<std/core/types/string>, groups : (std/core/types/optional :: V -> V)<groups>) -> matched;
+// Automatically generated. Retrieves the `obj` constructor field of the `:regex` type.
+fun obj : (^ regex : regex) -> std/core/types/any;
+pub fun .copy.2 : (.this : regex, obj : (std/core/types/optional :: V -> V)<std/core/types/any>) -> regex;
+fun groupsIndex : (groups : std/core/types/any, index : std/core/types/int) -> std/core/types/string;
+// For alternative regular expressions, return the alternative that was matched.
+// If this was not an alternative regex, returns "-1"
+pub fun alternative : (groups : groups) -> std/core/types/int;
+fun regexExec : (std/core/types/any, std/core/types/string, std/core/types/int) -> (std/core/types/maybe :: V -> V)<matched>;
+fun regexExecAll : (std/core/types/any, std/core/types/string, std/core/types/int) -> (std/core/types/vector :: V -> V)<matched>;
+fun groupsMatchedOn : (groups : std/core/types/any, index : std/core/types/int) -> std/core/types/int;
+fun regexReplace : (std/core/types/any, std/core/types/string, std/core/types/string, std/core/types/int, std/core/types/int) -> std/core/types/string;
+fun regexReplaceFun : forall<(e :: E)> (std/core/types/any, std/core/types/string, (matched) -> (e :: E) std/core/types/string, std/core/types/int, std/core/types/int) -> (e :: E) std/core/types/string;
+fun regexCreate : (std/core/types/string, std/core/types/int, std/core/types/int) -> std/core/types/any;
+fun regexSource : (r : std/core/types/any) -> std/core/types/string;
+fun regexCreateAlt : ((std/core/types/vector :: V -> V)<std/core/types/string>, std/core/types/int, std/core/types/int) -> std/core/types/any;
+fun regexSplit : (std/core/types/any, std/core/types/string, std/core/types/int, std/core/types/int) -> (std/core/types/vector :: V -> V)<std/core/types/string>;
+// Return the string captured by a particular group or the empty string.
+pub fun ([]) : (groups : groups, index : std/core/types/int) -> std/core/types/string;
+// Find a match for a regular expression starting at start position "start" (by default "0").
+// See also "contains"
+// (note: this fun is called |exec| in JavaScript).
+pub fun find : (s : std/core/types/string, regex : regex, start : (std/core/types/optional :: V -> V)<std/core/types/int>) -> (std/core/types/maybe :: V -> V)<matched>;
+// Does a regular expression pattern occur in a string "s"?
+// (note: called `test` in javascript)
+pub fun contains : (s : std/core/types/string, r : regex, start : (std/core/types/optional :: V -> V)<std/core/types/int>) -> std/core/types/bool;
+// Find all matches for a regular expression in a string.
+pub fun findAll : (s : std/core/types/string, regex : regex, start : (std/core/types/optional :: V -> V)<std/core/types/int>) -> (std/core/types/vector :: V -> V)<matched>;
+// Returns "True" if a particular capture group actually matched.
+// This is used if the group can match, but may capture the empty string.
+pub fun matchedOn : (groups : groups, index : std/core/types/int) -> std/core/types/bool;
+// Return first group that was matched (or -1 if nothing was matched) 
+pub fun firstMatchedOn : (groups : groups, start : (std/core/types/optional :: V -> V)<std/core/types/int>, end : (std/core/types/optional :: V -> V)<std/core/types/int>) -> std/core/types/int;
+// Return the first matched group (or "" if nothing matched) starting at "start"
+// and returning at most group "end"
+pub fun firstMatched : (groups : groups, start : (std/core/types/optional :: V -> V)<std/core/types/int>, end : (std/core/types/optional :: V -> V)<std/core/types/int>) -> std/core/types/string;
+fun replaceEx : forall<(e :: E)> (s : std/core/types/string, regex : regex, repl : (matched : matched) -> (e :: E) std/core/types/string, all : (std/core/types/optional :: V -> V)<std/core/types/bool>, start : (std/core/types/optional :: V -> V)<std/core/types/int>) -> (e :: E) std/core/types/string;
+fun replaceEx.1 : (s : std/core/types/string, regex : regex, repl : std/core/types/string, all : (std/core/types/optional :: V -> V)<std/core/types/bool>, start : (std/core/types/optional :: V -> V)<std/core/types/int>) -> std/core/types/string;
+// Replace the all occurrences of "regex" by the result of the replacement fun "repl" in a string "s".
+pub fun replaceAll : forall<(e :: E)> (s : std/core/types/string, regex : regex, repl : (matched : matched) -> (e :: E) std/core/types/string, start : (std/core/types/optional :: V -> V)<std/core/types/int>) -> (e :: E) std/core/types/string;
+// Replace all ocurrences of "regex" by the result of a replacement string "repl" in a string "s".
+pub fun replaceAll.1 : (s : std/core/types/string, regex : regex, repl : std/core/types/string, start : (std/core/types/optional :: V -> V)<std/core/types/int>) -> std/core/types/string;
+// Create a new regular expression. Takes two optional parameters. Set "ignoreCase" to "True"
+// to ignore uppercase/lowercase distinction. If  "multiline" is set to "True", then "^" and "$"
+// match also the beginning and end of every line (instead of the entire input).
+pub fun regex : (regex : std/core/types/string, ignorecase : (std/core/types/optional :: V -> V)<std/core/types/bool>, multiline : (std/core/types/optional :: V -> V)<std/core/types/bool>) -> regex;
+val rxNonGroup : regex;
+// Return the pattern as a string
+pub fun source : (r : regex) -> std/core/types/string;
+// How many groups are captured by this regex?
+pub fun groupsCount : (r : regex) -> std/core/types/int;
+// Create a new _alternative_ regular expression. 
+// Matches any of the given patterns but the groups are local to each alternative.
+// See "alternative" to find out which alternative was matched. Contains an optimization
+// where a common prefix of all patterns is lifted out of the alternative to increase efficiency.
+// Takes two optional parameters. Set "ignoreCase" to "True"
+// to ignore uppercase/lowercase distinction. If  "multiline" is set to "True", then "^" and "$"
+// match also the beginning and end of every line (instead of the entire input).  
+// Note: currently only supported in the javascript backend.
+pub fun regexAlt : (regexs : (std/core/list :: V -> V)<std/core/types/string>, ignorecase : (std/core/types/optional :: V -> V)<std/core/types/bool>, multiline : (std/core/types/optional :: V -> V)<std/core/types/bool>) -> regex;
+// Replace the first occurrence of "regex" by the result of the replacement fun "repl" in a string "s".
+pub fun replace : forall<(e :: E)> (s : std/core/types/string, regex : regex, repl : (matched : matched) -> (e :: E) std/core/types/string, start : (std/core/types/optional :: V -> V)<std/core/types/int>) -> (e :: E) std/core/types/string;
+// Replace the first occurrence of "regex" by the result a replacement string "repl" in a string "s".
+// The replacement string can contain `$$` for a `$` sign, `$n` for a capture group,
+// `$&` for the entire match (`==$0`).
+pub fun replace.1 : (s : std/core/types/string, regex : regex, repl : std/core/types/string, start : (std/core/types/optional :: V -> V)<std/core/types/int>) -> std/core/types/string;
+// Split a string "s" in at most "n" parts using a regular expression "r" as separator.
+pub fun split : (s : std/core/types/string, r : regex, n : (std/core/types/optional :: V -> V)<std/core/types/int>, start : (std/core/types/optional :: V -> V)<std/core/types/int>) -> (std/core/types/vector :: V -> V)<std/core/types/string>;
+fun .ctail-splitExcludeX : (s : std/core/types/string, splitr : regex, acc : std/core/types/string, .acc : (std/core/types/ctail :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>>) -> <(std/core/types/div :: E)> (std/core/list :: V -> V)<std/core/types/string>;
+fun splitExcludeX : (s : std/core/types/string, splitr : regex, acc : std/core/types/string) -> <(std/core/types/div :: E)> (std/core/list :: V -> V)<std/core/types/string>;
+// Split a string "s" over separator "sep" where "sep" does not occur in 
+// _tokens_ matching "exclude".
+// For example: `splitExclude("comma,'sep,arated',values", regex(","),regex("'[^']*'|[^',]"))`
+pub fun splitExclude : (s : std/core/types/string, sep : regex, exclude : regex) -> <(std/core/types/div :: X)> (std/core/list :: V -> V)<std/core/types/string>;
+ 
+//------------------------------
+//#kki: external declarations
+ 
+ 
+//------------------------------
+//#kki: inline definitions
+ 
+//.inline-section
+specialize "*__" fun firstMatched // inline size: 1
+  = fn(groups0: groups, start: (std/core/types/optional :: V -> V)<std/core/types/int>, end: (std/core/types/optional :: V -> V)<std/core/types/int>){
+    val i0 : std/core/types/int
+          = val .start.470 : std/core/types/int
+              = match (start) {
+                ((std/core/types/Optional((.start.590: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat5: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+                   -> .start.590;
+                ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat00: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+                   -> 1;
+              };
+            val .pat : (std/core/types/optional :: V -> V)<std/core/types/int>
+              = std/core/types/Optional<std/core/types/int>(.start.470);
+            val .scrut : (std/core/types/optional :: V -> V)<std/core/types/int>
+              = .pat;
+            val .end.474 : std/core/types/int
+              = match (end) {
+                ((std/core/types/Optional((.end.594: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat10: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+                   -> .end.594;
+                ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat20: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+                   -> 10;
+              };
+            val .pat1 : (std/core/types/optional :: V -> V)<std/core/types/int>
+              = std/core/types/Optional<std/core/types/int>(.end.474);
+            val .scrut : (std/core/types/optional :: V -> V)<std/core/types/int>
+              = .pat1;
+          match ((std/core/find<std/core/types/int>((std/core/list(.start.470, .end.474)), (fn(i: std/core/types/int){
+              val i0.1931 : std/core/types/int
+                    = (compat/regex/groupsMatchedOn((match (groups0) {
+                        ((.skip compat/regex/Groups((.x: std/core/types/any) : std/core/types/any) : groups ) as .pat3: groups)
+                           -> .x;
+                      }), i));
+              (std/core/(!=.1)(i0.1931, 0));
+            })))) {
+            ((std/core/types/Nothing() : (std/core/types/maybe :: V -> V)<std/core/types/int> ) as .pat30: ((std/core/types/maybe :: V -> V)<std/core/types/int>))
+               -> std/core/(~)(1);
+            ((.skip std/core/types/Just((i00: std/core/types/int) : std/core/types/int) : (std/core/types/maybe :: V -> V)<std/core/types/int> ) as .pat4: ((std/core/types/maybe :: V -> V)<std/core/types/int>))
+               -> i00;
+          };
+    match ((std/core/(>=.1)(i0, 0))) {
+      ((std/core/types/True() : std/core/types/bool ) as .pat31: std/core/types/bool)
+         -> compat/regex/groupsIndex((match (groups0) {
+            ((.skip compat/regex/Groups((.x0: std/core/types/any) : std/core/types/any) : groups ) as .pat40: groups)
+               -> .x0;
+          }), i0);
+      ((.skip std/core/types/False() : std/core/types/bool ) as .pat400: std/core/types/bool)
+         -> "";
+    };
+  };
+specialize "*__" fun firstMatchedOn // inline size: 1
+  = fn(groups0: groups, start: (std/core/types/optional :: V -> V)<std/core/types/int>, end: (std/core/types/optional :: V -> V)<std/core/types/int>){
+    match ((std/core/find<std/core/types/int>((std/core/list((match (start) {
+          ((std/core/types/Optional((.start.470: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+             -> .start.470;
+          ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat0: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+             -> 1;
+        }), (match (end) {
+          ((std/core/types/Optional((.end.474: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat1: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+             -> .end.474;
+          ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat2: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+             -> 10;
+        }))), (fn(i: std/core/types/int){
+        val i0.1931 : std/core/types/int
+              = (compat/regex/groupsMatchedOn((match (groups0) {
+                  ((.skip compat/regex/Groups((.x: std/core/types/any) : std/core/types/any) : groups ) as .pat3: groups)
+                     -> .x;
+                }), i));
+        (std/core/(!=.1)(i0.1931, 0));
+      })))) {
+      ((std/core/types/Nothing() : (std/core/types/maybe :: V -> V)<std/core/types/int> ) as .pat30: ((std/core/types/maybe :: V -> V)<std/core/types/int>))
+         -> std/core/(~)(1);
+      ((.skip std/core/types/Just((i00: std/core/types/int) : std/core/types/int) : (std/core/types/maybe :: V -> V)<std/core/types/int> ) as .pat4: ((std/core/types/maybe :: V -> V)<std/core/types/int>))
+         -> i00;
+    };
+  };
+inline borrow "^" fun grp // inline size: 0
+  = fn(groups0: groups){
+    match (groups0) {
+      ((.skip compat/regex/Groups((.x: std/core/types/any) : std/core/types/any) : groups ) as .pat: groups)
+         -> .x;
+    };
+  };
+fun .copy // inline size: 2
+  = fn(.this: groups, grp0: (std/core/types/optional :: V -> V)<std/core/types/any>){
+    compat/regex/Groups((match (grp0) {
+      ((std/core/types/Optional((.grp.122: std/core/types/any) : std/core/types/any) : (std/core/types/optional :: V -> V)<std/core/types/any> ) as .pat: ((std/core/types/optional :: V -> V)<std/core/types/any>))
+         -> .grp.122;
+      ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/any> ) as .pat0: ((std/core/types/optional :: V -> V)<std/core/types/any>))
+         -> (match (.this) {
+          ((.skip compat/regex/Groups((.x: std/core/types/any) : std/core/types/any) : groups ) as .pat1: groups)
+             -> .x;
+        });
+    }));
+  };
+inline borrow "^" fun index // inline size: 0
+  = fn(matched0: matched){
+    match (matched0) {
+      ((.skip compat/regex/Matched((.x: std/core/types/int) : std/core/types/int, (.pat0: std/core/types/int) : std/core/types/int, (.pat1: std/core/types/string) : std/core/types/string, ((.skip compat/regex/Groups((.pat3: std/core/types/any) : std/core/types/any) : groups ) as .pat2: groups) : groups) : matched ) as .pat: matched)
+         -> .x;
+    };
+  };
+inline borrow "^" fun next // inline size: 0
+  = fn(matched0: matched){
+    match (matched0) {
+      ((.skip compat/regex/Matched((.pat0: std/core/types/int) : std/core/types/int, (.x: std/core/types/int) : std/core/types/int, (.pat1: std/core/types/string) : std/core/types/string, ((.skip compat/regex/Groups((.pat3: std/core/types/any) : std/core/types/any) : groups ) as .pat2: groups) : groups) : matched ) as .pat: matched)
+         -> .x;
+    };
+  };
+inline borrow "^" fun matched // inline size: 0
+  = fn(matched0: matched){
+    match (matched0) {
+      ((.skip compat/regex/Matched((.pat0: std/core/types/int) : std/core/types/int, (.pat1: std/core/types/int) : std/core/types/int, (.x: std/core/types/string) : std/core/types/string, ((.skip compat/regex/Groups((.pat3: std/core/types/any) : std/core/types/any) : groups ) as .pat2: groups) : groups) : matched ) as .pat: matched)
+         -> .x;
+    };
+  };
+inline borrow "^" fun groups // inline size: 0
+  = fn(matched0: matched){
+    match (matched0) {
+      ((.skip compat/regex/Matched((.pat0: std/core/types/int) : std/core/types/int, (.pat1: std/core/types/int) : std/core/types/int, (.pat2: std/core/types/string) : std/core/types/string, ((.skip compat/regex/Groups((.pat3: std/core/types/any) : std/core/types/any) : groups ) as .x: groups) : groups) : matched ) as .pat: matched)
+         -> .x;
+    };
+  };
+inline borrow "^" fun obj // inline size: 0
+  = fn(regex0: regex){
+    match (regex0) {
+      ((.skip compat/regex/Regex((.x: std/core/types/any) : std/core/types/any) : regex ) as .pat: regex)
+         -> .x;
+    };
+  };
+fun .copy.2 // inline size: 2
+  = fn(.this: regex, obj0: (std/core/types/optional :: V -> V)<std/core/types/any>){
+    compat/regex/Regex((match (obj0) {
+      ((std/core/types/Optional((.obj.209: std/core/types/any) : std/core/types/any) : (std/core/types/optional :: V -> V)<std/core/types/any> ) as .pat: ((std/core/types/optional :: V -> V)<std/core/types/any>))
+         -> .obj.209;
+      ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/any> ) as .pat0: ((std/core/types/optional :: V -> V)<std/core/types/any>))
+         -> (match (.this) {
+          ((.skip compat/regex/Regex((.x: std/core/types/any) : std/core/types/any) : regex ) as .pat1: regex)
+             -> .x;
+        });
+    }));
+  };
+fun ([]) // inline size: 1
+  = fn(groups0: groups, index0: std/core/types/int){
+    compat/regex/groupsIndex((match (groups0) {
+        ((.skip compat/regex/Groups((.x: std/core/types/any) : std/core/types/any) : groups ) as .pat: groups)
+           -> .x;
+      }), index0);
+  };
+fun matchedOn // inline size: 2
+  = fn(groups0: groups, index0: std/core/types/int){
+    val i.1927 : std/core/types/int
+          = compat/regex/groupsMatchedOn((match (groups0) {
+              ((.skip compat/regex/Groups((.x: std/core/types/any) : std/core/types/any) : groups ) as .pat: groups)
+                 -> .x;
+            }), index0);
+    std/core/(!=.1)(i.1927, 0);
+  };
+fun replaceAll // inline size: 4
+  = forall<(e :: E)> fn<(e :: E)>(s: std/core/types/string, regex0: regex, repl: (matched : matched) -> (e :: E) std/core/types/string, start: (std/core/types/optional :: V -> V)<std/core/types/int>){
+    compat/regex/replaceEx<(e :: E)>(s, regex0, repl, (std/core/types/Optional<std/core/types/bool>(std/core/types/True)), (std/core/types/Optional<std/core/types/int>((match (start) {
+        ((std/core/types/Optional((.start.790: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+           -> .start.790;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat0: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+           -> 0;
+      }))));
+  };
+fun replaceAll.1 // inline size: 4
+  = fn(s: std/core/types/string, regex0: regex, repl: std/core/types/string, start: (std/core/types/optional :: V -> V)<std/core/types/int>){
+    compat/regex/replaceEx.1(s, regex0, repl, (std/core/types/Optional<std/core/types/bool>(std/core/types/True)), (std/core/types/Optional<std/core/types/int>((match (start) {
+        ((std/core/types/Optional((.start.826: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+           -> .start.826;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat0: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+           -> 0;
+      }))));
+  };
+fun source // inline size: 1
+  = fn(r: regex){
+    compat/regex/regexSource((match (r) {
+      ((.skip compat/regex/Regex((.x: std/core/types/any) : std/core/types/any) : regex ) as .pat: regex)
+         -> .x;
+    }));
+  };
+fun replace // inline size: 4
+  = forall<(e :: E)> fn<(e :: E)>(s: std/core/types/string, regex0: regex, repl: (matched : matched) -> (e :: E) std/core/types/string, start: (std/core/types/optional :: V -> V)<std/core/types/int>){
+    compat/regex/replaceEx<(e :: E)>(s, regex0, repl, (std/core/types/Optional<std/core/types/bool>(std/core/types/False)), (std/core/types/Optional<std/core/types/int>((match (start) {
+        ((std/core/types/Optional((.start.1053: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+           -> .start.1053;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat0: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+           -> 0;
+      }))));
+  };
+fun replace.1 // inline size: 4
+  = fn(s: std/core/types/string, regex0: regex, repl: std/core/types/string, start: (std/core/types/optional :: V -> V)<std/core/types/int>){
+    compat/regex/replaceEx.1(s, regex0, repl, (std/core/types/Optional<std/core/types/bool>(std/core/types/False)), (std/core/types/Optional<std/core/types/int>((match (start) {
+        ((std/core/types/Optional((.start.1089: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+           -> .start.1089;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat0: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+           -> 0;
+      }))));
+  };

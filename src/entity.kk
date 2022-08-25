@@ -10,8 +10,8 @@
 module entity
 
 import common  // warning
-import std/log
-import std/regex
+import v1/std/log
+import std/text/regex
 
 struct entity(
   ename : string,
@@ -22,14 +22,14 @@ struct entity(
 
 // Convert an html entity to a LaTeX command.
 // Takes as input the string between the `&` and `;` of a HTML entity.
-public function entityToTex( entity : string ) : string 
+pub fun entityToTex( entity : string ) : string 
 {
   if (entity.startsWith("#")) {
     val num = if (entity.startsWith("#x") || entity.startsWith("#X")) 
            then "0" + entity.substr(1)
            else entity.substr(1)
     val i = num.parseInt.maybe(~1,id)
-    match (entities.find(fun(e) { e.ecode == i })) {
+    match (entities.find(fn(e) { e.ecode == i })) {
       Nothing -> {
         if (i > 127) warning( "unknown unicode point: &#" + num + ";", "texwarning")
         @"\mdUnicode{" + i.show + "}"
@@ -37,7 +37,7 @@ public function entityToTex( entity : string ) : string
       Just(e) -> e.entityCmd
     }       
   }
-  else match(entities.find(fun(e) { e.ename == entity })) {
+  else match(entities.find(fn(e) { e.ename == entity })) {
     Nothing -> {
       warning( "unknown entity: &" + entity + ";", "texwarning")
       @"\mdEntity{" + entity + "}"
@@ -47,7 +47,7 @@ public function entityToTex( entity : string ) : string
 }
 
 // Convert an html entity to a unicode number
-public function entityToNum( entity : string ) : maybe<int> 
+pub fun entityToNum( entity : string ) : maybe<int> 
 {
   if (entity.startsWith("#")) {
     val num = if (entity.startsWith("#x") || entity.startsWith("#X")) 
@@ -55,24 +55,24 @@ public function entityToNum( entity : string ) : maybe<int>
            else entity.substr(1)
     num.parseInt
   }
-  else match(entities.find(fun(e) { e.ename == entity })) {
+  else match(entities.find(fn(e) { e.ename == entity })) {
     Nothing -> Nothing
     Just(e) -> Just(e.ecode)
   }
 }
 
-public function entityNameAsNum( name : string ) : maybe<string> 
+pub fun entityNameAsNum( name : string ) : maybe<string> 
 {
   if (name=="nl") then Just("\n")
   elif (name=="br") then Just("\\\n")
   elif (name=="null") then Just("")
-  else match(entities.find(fun(e) { e.ename == name })) {
+  else match(entities.find(fn(e) { e.ename == name })) {
     Nothing -> Nothing
     Just(e) -> Just("&#" + e.ecode.show + ";")
   }  
 }
 
-public function entityNameToNum( name : string ) : string
+pub fun entityNameToNum( name : string ) : string
 {
   match(name.entityNameAsNum) {
     Just(e) -> e
@@ -83,7 +83,7 @@ public function entityNameToNum( name : string ) : string
   }
 }
 
-function entityCmd( entity : entity ) : string {
+fun entityCmd( entity : entity ) : string {
   val cmd = entity.ecmd
   if (entity.emath) 
    then @"\ensuremath{" + cmd + "}"
@@ -94,19 +94,19 @@ function entityCmd( entity : entity ) : string {
 val rxSafeEnd = regex(@"[^A-Za-z@]$")
 
 // Translate a TeX command to an entity (or empty if unknown)
-public function texCmdToEntity( cmd : string ) : string {
-  match (entities.find( fun(e) { e.ecmd == cmd } )) {
+pub fun texCmdToEntity( cmd : string ) : string {
+  match (entities.find( fn(e) { e.ecmd == cmd } )) {
     Nothing -> ""
     Just(e) -> "&" + e.ename + ";"
   }
 }
 
-public function logEntities() {
+pub fun logEntities() {
   log("entities", @"{""name"": ""nl"", ""value"":""&nl;"", ""code"":10}" )
   log("entities", @"{""name"": ""br"", ""value"":""&br;""}" )
   log("entities", @"{""name"": ""null"", ""value"":""&null;""}" )
   log("entities", @"{""name"": ""&"", ""value"":""&&;"", ""code"":38}" )
-  entities.foreach fun(ent) {
+  entities.foreach fn(ent) {
     log("entities", "{\"name\":" + ent.ename.json + ",\"value\":" + ("&" + ent.ename + ";").json + ",\"code\":" + ent.ecode.show + "}" );
   }
 }

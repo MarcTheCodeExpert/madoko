@@ -38,13 +38,13 @@ var contribDir = "contrib";
 //
 // > jake compiler VARIANT=release
 
-var kokaDir   = "../koka-0.6"
+var kokaDir   = "../koka"
 var libraryDir= path.join(kokaDir,"lib")
 var kokaExe   = path.join(kokaDir,"out/release/koka-0.6.0-dev")
 var testDir   = "test";
 
 var kokaFlags = "-i" + sourceDir + " -i" + libraryDir + " " + (process.env.kokaFlags || "");
-var kokaCmd = kokaExe + " " + kokaFlags + " -c -o" + outputDir + " --outname=" + main + " "
+var kokaCmd = "koka" + " " + kokaFlags + " -c -o" + outputDir + " --output=" + main + " " + "--target=js" 
 
 
 //-----------------------------------------------------

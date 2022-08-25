@@ -9,20 +9,26 @@
 // The ":options" type and parsing of the command line
 module options
 
-import std/log
-import std/env
-import std/dict
-import std/flags
-import std/regex
-import std/string
-import std/path
+
+import compat/log
+import std/os/env
+import compat/dict
+import std/os/flags
+import std/text/regex
+import std/os/path
+import compat/path
+import compat/env
+import compat/string
+import compat/regex
+import compat/flags
+import compat
 import common
 
 // Metadata is just a string to string map.
-public alias metadata = list<(string,string)>
+pub alias metadata = list<(string,string)>
 
 // The options
-public struct options(
+pub struct options(
   version  : string = "",  // Initialized to the program version
   bench    : bool = False, // turn off more expensive features for benchmarking
   verbose  : int  = 0,      // be more verbose
@@ -70,12 +76,12 @@ public struct options(
   lineNoWeb     : bool = False,             // emit line no info in html pages.
   copyStyles    : bool = True,              // copy standard style files
   lineMap       : lineMap = End,            // keep track of line numbers in include files
-  extractStart  : string = @"^(?:\/\/|--|[#%]|[<]!--|\(\*) *BEGIN *: *(\w+) *(?:--[>]|\*\))?$",
-  extractEnd    : string = @"^(?:\/\/|--|[#%]|[<]!--|\(\*) *END *(?:[:] *(\w+) *)?(?:--[>]|\*\))?$"
+  extractStart  : string = r"^(?:\/\/|--|[#%]|[<]!--|\(\*) *BEGIN *: *(\w+) *(?:--[>]|\*\))?$",
+  extractEnd    : string = r"^(?:\/\/|--|[#%]|[<]!--|\(\*) *END *(?:[:] *(\w+) *)?(?:--[>]|\*\))?$"
 );
 
 
-public struct commandOptions(
+pub struct commandOptions(
   showVersion : bool = False,
   convertTex  : bool = False,
   outputDir   : string = "out",
@@ -85,27 +91,27 @@ public struct commandOptions(
   options     : options = Options()
 );
 
-function creq( f : (commandOptions,string) -> commandOptions, help : string ) : optionArg<commandOptions>
+fun creq( f : (commandOptions,string) -> commandOptions, help : string ) : flag-parser<commandOptions>
 {
   Req(f,help)
 }
 
-function cflag( f : (commandOptions,bool) -> commandOptions ) : optionArg<commandOptions>
+fun cflag( f : (commandOptions,bool) -> commandOptions ) : flag-parser<commandOptions>
 {
-  Flag(f)
+  Bool(f)
 }
 
-function oflag( f : (options,bool) -> options ) : optionArg<commandOptions>
+fun oflag( f : (options,bool) -> options ) : flag-parser<commandOptions>
 {
-  Flag(fun(co:commandOptions,b:bool) { co(options = f(co.options,b)) })
+  Bool(fn(co:commandOptions,b:bool) { co(options = f(co.options,b)) })
 }
 
-function oreq( f : (options,string) -> options, help : string ) : optionArg<commandOptions>
+fun oreq( f : (options,string) -> options, help : string ) : flag-parser<commandOptions>
 {
-  Req(fun(co:commandOptions,v:string) { co(options = f(co.options,v)) },help)
+  Req(fn(co:commandOptions,v:string) { co(options = f(co.options,v)) },help)
 }
 
-function setbench( o : options, b : bool ) {
+fun setbench( o : options, b : bool ) {
   if (b) {
     o(tocDepth=0,bench=True)
   }
@@ -114,30 +120,29 @@ function setbench( o : options, b : bool ) {
   }
 }
 
-val optionsDesc : list<option<commandOptions>>
-  = [ Option( "",  ["version"], cflag(fun(co,v) { co(showVersion = v) }),   "Display version information" ),
-      Option( "v", ["verbose"], oflag(fun(o,v) { o(verbose = if (v) then o.verbose + 1 else 0) }),     "Be more verbose"),
-      Option( "",  ["odir"],    creq(fun(co,s) { co(outputDir=s) },"DIR"), "Write output files to the specified directory" ),
-      Option( "",  ["xmp"],     oflag(fun(o,v) { o(xmp = v) }),       "Only process markdown between <xmp> tags"),
-      Option( "",  ["tex"],     oflag(fun(o,v) { o(tex = v) }),       "Generate a LaTeX file"),
+val optionsDesc : list<flag<commandOptions>>
+  = [ Flag( "",  ["version"], cflag(fn(co,v) { co(showVersion = v) }),   "Display version information" ),
+      Flag( "v", ["verbose"], oflag(fn(o,v) { o(verbose = if (v) then o.verbose + 1 else 0) }),     "Be more verbose"),
+      Flag( "",  ["odir"],    creq(fn(co,s) { co(outputDir=s) },"DIR"), "Write output files to the specified directory" ),
+      Flag( "",  ["xmp"],     oflag(fn(o,v) { o(xmp = v) }),       "Only process markdown between <xmp> tags"),
+      Flag( "",  ["tex"],     oflag(fn(o,v) { o(tex = v) }),       "Generate a LaTeX file"),
 
-      Option( "f", ["fragment"], oflag(fun(o,v) { o(full=Just(!v)) }), "Generate a fragment instead of a full document"),
-      Option( "",  ["sanitize"], oflag(fun(o,v) { o(sanitize = v) }), "Always escape or suppress user defined html"),
-      Option( "" , ["sandbox"],  oflag(fun(o,v) { o(sandbox=v) }),    "Run in a sandbox for secure server execution"),
-      Option( "",  ["pedantic"], oflag(fun(o,v) { o(pedantic = v) }), "Pedantic mode"),
-      Option( "",  ["bench"],    oflag(setbench),                     "For benchmarking: turn off numbering, etc."),
-      Option( "",  ["installdir"], creq(fun(co,s) { co(installDir=s) },"DIR"), "Set installation directory explicitly"),
-      Option( "",  ["stylesdir"], creq(fun(co,s) { co(stylesDir=s) },"DIR"), "Set the directory of the styles explicitly (defaults to <installDir>/styles)"),
-      Option( "r", ["rebuild"],  oflag(fun(o,v) { o(rebuild=v) }),    "Force rebuild bibliography, math, etc."),
-      Option( "",  ["prelude"],  oreq(fun(o,s) { o(prelude=s) }, "FILE"), "Include <FILE> at start of the document"),
-      Option( "",  ["verbose-max"], oreq(fun(o,s) { o(verboseMaxLine=parseIntDefault(s,78)) }, "LEN"), "Maximum line length for messages" ),
-
-      Option( "m", ["meta"],     oreq(setMeta, "key:val"), "Semi-colon separated list of metadata values")
+      Flag( "f", ["fragment"], oflag(fn(o,v) { o(full=Just(!v)) }), "Generate a fragment instead of a full document"),
+      Flag( "",  ["sanitize"], oflag(fn(o,v) { o(sanitize = v) }), "Always escape or suppress user defined html"),
+      Flag( "" , ["sandbox"],  oflag(fn(o,v) { o(sandbox=v) }),    "Run in a sandbox for secure server execution"),
+      Flag( "",  ["pedantic"], oflag(fn(o,v) { o(pedantic = v) }), "Pedantic mode"),
+      Flag( "",  ["bench"],    oflag(setbench),                     "For benchmarking: turn off numbering, etc."),
+      Flag( "",  ["installdir"], creq(fn(co,s) { co(installDir=s) },"DIR"), "Set installation directory explicitly"),
+      Flag( "",  ["stylesdir"], creq(fn(co,s) { co(stylesDir=s) },"DIR"), "Set the directory of the styles explicitly (defaults to <installDir>/styles)"),
+      Flag( "r", ["rebuild"],  oflag(fn(o,v) { o(rebuild=v) }),    "Force rebuild bibliography, math, etc."),
+      Flag( "",  ["prelude"],  oreq(fn(o,s) { o(prelude=s) }, "FILE"), "Include <FILE> at start of the document"),
+      Flag( "",  ["verbose-max"], oreq(fn(o,s) { o(verboseMaxLine=parse-int-default(s,78)) }, "LEN"), "Maximum line length for messages" ),
+      Flag( "m", ["meta"],     oreq(setMeta, "key:val"), "Semi-colon separated list of metadata values")
     ]
 
-function setMeta( opts0 : options, value : string ) : options {
-  val keyvals = value.split(";").list
-  keyvals.foldl(opts0) fun(opts : options,keyval) {
+fun setMeta( opts0 : options, value : string ) : options {
+  val keyvals = value.split(";")
+  keyvals.foldl(opts0) fn(opts : options,keyval) {
     val i = keyval.indexOf(":")
     if (i > 0) {
       val key = keyval.substr(0,i).trim
@@ -152,17 +157,17 @@ function setMeta( opts0 : options, value : string ) : options {
 }
 
 // Parse the options from the command line given some extra arguments (default `""`).
-public function parseOptions( version : string, extra : string = "") : io maybe<commandOptions>
+pub fun parseOptions( version : string, extra : string = "") : io maybe<commandOptions>
 {
-  parseOptionList(version, env/arguments + extra.split(" ").list.filter(fun(s) { s != "" }))
+  parseOptionList(version, compat/env/arguments + extra.split(" ").filter(fn(s) { s != "" }))
 }
 
-public function parseOptionList( version : string, cmdargs  : list<string> ) : io maybe<commandOptions>
+pub fun parseOptionList( version : string, cmdargs  : list<string> ) : io maybe<commandOptions>
 {
   // testOptions.usageInfo( header ).println
   val (options,args,errs) = parse( CommandOptions(options = Options(version=version)), optionsDesc, cmdargs )
 
-  if (!(errs.isNil)) {
+  if (!(errs.is-nil)) {
     println( errs.join("\n") + "\n" + fullUsageInfo() )
     Nothing
   }
@@ -170,7 +175,7 @@ public function parseOptionList( version : string, cmdargs  : list<string> ) : i
     println( "Madoko, version " + version + ".")
     Nothing
   }
-  elif (args.isNil) {
+  elif (args.is-nil) {
     fullUsageInfo().println
     Nothing
   }
@@ -179,42 +184,42 @@ public function parseOptionList( version : string, cmdargs  : list<string> ) : i
   }
 }
 
-function fullUsageInfo() {
+fun fullUsageInfo() {
   val header = "usage:\n madoko [options] files\n\noptions:"
-  optionsDesc.usageInfo(header) + "\n\nPrefix a flag with 'no-' to negate it. For example '--no-logo'."
+  optionsDesc.usage(header) + "\n\nPrefix a flag with 'no-' to negate it. For example '--no-logo'."
 }
 
 // sanitize options
-function check( cmdOptions : commandOptions ) : io commandOptions
+fun check( cmdOptions : commandOptions ) : io commandOptions
 {
-  val installDirectory = if (cmdOptions.installDir=="") then programPath().dirname else cmdOptions.installDir
+  val installDirectory = if (cmdOptions.installDir=="") then appdir().dirname else cmdOptions.installDir
   val stylesDirectory = if (cmdOptions.stylesDir=="") then installDirectory + "/../styles" else cmdOptions.stylesDir
   cmdOptions(installDir=installDirectory, stylesDir=stylesDirectory)
 }
 
 
-public function getDocName( opts : options ) : string {
-  match(opts.metadata.find(fun(kv) { kv.fst == "docname" })) {
+pub fun getDocName( opts : options ) : string {
+  match(opts.metadata.find(fn(kv) { kv.fst == "docname" })) {
     Just(kv) -> kv.snd + ": "
     Nothing  -> ""
   }
 }
 
-function cutoff( s : string, n : int ) : string {
+fun cutoff( s : string, n : int ) : string {
   if (n<=1) return s
-  s.lines.map(fun(line) {
-    if (line.length >= n) then line.substr(0,n-1) + "\n" + line.substr(n-1) else line
+  s.lines.map(fn(line) {
+    if (line.length >= n) then line.substr(0,n - 1) + "\n" + line.substr(n - 1) else line
   }).unlines
 }
 
-public function indent( opts : options, s : string, maxLine : int = 78 ) : string {
-  s.cutoff(maxLine).lines.map(fun(line) { "  " + line }).unlines
+pub fun indent( opts : options, s : string, maxLine : int = 78 ) : string {
+  s.cutoff(maxLine).lines.map(fn(line) { "  " + line }).unlines
 }
 
-public function print( opts :options, msg : string, level : int = 1  ) {
+pub fun print( opts :options, msg : string, level : int = 1  ) {
   if (opts.verbose >= level) println(opts.indent(opts.getDocName + msg,opts.verboseMaxLine))
 }
 
-public function printErr( opts :options, msg : string, level : int = 0  ) {
+pub fun printErr( opts :options, msg : string, level : int = 0  ) {
   if (opts.verbose >= level) println(opts.indent(msg,opts.verboseMaxLine))
 }

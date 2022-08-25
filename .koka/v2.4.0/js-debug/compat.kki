@@ -1,0 +1,195 @@
+module interface compat
+ 
+//------------------------------
+//#kki: import declarations
+ 
+import std/core/types = std/core/types = "";
+import std/core/hnd = std/core/hnd = "";
+import std/core = std/core = "";
+ 
+//------------------------------
+//#kki: external imports
+ 
+ 
+//------------------------------
+//#kki: fixity declarations
+ 
+ 
+//------------------------------
+//#kki: local imported aliases
+ 
+ 
+//------------------------------
+//#kki: type declarations
+ 
+ 
+//------------------------------
+//#kki: declarations
+ 
+/*
+  Operator "+" --> addition of 2 strings
+*/
+pub fun (+) : (left : std/core/types/string, right : std/core/types/string) -> std/core/types/string;
+/*
+  Operator "+" --> addition of 2 list<string>
+*/
+pub fun (+.1) : forall<a> (left : (std/core/list :: V -> V)<a>, right : (std/core/list :: V -> V)<a>) -> (std/core/list :: V -> V)<a>;
+/*
+  returns the length of a string
+*/
+pub fun length : (s : std/core/types/string) -> std/core/types/int;
+/*
+  from core.kk
+*/
+fun makeString : (n : std/core/types/int, c : std/core/types/char) -> std/core/types/string;
+// Does string `s`  contain the character `c`  ?
+pub fun contains : (s : std/core/types/string, c : std/core/types/char) -> std/core/types/bool;
+/*
+  endsWith function from core.kk
+*/
+pub fun endsWith : (s : std/core/types/string, post : std/core/types/string) -> std/core/types/bool;
+// Raise an exception with a specified message.
+pub fun error : forall<a> (std/core/types/string) -> <(std/core/types/handled :: HX -> X)<(std/core/exn :: HX)>> a;
+/*
+  Return the extension (including the `.`)  
+  `extname("foo.ext") == ".ext"`, `extname("bla.") == "."`, `extname("bla") == ""` 
+  from path.kk
+*/
+pub fun extname : (p : std/core/types/string) -> std/core/types/string;
+// Fold a list from the right, i.e. `foldr([1,2],0,(+)) == 1+(2+0)` 
+// Note, "foldr" is less efficient than "foldl" as it reverses the list first. 
+pub fun foldr : forall<a,b,(e :: E)> (xs : (std/core/list :: V -> V)<a>, z : b, f : (a, b) -> (e :: E) b) -> (e :: E) b;
+/*
+  helper function for showHex from core.kk
+*/
+fun gformat : forall<a> (value : a, format : std/core/types/string) -> std/core/types/string;
+// Does string `s`  contain the character `c`  ?
+pub fun indexOf : (s : std/core/types/string, c : std/core/types/char) -> std/core/types/int;
+// Does string `s`  contain the string `sub`  ?
+pub fun indexOf.1 : (s : std/core/types/string, sub : std/core/types/string) -> std/core/types/int;
+// Does string `s`  contain the character `c`  ?
+pub fun lastIndexOf : (s : std/core/types/string, c : std/core/types/char) -> std/core/types/int;
+// Does string `s`  contain the string `sub`  ?
+pub fun lastIndexOf.1 : (s : std/core/types/string, sub : std/core/types/string) -> std/core/types/int;
+pub val maxInt : std/core/types/int;
+// Return a default value when an exception is raised
+pub fun onExn : forall<a,(e :: E)> (value : a, action : () -> <(std/core/types/handled :: HX -> X)<(std/core/exn :: HX)>|(e :: E)> a) -> (e :: E) a;
+/*
+  startsWith function from core.kk
+*/
+pub fun startsWith : (s : std/core/types/string, pre : std/core/types/string) -> std/core/types/bool;
+pub fun substr2 : (s : std/core/types/string, start : std/core/types/int, len : std/core/types/int) -> std/core/types/string;
+/*
+  substring functions operating in csharp and js
+  all from core.kk
+*/
+pub fun substr1 : (s : std/core/types/string, start : std/core/types/int) -> std/core/types/string;
+/*
+  to lowercase funtion from core.kk
+*/
+pub fun toLower : (s : std/core/types/string) -> std/core/types/string;
+/*
+  Construct a string of `n`  characters `c`  (or the empty string if `n <= 0` )
+  from core.kk
+*/
+pub fun string : (n : std/core/types/int, c : std/core/types/char) -> std/core/types/string;
+/*
+  Right-align a string to width `width`  using `char`  (default is a space) to fill from the left.
+  from core.kk
+*/
+pub fun align : (s : std/core/types/string, width : std/core/types/int, char : (std/core/types/optional :: V -> V)<std/core/types/char>) -> std/core/types/string;
+// monadic lift
+fun .mlift730-concat : forall<a,(e :: E)> (.y.725 : (std/core/list :: V -> V)<(std/core/list :: V -> V)<a>>) -> (e :: E) (std/core/list :: V -> V)<a>;
+// Concatenate the result lists from applying a function to all elements
+pub fun concat : forall<a,b,(e :: E)> (xs : (std/core/list :: V -> V)<a>, f : (a) -> (e :: E) (std/core/list :: V -> V)<b>) -> (e :: E) (std/core/list :: V -> V)<b>;
+// monadic lift
+fun .mlift731-foreachUntil : forall<a,b,(e :: E)> (action : (a) -> (e :: E) (std/core/types/maybe :: V -> V)<b>, xx : (std/core/list :: V -> V)<a>, .y.726 : (std/core/types/maybe :: V -> V)<b>) -> (e :: E) (std/core/types/maybe :: V -> V)<b>;
+// Invoke "action" for each element of a list while "action" return "Nothing"
+pub fun foreachUntil : forall<a,b,(e :: E)> (xs : (std/core/list :: V -> V)<a>, action : (a) -> (e :: E) (std/core/types/maybe :: V -> V)<b>) -> (e :: E) (std/core/types/maybe :: V -> V)<b>;
+/*
+  showHex function from core.kk
+*/
+pub fun showHex : (i : std/core/types/int, width : (std/core/types/optional :: V -> V)<std/core/types/int>, useCapitals : (std/core/types/optional :: V -> V)<std/core/types/bool>) -> std/core/types/string;
+pub fun substr : (s : std/core/types/string, start : std/core/types/int) -> std/core/types/string;
+pub fun substr.1 : (s : std/core/types/string, start : std/core/types/int, len : std/core/types/int) -> std/core/types/string;
+ 
+//------------------------------
+//#kki: external declarations
+ 
+ 
+//------------------------------
+//#kki: inline definitions
+ 
+//.inline-section
+specialize "_*" fun concat // inline size: 1
+  = forall<a,b,(e :: E)> fn<(e :: E)>(xs: (std/core/list :: V -> V)<a>, f: (a) -> (e :: E) (std/core/list :: V -> V)<b>){
+    std/core/types/.open<(std/core/types/(<>) :: E),(e :: E),(xss : (std/core/list :: V -> V)<(std/core/list :: V -> V)<b>>) -> (std/core/list :: V -> V)<b>,(xss : (std/core/list :: V -> V)<(std/core/list :: V -> V)<b>>) -> (e :: E) (std/core/list :: V -> V)<b>>((std/core/concat<b>))((std/core/map.5<a,(std/core/list :: V -> V)<b>,(e :: E)>(xs, f)));
+  };
+specialize "__*" fun foldr // inline size: 1
+  = forall<a,b,(e :: E)> fn<(e :: E)>(xs: (std/core/list :: V -> V)<a>, z: b, f: (a, b) -> (e :: E) b){
+    std/core/foldl<a,b,(e :: E)>((std/core/types/.open<(std/core/types/(<>) :: E),(e :: E),(xs : (std/core/list :: V -> V)<a>) -> (std/core/list :: V -> V)<a>,(xs : (std/core/list :: V -> V)<a>) -> (e :: E) (std/core/list :: V -> V)<a>>((std/core/reverse<a>))(xs)), z, (fn<(e :: E)>(x: b, y: a){
+        (f(y, x));
+      }));
+  };
+recursive specialize "_*" fun foreachUntil // inline size: 4
+  = forall<a,b,(e :: E)> fn<(e :: E)>(xs: (std/core/list :: V -> V)<a>, action: (a) -> (e :: E) (std/core/types/maybe :: V -> V)<b>){
+    (match (xs) {
+      ((std/core/Nil() : (std/core/list :: V -> V)<a> ) as .pat: ((std/core/list :: V -> V)<a>))
+         -> std/core/types/Nothing<b>;
+      ((.skip std/core/Cons((x: a) : a, (xx: (std/core/list :: V -> V)<a>) : (std/core/list :: V -> V)<a>) : (std/core/list :: V -> V)<a> ) as .pat0: ((std/core/list :: V -> V)<a>))
+         -> (match ((action(x))) {
+          ((std/core/types/Nothing() : (std/core/types/maybe :: V -> V)<b> ) as .pat1: ((std/core/types/maybe :: V -> V)<b>))
+             -> compat/foreachUntil<a,b,(e :: E)>(xx, action);
+          (res: ((std/core/types/maybe :: V -> V)<b>))
+             -> res;
+        });
+    });
+  };
+fun (+) // inline size: 1
+  = fn(left: std/core/types/string, right: std/core/types/string){
+    std/core/(++.1)(left, right);
+  };
+fun (+.1) // inline size: 1
+  = forall<a> fn(left: (std/core/list :: V -> V)<a>, right: (std/core/list :: V -> V)<a>){
+    std/core/append<a>(left, right);
+  };
+fun length // inline size: 1
+  = fn(s: std/core/types/string){
+    std/core/count.1(s);
+  };
+fun foldr // inline size: 4
+  = forall<a,b,(e :: E)> fn<(e :: E)>(xs: (std/core/list :: V -> V)<a>, z: b, f: (a, b) -> (e :: E) b){
+    std/core/foldl<a,b,(e :: E)>((std/core/types/.open<(std/core/types/(<>) :: E),(e :: E),(xs : (std/core/list :: V -> V)<a>) -> (std/core/list :: V -> V)<a>,(xs : (std/core/list :: V -> V)<a>) -> (e :: E) (std/core/list :: V -> V)<a>>((std/core/reverse<a>))(xs)), z, (fn<(e :: E)>(x: b, y: a){
+        (f(y, x));
+      }));
+  };
+inline val maxInt // inline size: 0
+  = 2147483647;
+fun onExn // inline size: 1
+  = forall<a,(e :: E)> fn<(e :: E)>(value: a, action: () -> <(std/core/types/handled :: HX -> X)<(std/core/exn :: HX)>|(e :: E)> a){
+    std/core/try<a,(e :: E)>(action, (fn<(e :: E)>(._wildcard_209_22: std/core/exception){
+        value;
+      }));
+  };
+fun string // inline size: 3
+  = fn(n: std/core/types/int, c: std/core/types/char){
+    match ((std/core/(<=.1)(n, 0))) {
+      ((std/core/types/True() : std/core/types/bool ) as .pat: std/core/types/bool)
+         -> "";
+      ((.skip std/core/types/False() : std/core/types/bool ) as .pat0: std/core/types/bool)
+         -> compat/makeString(n, c);
+    };
+  };
+fun concat // inline size: 3
+  = forall<a,b,(e :: E)> fn<(e :: E)>(xs: (std/core/list :: V -> V)<a>, f: (a) -> (e :: E) (std/core/list :: V -> V)<b>){
+    std/core/types/.open<(std/core/types/(<>) :: E),(e :: E),(xss : (std/core/list :: V -> V)<(std/core/list :: V -> V)<b>>) -> (std/core/list :: V -> V)<b>,(xss : (std/core/list :: V -> V)<(std/core/list :: V -> V)<b>>) -> (e :: E) (std/core/list :: V -> V)<b>>((std/core/concat<b>))((std/core/map.5<a,(std/core/list :: V -> V)<b>,(e :: E)>(xs, f)));
+  };
+fun substr.1 // inline size: 3
+  = fn(s: std/core/types/string, start: std/core/types/int, len: std/core/types/int){
+    match ((std/core/(<=.1)(len, 0))) {
+      ((std/core/types/True() : std/core/types/bool ) as .pat: std/core/types/bool)
+         -> "";
+      ((.skip std/core/types/False() : std/core/types/bool ) as .pat0: std/core/types/bool)
+         -> compat/substr2(s, start, len);
+    };
+  };

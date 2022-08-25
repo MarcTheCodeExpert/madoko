@@ -1,0 +1,383 @@
+// 64-bit signed integers.
+//
+// Using 64-bit signed two's complement representation 
+// with wrapping on overflow, e.g. `max-int64 + 1.int64 == min-int64`
+module interface std/num/int64
+ 
+//------------------------------
+//#kki: import declarations
+ 
+import std/core/types = std/core/types = "";
+import std/core/hnd = std/core/hnd = "";
+import std/core = std/core = "";
+ 
+//------------------------------
+//#kki: external imports
+ 
+ 
+//------------------------------
+//#kki: fixity declarations
+ 
+ 
+//------------------------------
+//#kki: local imported aliases
+ 
+// An alias for the empty effect.
+local alias std/core/total :: E = (std/core/types/(<>) :: E) = 1;
+ 
+//------------------------------
+//#kki: type declarations
+ 
+ 
+//------------------------------
+//#kki: declarations
+ 
+// Take the bitwise _xor_ of two `:int64`s
+pub fun (^) : (x : std/core/types/int64, y : std/core/types/int64) -> std/core/types/int64;
+pub fun compare : (x : std/core/types/int64, y : std/core/types/int64) -> std/core/types/order;
+// Return the maximum of two integers
+pub fun max : (i : std/core/types/int64, j : std/core/types/int64) -> std/core/types/int64;
+// Return the minimum of two integers
+pub fun min : (i : std/core/types/int64, j : std/core/types/int64) -> std/core/types/int64;
+// Show an `:int64` in hexadecimal notation
+// The `width`  parameter specifies how wide the hex value is where `'0'`  is used to align.\
+// The `use-capitals` parameter (= `True`) determines if captical letters should be used to display the hexadecimal digits.\
+// The `pre` (=`"0x"`) is an optional prefix for the number (goes between the sign and the number).
+pub fun show-hex : (i : std/core/types/int64, width : (std/core/types/optional :: V -> V)<std/core/types/int>, use-capitals : (std/core/types/optional :: V -> V)<std/core/types/bool>, pre : (std/core/types/optional :: V -> V)<std/core/types/string>) -> std/core/types/string;
+// Convert an `:int64` to an `:int` but interpret the `:int64` as a 64-bit unsigned value.
+pub fun uint : (i : std/core/types/int64) -> std/core/types/int;
+pub fun sign : (i : std/core/types/int64) -> std/core/types/order;
+pub val one : std/core/types/int64;
+pub val zero : std/core/types/int64;
+// Convert a boolean to an `:int64`.
+pub fun int64.1 : (b : std/core/types/bool) -> std/core/types/int64;
+// Shift an `:int64` `i` to the left by `n % 64` bits.
+pub fun shl : (i : std/core/types/int64, shift : std/core/types/int) -> std/core/types/int64;
+// Create an `:int64` `i` from the bits of `lo` and `hi` such
+// that `i.int = hi.int * 0x1_0000_0000 + lo.uint`.
+pub fun int64.2 : (lo : std/core/types/int32, hi : std/core/types/int32) -> std/core/types/int64;
+// The maximal integer value before overflow happens
+pub val max-int64 : std/core/types/int64;
+// Convert an `:int` to `:int64` but interpret the `int` as an unsigned 64-bit value.
+// `i` is clamped between `0` and `0xFFFF_FFFF_FFFF_FFFF`.\
+// `0x7FFF_FFFF_FFFF_FFFF.uint64 == 0x7FFF_FFFF_FFFF_FFFF.int64 == max-int64`\
+// `0x8000_0000_0000_0000.uint64 == -0x8000_0000_0000_0000.int64 == min-int64`\
+// `0xFFFF_FFFF_FFFF_FFFF.uint64 == -1.int64`\
+pub fun uint64.1 : (i : std/core/types/int) -> std/core/types/int64;
+// The minimal integer value before underflow happens
+pub val min-int64 : std/core/types/int64;
+// Euclidean-0 modulus. See `(/):(x : int64, y : int64) -> int64` division for more information.
+pub fun (%) : (x : std/core/types/int64, y : std/core/types/int64) -> std/core/types/int64;
+// Decrement a 64-bit integer.
+pub fun dec : (i : std/core/types/int64) -> std/core/types/int64;
+// Increment a 64-bit integer.
+pub fun inc : (i : std/core/types/int64) -> std/core/types/int64;
+/* 
+Euclidean-0 division.
+Euclidean division is defined as: For any `D`  and `d`  where `d!=0` , we have:
+
+1. `D == d*(D/d) + (D%d)`
+2. `D%d`  is always positive where `0 <= D%d < abs(d)`
+
+Moreover, Euclidean-0 is a total function, for the case where `d==0`  we have
+that `D%0 == D`  and `D/0 == 0` . So property (1) still holds, but not property (2).
+Useful laws that hold for Euclidean-0 division:
+
+* `D/(-d) == -(D/d)`
+* `D%(-d) == D%d`
+* `D/(2^n) == sar(D,n)         `  (with `0 <= n <= 31`)
+* `D%(2^n) == D & ((2^n) - 1)  `  (with `0 <= n <= 31`)
+
+Note that an interesting edge case is `min-int64 / -1` which equals `min-int64` since in modulo 64-bit
+arithmetic `min-int64 == -1 * min-int64 == -1 * (min-int64 / -1) + (min-int64 % -1)` satisfying property (1).
+Of course `(min-int64 + 1) / -1` is again positive (namely `max-int64`).
+
+See also _Division and modulus for computer scientists, Daan Leijen, 2001_ 
+[pdf](http://research.microsoft.com/pubs/151917/divmodnote.pdf) .
+*/
+pub fun (/) : (x : std/core/types/int64, y : std/core/types/int64) -> std/core/types/int64;
+// Negate a 64-bit integer
+pub fun negate : (i : std/core/types/int64) -> std/core/types/int64;
+// Return the absolute value of an integer.
+// Raises an exception if the `:int64` is `min-int64`
+// (since the negation of `min-int64` equals itself and is still negative)
+pub fun abs : (i : std/core/types/int64) -> <(std/core/types/handled :: HX -> X)<(std/core/exn :: HX)>> std/core/types/int64;
+// Return the absolute value of an integer.
+// Returns 0 if the `:int64` is `min-int64`
+// (since the negation of `min-int64` equals itself and is still negative)
+pub fun abs0 : (i : std/core/types/int64) -> std/core/types/int64;
+// The number of bits in an `:int64` (always 64)
+pub val bits-int64 : std/core/types/int64;
+// Convert an `:int64` to a boolean.
+pub fun bool : (i : std/core/types/int64) -> std/core/types/bool;
+// Truncated division (as in C). See also `(/):(x : int64, y : int64) -> int64`.
+pub fun cdiv : (i : std/core/types/int64, j : std/core/types/int64) -> <(std/core/types/handled :: HX -> X)<(std/core/exn :: HX)>> std/core/types/int64;
+// Truncated modulus (as in C). See also `(%):(x : int64, y : int64) -> int64`.
+pub fun cmod : (i : std/core/types/int64, j : std/core/types/int64) -> <(std/core/types/handled :: HX -> X)<(std/core/exn :: HX)>> std/core/types/int64;
+pub fun divmod : (x : std/core/types/int64, y : std/core/types/int64) -> (std/core/types/int64, std/core/types/int64);
+// Convert an 64-bit integer to a `:float64`.
+pub fun float64 : (i : std/core/types/int64) -> std/core/types/float64;
+// monadic lift
+fun .mlift1689-fold-int64 : forall<a,(e :: E)> (end : std/core/types/int64, f : (std/core/types/int64, a) -> (e :: E) a, start : std/core/types/int64, x : a) -> (e :: E) a;
+pub fun fold-int64 : forall<a,(e :: E)> (start : std/core/types/int64, end : std/core/types/int64, init : a, f : (std/core/types/int64, a) -> (e :: E) a) -> (e :: E) a;
+// Returns `true` if the integer `i`  is an even number.
+pub fun is-even : (i : std/core/types/int64) -> std/core/types/bool;
+// Returns `true` if the integer `i`  is an odd number.
+pub fun is-odd : (i : std/core/types/int64) -> std/core/types/bool;
+// Bitwise rotate an `:int64` `n % 64` bits to the left.
+pub fun rotl : (i : std/core/types/int64, shift : std/core/types/int) -> std/core/types/int64;
+// Bitwise rotate an `:int64` `n % 64` bits to the right.
+pub fun rotr : (i : std/core/types/int64, shift : std/core/types/int) -> std/core/types/int64;
+// Arithmetic shift an `:int64` to the right by `n % 64` bits. Shift in the sign bit from the left.
+pub fun sar : (i : std/core/types/int64, shift : std/core/types/int) -> std/core/types/int64;
+// Convert an `:int64` to a string
+pub fun show : (i : std/core/types/int64) -> std/core/types/string;
+// Show an `:int64` in hexadecimal notation interpreted as an unsigned 64-bit value.
+// The `width`  parameter specifies how wide the hex value is where `'0'`  is used to align.\
+// The `use-capitals` parameter (= `True`) determines if captical letters should be used to display the hexadecimal digits.\
+// The `pre` (=`"0x"`) is an optional prefix for the number.
+pub fun show-hex64 : (i : std/core/types/int64, width : (std/core/types/optional :: V -> V)<std/core/types/int>, use-capitals : (std/core/types/optional :: V -> V)<std/core/types/bool>, pre : (std/core/types/optional :: V -> V)<std/core/types/string>) -> std/core/types/string;
+// Logical shift an `:int64` to the right by `n % 64` bits. Shift in zeros from the left.
+pub fun shr : (i : std/core/types/int64, shift : std/core/types/int) -> std/core/types/int64;
+// Negate an 64-bit integer
+pub fun (~) : (i : std/core/types/int64) -> (std/core/total :: E) std/core/types/int64;
+ 
+//------------------------------
+//#kki: external declarations
+ 
+// Convert an `:int32` to an `:int64` (using sign extension).
+pub extern int64 : (i : std/core/types/int32) -> std/core/types/int64 {
+  c inline "(int64_t)(#1)";
+  js inline "$std_core._int64_from_int32(#1)";
+};
+// Convert an `:int32` to an `:int64` interpreting the `:int32` as unsigned.
+pub extern uint64 : (i : std/core/types/int32) -> std/core/types/int64 {
+  c inline "(int64_t)((uint32_t)(#1))";
+  js inline "$std_core._int64_from_uint32(#1)";
+};
+// Clamp an `:int64` to an `:int32`
+// `-1.int64.int32 == -1.int32`  
+// `0x8000_0000.int64.int32 == 0x7FFF_FFFF.int32` (clamped)
+pub extern int32 : (i : std/core/types/int64) -> std/core/types/int32 {
+  c inline "kk_int64_clamp_int32(#1,kk_context())";
+  js inline "$std_core._int64_clamp_int32(#1)";
+};
+// Clamp an `:int64` to an `:int32` but interpreting the `:int32` as unsigned
+// (and thus clamp between 0 and 0xFFFFFFFF).
+// `-1.int64.uint32 == 0.int32` (clamped)  
+// `0xFFFFFFFF.int64.uint32 == -1.int32`
+pub extern uint32 : (i : std/core/types/int64) -> std/core/types/int32 {
+  c inline "kk_int64_clamp_uint32(#1,kk_context())";
+  js inline "$std_core._int64_clamp_uint32(#1)";
+};
+pub extern (<=) : (std/core/types/int64, std/core/types/int64) -> std/core/types/bool = inline "(#1 <= #2)";
+pub extern (==) : (std/core/types/int64, std/core/types/int64) -> std/core/types/bool {
+  inline "(#1 == #2)";
+  js inline "(#1 === #2)";
+};
+pub extern (!=) : (std/core/types/int64, std/core/types/int64) -> std/core/types/bool {
+  inline "(#1 != #2)";
+  js inline "(#1 !== #2)";
+};
+pub extern (>=) : (std/core/types/int64, std/core/types/int64) -> std/core/types/bool = inline "(#1 >= #2)";
+pub extern (<) : (std/core/types/int64, std/core/types/int64) -> std/core/types/bool = inline "(#1 < #2)";
+pub extern (>) : (std/core/types/int64, std/core/types/int64) -> std/core/types/bool = inline "(#1 > #2)";
+pub extern (+) : (std/core/types/int64, std/core/types/int64) -> std/core/types/int64 {
+  c inline "(int64_t)((uint64_t)#1 + (uint64_t)#2)";
+  js inline "BigInt.asIntN(64,#1 + #2)";
+};
+pub extern (-) : (std/core/types/int64, std/core/types/int64) -> std/core/types/int64 {
+  inline "(int64_t)((uint64_t)#1 - (uint64_t)#2)";
+  js inline "BigInt.asIntN(64,#1 - #2)";
+};
+pub extern is-neg : (i : std/core/types/int64) -> std/core/types/bool {
+  inline "0 > #1";
+  js inline "0n > #1";
+};
+pub extern is-pos : (i : std/core/types/int64) -> std/core/types/bool {
+  inline "0 < #1";
+  js inline "0n < #1";
+};
+pub extern is-zero : (i : std/core/types/int64) -> std/core/types/bool {
+  inline "0 == #1";
+  js inline "0n === #1";
+};
+// Multiply two 64-bit integers.
+pub extern (*) : (std/core/types/int64, std/core/types/int64) -> std/core/types/int64 {
+  c inline "(int64_t)((uint64_t)#1 * (uint64_t)#2)";
+  js inline "BigInt.asIntN(64,#1 * #2)";
+};
+// Take the bitwise _and_ of two `:int64`s
+pub extern and : (std/core/types/int64, std/core/types/int64) -> std/core/types/int64 = inline "#1 & #2";
+// Take the bitwise _or_ of two `:int64`s
+pub extern or : (std/core/types/int64, std/core/types/int64) -> std/core/types/int64 = inline "#1 | #2";
+// Take the bitwise _xor_ of two `:int64`s
+pub extern xor : (std/core/types/int64, std/core/types/int64) -> std/core/types/int64 = inline "#1 ^ #2";
+// Bitwise _not_ of an `:int64`, i.e. flips all bits.
+pub extern not : (i : std/core/types/int64) -> std/core/types/int64 {
+  inline "~#1";
+  js inline "BigInt.asIntN(64, ~#1)";
+};
+// Shift an `:int64` `i` to the left by `n % 64` bits.
+extern shl64 : (std/core/types/int64, std/core/types/int64) -> std/core/types/int64 {
+  c inline "kk_shl64(#1,#2)";
+  js inline "$std_core._int64_shl(#1,#2)";
+};
+// Logical shift an `:int64` to the right by `n % 64` bits. Shift in zeros from the left.
+extern shr64 : (std/core/types/int64, std/core/types/int64) -> std/core/types/int64 {
+  c inline "(int64_t)kk_shr64(#1,#2)";
+  cs inline "(int64)(((Uint64)#1)>>#2)";
+  js inline "$std_core._int64_shr(#1,#2)";
+};
+// Arithmetic shift an `:int64` to the right by `n % 64` bits. Preserves the sign bit.
+extern sar64 : (std/core/types/int64, std/core/types/int64) -> std/core/types/int64 {
+  c inline "kk_sar64(#1,#2)";
+  js inline "$std_core._int64_sar(#1,#2)";
+};
+// Bitwise rotate an `:int64` `n % 64` bits to the left.
+extern rotl64 : (i : std/core/types/int64, n : std/core/types/int64) -> std/core/types/int64 {
+  c inline "(int64_t)kk_bits_rotl64(#1,#2)";
+  js inline "$std_core._int64_rotl(#1,#2)";
+};
+// Bitwise rotate an `:int64` `n % 64` bits to the right.
+extern rotr64 : (i : std/core/types/int64, n : std/core/types/int64) -> std/core/types/int64 {
+  c inline "(int64_t)kk_bits_rotr64(#1,#2)";
+  js inline "$std_core._int64_rotr(#1,#2)";
+};
+// Truncated division (as in C). See also `(/):(x : int64, y : int64) -> int64`.
+extern unsafe-cdiv : (std/core/types/int64, std/core/types/int64) -> std/core/types/int64 = inline "#1 / #2";
+// Truncated modulus (as in C). See also `(%):(x : int64, y : int64) -> int64`.
+extern unsafe-cmod : (std/core/types/int64, std/core/types/int64) -> std/core/types/int64 = inline "#1 % #2";
+ 
+//------------------------------
+//#kki: inline definitions
+ 
+//.inline-section
+recursive specialize "___*" fun fold-int64 // inline size: 11
+  = forall<a,(e :: E)> fn<(e :: E)>(start: std/core/types/int64, end: std/core/types/int64, init: a, f: (std/core/types/int64, a) -> (e :: E) a){
+    (match ((std/core/types/.open<(std/core/types/(<>) :: E),(e :: E),(std/core/types/int64, std/core/types/int64) -> std/core/types/bool,(std/core/types/int64, std/core/types/int64) -> (e :: E) std/core/types/bool>(std/num/int64/(>=))(start, end))) {
+      ((std/core/types/True() : std/core/types/bool ) as .pat: std/core/types/bool)
+         -> init;
+      ((.skip std/core/types/False() : std/core/types/bool ) as .pat0: std/core/types/bool)
+         -> val x : a
+                  = f(start, init);
+        std/num/int64/fold-int64<a,(e :: E)>((std/core/types/.open<(std/core/types/(<>) :: E),(e :: E),(x : std/core/types/int64) -> std/core/types/int64,(x : std/core/types/int64) -> (e :: E) std/core/types/int64>((std/core/types/unsafe-decreasing<std/core/types/int64>))((std/core/types/.open<(std/core/types/(<>) :: E),(e :: E),(i : std/core/types/int64) -> std/core/types/int64,(i : std/core/types/int64) -> (e :: E) std/core/types/int64>((fn(i: std/core/types/int64){
+            (std/num/int64/(+)(i, (std/core/int64(1))));
+          }))(start)))), end, x, f);
+    });
+  };
+fun (^) // inline size: 1
+  = fn(x: std/core/types/int64, y: std/core/types/int64){
+    std/num/int64/xor(x, y);
+  };
+fun compare // inline size: 4
+  = fn(x: std/core/types/int64, y: std/core/types/int64){
+    match ((std/num/int64/(<)(x, y))) {
+      ((std/core/types/True() : std/core/types/bool ) as .pat: std/core/types/bool)
+         -> std/core/types/Lt;
+      ((.skip std/core/types/False() : std/core/types/bool ) as .pat0: std/core/types/bool)
+         -> (match ((std/num/int64/(>)(x, y))) {
+          ((std/core/types/True() : std/core/types/bool ) as .pat1: std/core/types/bool)
+             -> std/core/types/Gt;
+          ((.skip std/core/types/False() : std/core/types/bool ) as .pat2: std/core/types/bool)
+             -> std/core/types/Eq;
+        });
+    };
+  };
+fun max // inline size: 2
+  = fn(i: std/core/types/int64, j: std/core/types/int64){
+    match ((std/num/int64/(>=)(i, j))) {
+      ((std/core/types/True() : std/core/types/bool ) as .pat: std/core/types/bool)
+         -> i;
+      ((.skip std/core/types/False() : std/core/types/bool ) as .pat0: std/core/types/bool)
+         -> j;
+    };
+  };
+fun min // inline size: 2
+  = fn(i: std/core/types/int64, j: std/core/types/int64){
+    match ((std/num/int64/(<=)(i, j))) {
+      ((std/core/types/True() : std/core/types/bool ) as .pat: std/core/types/bool)
+         -> i;
+      ((.skip std/core/types/False() : std/core/types/bool ) as .pat0: std/core/types/bool)
+         -> j;
+    };
+  };
+fun sign // inline size: 4
+  = fn(i: std/core/types/int64){
+    match ((std/num/int64/is-pos(i))) {
+      ((std/core/types/True() : std/core/types/bool ) as .pat: std/core/types/bool)
+         -> std/core/types/Gt;
+      ((.skip std/core/types/False() : std/core/types/bool ) as .pat0: std/core/types/bool)
+         -> (match ((std/num/int64/is-neg(i))) {
+          ((std/core/types/True() : std/core/types/bool ) as .pat1: std/core/types/bool)
+             -> std/core/types/Lt;
+          ((.skip std/core/types/False() : std/core/types/bool ) as .pat2: std/core/types/bool)
+             -> std/core/types/Eq;
+        });
+    };
+  };
+fun int64.1 // inline size: 1
+  = fn(b: std/core/types/bool){
+    match (b) {
+      ((std/core/types/True() : std/core/types/bool ) as .pat: std/core/types/bool)
+         -> std/num/int64/one;
+      ((.skip std/core/types/False() : std/core/types/bool ) as .pat0: std/core/types/bool)
+         -> std/num/int64/zero;
+    };
+  };
+fun shl // inline size: 2
+  = fn(i: std/core/types/int64, shift: std/core/types/int){
+    std/num/int64/shl64(i, (std/core/int64(shift)));
+  };
+fun dec // inline size: 2
+  = fn(i: std/core/types/int64){
+    std/num/int64/(-)(i, (std/core/int64(1)));
+  };
+fun inc // inline size: 2
+  = fn(i: std/core/types/int64){
+    std/num/int64/(+)(i, (std/core/int64(1)));
+  };
+fun negate // inline size: 2
+  = fn(i: std/core/types/int64){
+    std/num/int64/(-)((std/core/int64(0)), i);
+  };
+fun bool // inline size: 1
+  = fn(i: std/core/types/int64){
+    std/num/int64/(!=)(i, std/num/int64/zero);
+  };
+fun float64 // inline size: 2
+  = fn(i: std/core/types/int64){
+    std/core/float64((std/core/int.5(i)));
+  };
+fun is-even // inline size: 2
+  = fn(i: std/core/types/int64){
+    std/num/int64/(==)((std/num/int64/and(i, std/num/int64/one)), std/num/int64/zero);
+  };
+fun is-odd // inline size: 2
+  = fn(i: std/core/types/int64){
+    std/num/int64/(==)((std/num/int64/and(i, std/num/int64/one)), std/num/int64/one);
+  };
+fun rotl // inline size: 2
+  = fn(i: std/core/types/int64, shift: std/core/types/int){
+    std/num/int64/rotl64(i, (std/core/int64(shift)));
+  };
+fun rotr // inline size: 2
+  = fn(i: std/core/types/int64, shift: std/core/types/int){
+    std/num/int64/rotr64(i, (std/core/int64(shift)));
+  };
+fun sar // inline size: 2
+  = fn(i: std/core/types/int64, shift: std/core/types/int){
+    std/num/int64/sar64(i, (std/core/int64(shift)));
+  };
+fun show // inline size: 2
+  = fn(i: std/core/types/int64){
+    std/core/show((std/core/int.5(i)));
+  };
+fun shr // inline size: 2
+  = fn(i: std/core/types/int64, shift: std/core/types/int){
+    std/num/int64/shr64(i, (std/core/int64(shift)));
+  };
+fun (~) // inline size: 2
+  = fn<(std/core/total :: E)>(i: std/core/types/int64){
+    std/num/int64/(-)((std/core/int64(0)), i);
+  };

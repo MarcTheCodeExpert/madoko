@@ -9,12 +9,11 @@
 // Main Madoko driver: provides files etc. and calls madoko.markdown
 module driver
 
-import std/log
-import std/regex
-import std/path
-import std/dict
-import std/date
-import std/string
+import v1/std/log
+import std/text/regex
+import std/os/path
+import std/data/dict
+import std/time/date
 import common
 import options
 import metadata
@@ -25,11 +24,18 @@ import hilite
 import texParser
 import includes
 
-public struct runners()
+import compat
+import compat/path
+import compat/log
+import compat/regex
+import compat/dict
+import compat/string
+
+pub struct runners()
 
 val standardTexStyles = ["ellipse.sty","options.sty","longbox.sty","longfbox.sty","madoko2.sty","latex-madoko.sty"]
 
-public function processContent( inName : string, outName : string, content : string,
+pub fun processContent( inName : string, outName : string, content : string,
                           opts : commandOptions, firstTime : bool = False,
                           continue : (output:string,inputName:string,outputName:string,options:options) -> io () ) : io ()
 {
@@ -37,7 +43,7 @@ public function processContent( inName : string, outName : string, content : str
   val searchDirs = [inName.dirname,outName.dirname,styleDir]
   val opts0  = if (inName.endsWith(".xmp.html") || inName.endsWith(".xmp"))
                 then (opts.options)(xmp = True,full = opts.options.full.maybe(Just(False),Just)) else opts.options
-  content.include(False, inName, outName, searchDirs, opts0) fun(icontent0,lmap) {
+  content.include(False, inName, outName, searchDirs, opts0) fn(icontent0,lmap) {
     // remove madoko comments
     val icontent = icontent0.removeMadokoComments
     // set up options
@@ -62,36 +68,36 @@ public function processContent( inName : string, outName : string, content : str
     if (mopts.copyStyles) {
       tryCopyTextFileFromNoSandboxTo( "madoko.css", styleDir, outName.dirname )
 
-      val isTex2  = match(mopts.metadata.find( fun(md) { md.fst == "tex2" } )) {
+      val isTex2  = match(mopts.metadata.find( fn(md) { md.fst == "tex2" } )) {
                       Just(md) -> md.snd.toLower == "true"
                       _ -> False
                     }
       val files = if (isTex2)
                    then standardTexStyles
                    else ["css.sty", "madoko.sty"]
-      files.foreach fun(fname) {
+      files.foreach fn(fname) {
         tryCopyTextFileFromNoSandboxTo(fname, styleDir, outName.dirname )
       }
     }
 
     process( inName, outName, searchDirs, content, icontent, xopts, mopts, firstTime)
-      fun(html) {
+      fn(html) {
         continue(html,inName,outName,mopts)
       }
   }
 }
 
-function extractFirstXmp( s : string ) : string {
+fun extractFirstXmp( s : string ) : string {
   match (s.find(rxXmp)) {
     Nothing -> ""
     Just(cap) -> cap.groups[1]
   }
 }
-val rxXmp = regex(@"<xmp\b.*?>([\s\S]*?)</xmp>")
+val rxXmp = regex(r"<xmp\b.*?>([\s\S]*?)</xmp>")
 
-val rxCurDir = regex(@"^(\.)(?=[\\/])")
+val rxCurDir = regex(r"^(\.)(?=[\\/])")
 
-function process( inName : string, outName : string, searchDirs : list<string>,
+fun process( inName : string, outName : string, searchDirs : list<string>,
                   content : string, icontent : string,
                   xopts : options, mopts : options, firstTime : bool,
                   continue : (string) -> io () ) : io ()
@@ -127,10 +133,10 @@ function process( inName : string, outName : string, searchDirs : list<string>,
 }
 
 // Fixup locations in warnings:
-function fixWarnings(txt : string) : string {
+fun fixWarnings(txt : string) : string {
   var location := "";
   val hist = mdict();
-  val ls = txt.lines.list.map fun(line) {
+  val ls = txt.lines.list.map fn(line) {
     match(line.find(rxLocation)) {
       Nothing -> {
         match(line.find(rxWarning)) {
@@ -154,24 +160,24 @@ function fixWarnings(txt : string) : string {
   }
   ls.concatMaybe.join
 }
-val rxLocation = regex(@"^\s*location:(.*)",ignoreCase=True)
-val rxWarning  = regex(@"^(\s*(?:error|warning):)(.*)",ignoreCase=True)
+val rxLocation = regex(r"^\s*location:(.*)",ignoreCase=True)
+val rxWarning  = regex(r"^(\s*(?:error|warning):)(.*)",ignoreCase=True)
 
 // Remove <!--madoko comments
-function removeMadokoComments( txt : string ) : string {
+fun removeMadokoComments( txt : string ) : string {
   txt.replaceAll( rxMadokoComment, "\n$1\n")
 }
-val rxMadokoComment = regex(@"^<!--madoko[ \t\r]*\n([\s\S]*?)^-->[ \t\r]*\n", ignoreCase=True, multiline=True)
+val rxMadokoComment = regex(r"^<!--madoko[ \t\r]*\n([\s\S]*?)^-->[ \t\r]*\n", ignoreCase=True, multiline=True)
 
 // Register colorizers
-function registerColorizers( opts : options, searchDirs : list<string>, content : string ) : io ()
+fun registerColorizers( opts : options, searchDirs : list<string>, content : string ) : io ()
 {
-  val searchDirsEx = searchDirs.concat( fun(dir) { [dir,combine(dir,"lang")] } )
+  val searchDirsEx = searchDirs.concat( fn(dir) { [dir,combine(dir,"lang")] } )
   val registered = mdict()
   val langs1 = opts.hilitelang.split(";").list
-  val langs2 = content.findAll(regex(@"(?:^ *```+ *|\blanguage\s*[:=])([\w\-\/]+)\b",multiline=True)).list.map(fun(cap) { cap.groups[1].basename })
+  val langs2 = content.findAll(regex(r"(?:^ *```+ *|\blanguage\s*[:=])([\w\-\/]+)\b",multiline=True)).list.map(fn(cap) { cap.groups[1].basename })
   val langs  = (langs1 + langs2).map(toLower)
-  langs.foreach fun(lang) {
+  langs.foreach fn(lang) {
     match (registered[lang]) {
       Just -> ()
       Nothing -> {
@@ -194,15 +200,15 @@ function registerColorizers( opts : options, searchDirs : list<string>, content 
   }
 }
 
-public function outputName( inputName : string, options : commandOptions ) : string {
-  val noextName = if (inputName.endsWith(".xmp.html")) then inputName.substr(0,inputName.length-9) else inputName.noext
+pub fun outputName( inputName : string, options : commandOptions ) : string {
+  val noextName = if (inputName.endsWith(".xmp.html")) then inputName.substr(0,inputName.length - 9) else inputName.noext
   val outName = if (options.convertTex) then inputName + ".mdk" else noextName + ".html"
   if (options.outputDir=="")
    then outName
    else options.outputDir + "/" + outName.basename
 }
 
-function tryCopyTextFileFromNoSandboxTo( fname, srcDir, outDir ) {
+fun tryCopyTextFileFromNoSandboxTo( fname, srcDir, outDir ) {
   val inName = combine(srcDir,fname)
   val outName = combine(outDir,fname)
   catch {
@@ -210,11 +216,11 @@ function tryCopyTextFileFromNoSandboxTo( fname, srcDir, outDir ) {
     tryWriteTextFile(outName,txt)
     ()
   }
-  fun(exn) { () }
+  fn(exn) { () }
 }
 
 
-public function withLogCompress( name: string, action : () -> <ndet|e> a ) : <ndet|e> (string,a) {
+pub fun withLogCompress( name: string, action : () -> <ndet|e> a ) : <ndet|e> (string,a) {
   val (log,x) = withLog(name,action)
   (log.replaceAll(rxDataLinesPre,""), x)
 }

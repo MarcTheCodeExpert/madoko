@@ -9,10 +9,10 @@
 // Format _block_ elements and and their inline elements.
 module formatBlock
 
-import std/string
-import std/regex
-import std/dict
-import std/log
+import v1/std/text/string
+import std/text/regex
+import std/data/dict
+import v1/std/log
 import common
 import attributes // mergeDefault
 import block
@@ -20,7 +20,7 @@ import inline
 import formatInline
 
 
-public struct formatContext(
+pub struct formatContext(
   inlineContext : inlineContext,
   tocBlocks   : dict<list<block>>,
   footnoteBlock : block,
@@ -31,28 +31,28 @@ public struct formatContext(
   fmt : formatter = FmtHtml
 )
 
-public function initialFormatContext( icontext : inlineContext, lineMap: lineMap,
+pub fun initialFormatContext( icontext : inlineContext, lineMap: lineMap,
                                       headingBase : int, pedantic : bool, fmt : formatter ) {
   FormatContext(icontext,dict(),Empty,headingBase,"language-",pedantic, lineMap, fmt)
 }
 
-function fmtEnv( context : formatContext, env : string, txt : string, attrs : attrs = attrsNone ) : string {
+fun fmtEnv( context : formatContext, env : string, txt : string, attrs : attrs = attrsNone ) : string {
   context.inlineContext.fmtEnv(env,txt,attrs)
 }
 
-function fmtCmd( context : formatContext, cmd : string, txt : string, attrs : attrs = attrsNone ) : string {
+fun fmtCmd( context : formatContext, cmd : string, txt : string, attrs : attrs = attrsNone ) : string {
   (context.inlineContext.xfmtCmd)(context.inlineContext,cmd,txt,attrs)
 }
 
-function fmtText( context : formatContext, txt : string ) : string {
+fun fmtText( context : formatContext, txt : string ) : string {
   (context.inlineContext.xfmtCmd)(context.inlineContext,"",txt,attrsNone)
 }
 
-function fmtTable( context : formatContext, head : list<row>, body : list<row>, colattrs : list<attrs>, attrs : attrs = attrsNone ) : string {
+fun fmtTable( context : formatContext, head : list<row>, body : list<row>, colattrs : list<attrs>, attrs : attrs = attrsNone ) : string {
   (context.inlineContext.xfmtTable)(context.inlineContext,head,body,colattrs,attrs)
 }
 
-function escapeMath( txt : string, fmt : formatter ) : string {
+fun escapeMath( txt : string, fmt : formatter ) : string {
   txt
 }
 
@@ -61,17 +61,17 @@ function escapeMath( txt : string, fmt : formatter ) : string {
 ---------------------------------------- */
 
 // Format blocks into html and parse and format all inline elements
-public function formatBlocks( context : formatContext, blocks : list<block> ) : string
+pub fun formatBlocks( context : formatContext, blocks : list<block> ) : string
 {
   unsafeNoDiv{ formatBlocksX(context,blocks) }
 }
 
-public function formatBlocksX( context : formatContext, blocks : list<block> ) : div string
+pub fun formatBlocksX( context : formatContext, blocks : list<block> ) : div string
 {
   formatBlocksAcc(context,blocks,builder())
 }
 
-function formatBlocksAcc( context : formatContext, blocks : list<block>, acc : builder<h> ) : <st<h>,div> string
+fun formatBlocksAcc( context : formatContext, blocks : list<block>, acc : builder<h> ) : <st<h>,div> string
 {
   match(blocks) {
     Nil -> acc.build
@@ -119,7 +119,7 @@ function formatBlocksAcc( context : formatContext, blocks : list<block>, acc : b
   }
 }
 
-function lineText( b :  block ) {
+fun lineText( b :  block ) {
   match(b) {
     Line(txt) -> txt
     _         -> ""
@@ -130,7 +130,7 @@ function lineText( b :  block ) {
    Output a single block element
 ---------------------------------------- */
 
-public function formatBlock( context : formatContext, block : block ) : div string
+pub fun formatBlock( context : formatContext, block : block ) : div string
 {
   match(block) {
     Para(txt,attrs) -> {
@@ -206,7 +206,7 @@ public function formatBlock( context : formatContext, block : block ) : div stri
     }
 
     Table(header,colstyles0,cells,attrs) -> {
-      val colstyles = colstyles0.map( fun(colstyle) { context.inlineContext.defaults.matchRules("tc",colstyle) } )
+      val colstyles = colstyles0.map( fn(colstyle) { context.inlineContext.defaults.matchRules("tc",colstyle) } )
       val thead = formatRows(header,colstyles,context,attrs,False)
       val tbody = formatRows(cells,colstyles,context,attrs,True)
       context.fmtTable(thead,tbody, colstyles, attrs.addClass("madoko"))
@@ -217,7 +217,7 @@ public function formatBlock( context : formatContext, block : block ) : div stri
     }
 
     Div(content,attrs) | attrs.hasClass("columns") -> {
-      val cols = content.map fun(b) {
+      val cols = content.map fn(b) {
         match(b) {
           Div(bs,xs) -> {
             if (!(xs.hasClass("column"))) {
@@ -231,7 +231,7 @@ public function formatBlock( context : formatContext, block : block ) : div stri
           }
         }
       }
-      context.fmtTable(Nil,[Row(cols)],cols.map(fun(c){ c.cellAttrs }),attrs)
+      context.fmtTable(Nil,[Row(cols)],cols.map(fn(c){ c.cellAttrs }),attrs)
     }
 
     Div(content,attrs) -> {
@@ -241,9 +241,9 @@ public function formatBlock( context : formatContext, block : block ) : div stri
       match (attrs.hasKey("bib-id")) {
         Just(bibid) -> {
           log("aux","%mdk bib: " + bibid
-                + (attrs.hasKey("csl-style").maybe("",fun(s) { ", csl-style:" + s.show }))
-                + (attrs.hasKey("bib-style").maybe("",fun(s) { ", bib-style:" + s.show }))
-                + (attrs.hasKey("locale").maybe("",fun(s) { ", locale:" + s.show }))
+                + (attrs.hasKey("csl-style").maybe("",fn(s) { ", csl-style:" + s.show }))
+                + (attrs.hasKey("bib-style").maybe("",fn(s) { ", bib-style:" + s.show }))
+                + (attrs.hasKey("locale").maybe("",fn(s) { ", locale:" + s.show }))
              )
         }
         Nothing     -> ()
@@ -273,21 +273,21 @@ val rxblank = regex(@"^\s*$")
 val rxDashes  = regex(@"^ *(\\/)?---+ *[|+]*$") //regex(@"^( |- |-- )*---+ *[- ]*[|+]*$")
 val rxDDashes = regex(@"^ *(\\/)?===+ *[|+]*$")
 
-function deriveMathAttrs( parentAttrs : attrs ) {
-  attrsNone.addClasses( parentAttrs.classes.filter(fun(c) { c.startsWith("snippet") || c.startsWith("math") } ) )
-           .addKeyvals( parentAttrs.keyvals.filter( fun(kv) {
+fun deriveMathAttrs( parentAttrs : attrs ) {
+  attrsNone.addClasses( parentAttrs.classes.filter(fn(c) { c.startsWith("snippet") || c.startsWith("math") } ) )
+           .addKeyvals( parentAttrs.keyvals.filter( fn(kv) {
                           val key = kv.fst
                           key.startsWith("color") || key.startsWith("font-") || key.startsWith("snippet-") || key.startsWith("math-") || key.startsWith("data-line-")
                         }))
 }
 
-function formatRows( rows : list<row>,
+fun formatRows( rows : list<row>,
                       colstyles : list<attrs>, context : formatContext,
                       attrs : attrs, isBody : bool ) : list<row>
 {
   if (rows.isNil) then return Nil
 
-  function defaultCellKeyvals( colNum : int, rowstyle : attrs, isLast : bool ) : list<(string,string)> {
+  fun defaultCellKeyvals( colNum : int, rowstyle : attrs, isLast : bool ) : list<(string,string)> {
     val mod  = if (colNum.even) then "even-" else "odd-"
     val elem = if (isBody) then "td-" else "th-"
     val idx  = colNum.show + "-"
@@ -299,7 +299,7 @@ function formatRows( rows : list<row>,
     kvs
   }
 
-  function formatRow( colNum : int, row : list<cell>, cols : list<attrs>, rowstyle : attrs ) : list<cell> {
+  fun formatRow( colNum : int, row : list<cell>, cols : list<attrs>, rowstyle : attrs ) : list<cell> {
     match(row) {
       Cons(cell,rs) -> {
         match(cols) {
@@ -353,7 +353,7 @@ function formatRows( rows : list<row>,
   }
 
 
-  function addRowKey( target : string, key : string, test : bool ) : list<(string,string)> {
+  fun addRowKey( target : string, key : string, test : bool ) : list<(string,string)> {
     if (!test) then [] else {
       match(attrs.hasKey(key)) {
         Nothing -> []
@@ -362,10 +362,10 @@ function formatRows( rows : list<row>,
     }
   }
 
-  function filterKeyvals( keyvals : list<(string,string)>, prefixes : list<string> ) : list<(string,string)> {
-    keyvals.filterMap fun(kv) {
+  fun filterKeyvals( keyvals : list<(string,string)>, prefixes : list<string> ) : list<(string,string)> {
+    keyvals.filterMap fn(kv) {
       val (key,value) = kv
-      match (prefixes.reverse.find(fun(pre) { key.startsWith(pre) })) {
+      match (prefixes.reverse.find(fn(pre) { key.startsWith(pre) })) {
         Just(pre) -> {
           val skey = key.substr(pre.length)
           if (skey.find(rxSubSelect).isJust) then Nothing else Just((skey,value))
@@ -375,7 +375,7 @@ function formatRows( rows : list<row>,
     }
   }
 
-  function defaultKeyvals( hasLine :  bool, rowNum : int, isLast : bool ) : list<(string,string)> {
+  fun defaultKeyvals( hasLine :  bool, rowNum : int, isLast : bool ) : list<(string,string)> {
     val mod = if (rowNum.even && rowNum != 0) then "even-" else "odd-"
     val row = if (isBody) then "tbody-tr-" else "thead-tr-"
     val idx = rowNum.show + "-"
@@ -384,12 +384,12 @@ function formatRows( rows : list<row>,
                    (if (isLast) then ["tr-last-",row + "last-"] else [])
     val kvs = attrs.keyvals.filterKeyvals(prefixes)
     if (hasLine)
-     then kvs.filter(fun(kv){kv.fst.startsWith("background-color") || kv.fst.startsWith("rule") })
+     then kvs.filter(fn(kv){kv.fst.startsWith("background-color") || kv.fst.startsWith("rule") })
      else kvs
   }
 
-  function containsDashes( row : row ) : bool {
-    row.cells.any( fun(cell) { cell.text.contains(rxDashes) || cell.text.contains(rxDDashes) })
+  fun containsDashes( row : row ) : bool {
+    row.cells.any( fn(cell) { cell.text.contains(rxDashes) || cell.text.contains(rxDDashes) })
   }
 
   var rowNum := 0
@@ -397,7 +397,7 @@ function formatRows( rows : list<row>,
   val firstHasLine = rows.take(1).all(containsDashes)
   val lastHasLine  = rows.reverse.take(1).all(containsDashes)
   val defaults = context.inlineContext.defaults
-  rows.map fun(row) {
+  rows.map fn(row) {
     rowCount := rowCount+1
     val hasLine = row.containsDashes
     val isLast  = !hasLine && (rowCount == rows.length - (if (lastHasLine) then 1 else 0))
@@ -426,4 +426,4 @@ function formatRows( rows : list<row>,
 val rxbars = regex(@"[|+]+$")
 val rxSubSelect = regex(@"^(even|odd|last|\d+)\-")
 
-function noalign( s : string ) : bool = !(s.startsWith("align-"))
+fun noalign( s : string ) : bool = !(s.startsWith("align-"))

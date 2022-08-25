@@ -9,10 +9,10 @@
 // Parse Madoko markdown text.
 module madoko
 
-import std/dict
-import std/regex
-import std/log
-import std/path
+import std/data/dict
+import std/text/regex
+import v1/std/log
+import std/os/path
 
 import backports
 import version
@@ -36,19 +36,19 @@ import includes
 ---------------------------------------- */
 
 // TODO also migrate to range
-public struct position (path: string, line: int)
+pub struct position (path: string, line: int)
 
 // Line information is 1-based and inclusive.
-public struct range (path: string, from: int, to: int)
+pub struct range (path: string, from: int, to: int)
 
-public struct referenceInfo (
+pub struct referenceInfo (
   id: string,
   element: string,
   caption: string,
   position: null<position>
 )
 
-public struct documentInfo (
+pub struct documentInfo (
   labels: vector<referenceInfo>,
   blocks: vector<blockInfo>,
   // just for debugging purposes we also include the original formatContext
@@ -57,7 +57,7 @@ public struct documentInfo (
 )
 
 // the type of block nodes we export to js / typescript
-public struct blockInfo (
+pub struct blockInfo (
   // the block kind
   kind: string,
   // the element id, empty if not present
@@ -81,7 +81,7 @@ public struct blockInfo (
 ---------------------------------------- */
 
 // Takes source markdown input and returns formatted html
-public function markdown( src : string,
+pub fun markdown( src : string,
                           options : options = initialOptions0,
                           fmt : formatter = FmtTex
                         ) : pure (string,options,list<block>,formatContext)
@@ -100,10 +100,10 @@ public function markdown( src : string,
 //
 // TODO Currently the logs are very sparse... Did I omit too much of the
 // processing to catch errors?
-public function analyze(
+pub fun analyze(
   inputName : string, content : string, resolveIncludes: bool, continue : (documentInfo) -> io ()
 ) : io () {
-  printRedirect( fun(s) { log("stdout", s) });
+  printRedirect( fn(s) { log("stdout", s) });
 
   val options = Options(
     version=version/version,
@@ -113,7 +113,7 @@ public function analyze(
     full=Just(False),
     copyStyles=False)
 
-  content.include(!resolveIncludes, inputName, "out/test.mdk", [inputName.dirname], options) fun(includedContent, lmap) {
+  content.include(!resolveIncludes, inputName, "out/test.mdk", [inputName.dirname], options) fn(includedContent, lmap) {
 
     withLog("stdout") {
       // TODO speed up again, by adding option to not run `formatBlocks`
@@ -130,20 +130,20 @@ public function analyze(
 
 
 // Process only markdown between <xmp> tags
-function markdownXmp( src : string, options : options = initialOptions0, fmt : formatter = FmtTex ) : pure (string,options,list<block>,formatContext)
+fun markdownXmp( src : string, options : options = initialOptions0, fmt : formatter = FmtTex ) : pure (string,options,list<block>,formatContext)
 {
   val commented = "~begin htmlraw\n" + src.replaceAll(rxxmp,"\n~end htmlraw\n$2\n~begin htmlraw\n") + "\n~end htmlraw"
   markdownNormal(commented, options, fmt)
 }
 val rxxmp = regex(@"(<xmp\b" + tagContent + @">)([\s\S]*?)</xmp>")
 
-public function normalizeSource( src : string ) : string {
+pub fun normalizeSource( src : string ) : string {
   val srcnl = if (src.contains('\r')) then src.replaceAll(regex(@"\r\n?"),"\n") else src
   srcnl.replaceAll(regex(@"\t"), "    ")
 }
 
 // Takes source markdown input and returns formatted html
-function markdownNormal( src0 : string, options0 : options = initialOptions0, fmt : formatter = FmtTex ) : pure (string,options,list<block>,formatContext)
+fun markdownNormal( src0 : string, options0 : options = initialOptions0, fmt : formatter = FmtTex ) : pure (string,options,list<block>,formatContext)
 {
   // first normalize the input: all tabs to 4 spaces.
   val (options1,src) = parseMeta(options0,fmt,src0.normalizeSource)
@@ -153,7 +153,7 @@ function markdownNormal( src0 : string, options0 : options = initialOptions0, fm
 
   if (options.verbose>=4) then {
     trace("metadata: " + fmt.showFormatter)
-    options.metadata.foreach fun(md) {
+    options.metadata.foreach fn(md) {
       trace("  " + md.fst + ": " + md.snd.cutoff(80))
     }
     trace("parse blocks")
@@ -195,18 +195,18 @@ function markdownNormal( src0 : string, options0 : options = initialOptions0, fm
 }
 
 // Export initial options for JavaScript usage
-public val initialOptions0 = initialOptions();
+pub val initialOptions0 = initialOptions();
 
-public function initialOptions() {
+pub fun initialOptions() {
   return Options();
 }
 
-public function traceRuleHist() {
+pub fun traceRuleHist() {
   common/traceRuleHist()
 }
 
-function logMetadata( mdata : metadata ) {
-  mdata.foreach fun(kv) {
+fun logMetadata( mdata : metadata ) {
+  mdata.foreach fn(kv) {
     val (key,value) = kv;
     if (!key.startsWith("~") && !key.startsWith(".") && !key.startsWith("#")) {
       log("entities", "{\"name\":" + key.json + ",\"value\":" + value.json + "}")
@@ -216,7 +216,7 @@ function logMetadata( mdata : metadata ) {
 
 
 // Create an ":inlineContext"
-public function inlineContext( fmt : formatter,
+pub fun inlineContext( fmt : formatter,
                                metadata : dict<string>,
                                embedinfos : dict<embedinfo>,
                                sanitize : bool = False,
@@ -257,31 +257,31 @@ public function inlineContext( fmt : formatter,
   Conversions between internal and external datatypes
 ---------------------------------------- */
 
-function range(attr: attrs, inputName: string): maybe<range> {
+fun range(attr: attrs, inputName: string): maybe<range> {
   match (attr.hasKey("data-line-start")) {
     Just(start) -> catch({
       val end = attr.lookupKey("data-line-end", start)
       val (path, startLine) = start.extractPosition(inputName)
       val (_, endLine) = end.extractPosition(inputName)
       Just(Range(path, startLine, endLine))
-    }, fun(exn) { Nothing })
+    }, fn(exn) { Nothing })
     Nothing -> Nothing
   }
 }
 
-function extractPosition(locationString: string, inputName: string): exn (string, int) {
+fun extractPosition(locationString: string, inputName: string): exn (string, int) {
   val locs = (inputName + ":" + locationString).split(";").list
   val last = locs.last.split(":")
   (last[0], last[1].parseInt.unJust)
 }
 
 // we need the inputName to normalize position information
-function toBlockInfos(bs: list<block>, inputName: string): div vector<blockInfo> {
-  vector(bs.map(fun(b){ b.toBlockInfo(inputName) }).concatMaybe)
+fun toBlockInfos(bs: list<block>, inputName: string): div vector<blockInfo> {
+  vector(bs.map(fn(b){ b.toBlockInfo(inputName) }).concatMaybe)
 }
 
 // TODO also include range information in extracted block structure
-function toBlockInfo(b: block, inputName: string): div maybe<blockInfo> {
+fun toBlockInfo(b: block, inputName: string): div maybe<blockInfo> {
   match(b) {
     HLine( attrs ) ->
       Just(BlockInfo("hline", attrs.name, attrs.elem, vector(), "", vector(attrs.classes), dict(attrs.keyvals), attrs.range(inputName).null))
@@ -309,13 +309,13 @@ function toBlockInfo(b: block, inputName: string): div maybe<blockInfo> {
 }
 
 
-function labelInfo(elem: (string, label)): referenceInfo {
+fun labelInfo(elem: (string, label)): referenceInfo {
   val (id, label) = elem
   ReferenceInfo(id, label.element, label.labelCaption, null(label.labelPosition))
 }
 
 // TODO change to labelRange
-function labelPosition(label : label) : maybe<position> {
+fun labelPosition(label : label) : maybe<position> {
   match(label.labelAttrs.hasKey("data-line")) { 
     Just(info) -> {
       val (path, lineno) = parseLineInfo(info)
@@ -325,7 +325,7 @@ function labelPosition(label : label) : maybe<position> {
   }
 }
 
-public function lastPathSegment( lineInfo : string ) : string {
+pub fun lastPathSegment( lineInfo : string ) : string {
   match (lineInfo.find(rxLastPath)) {
     Nothing   -> lineInfo
     Just(cap) -> cap.groups[1]

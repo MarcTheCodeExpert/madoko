@@ -1,0 +1,1521 @@
+// Common types and operations
+module interface common
+ 
+//------------------------------
+//#kki: import declarations
+ 
+import std/core/types = std/core/types = "";
+import std/core/hnd = std/core/hnd = "";
+import std/core = std/core = "";
+import compat/dict = compat/dict = "";
+import compat = compat = "";
+import compat/log = compat/log = "";
+import compat/regex = compat/regex = "";
+ 
+//------------------------------
+//#kki: external imports
+ 
+ 
+//------------------------------
+//#kki: fixity declarations
+ 
+ 
+//------------------------------
+//#kki: local imported aliases
+ 
+ 
+//------------------------------
+//#kki: type declarations
+ 
+/* --------------------------------------
+ Attributes
+---------------------------------------- */
+pub value{1,0} type formatter {
+  pub con FmtHtml : formatter;
+  pub con FmtTex : formatter;
+};
+pub value{0,1} type input {
+  pub con Pre : input;
+  pub con MathPre : input;
+  pub con Math : input;
+  pub con MathDefs : input;
+  pub con MathPoly : input;
+  pub con Tex : input;
+  pub con Raw(only: (std/core/types/maybe :: V -> V)<formatter>) : (only : (std/core/types/maybe :: V -> V)<formatter>) -> input;
+  pub con Markdown(only: (std/core/types/maybe :: V -> V)<formatter>) : (only : (std/core/types/maybe :: V -> V)<formatter>) -> input;
+};
+// Attributes
+pub type attrs {
+  // Attributes
+  pub con Attrs(empty: std/core/types/bool, sticky: std/core/types/bool, defaults: std/core/types/bool, text: std/core/types/string, replacers: (std/core/list :: V -> V)<std/core/types/string>, notag: std/core/types/bool, tight: std/core/types/bool, input: input, elem: std/core/types/string, texelem: std/core/types/string, htmlelem: std/core/types/string, name: std/core/types/string, label: std/core/types/string, source: std/core/types/string, lineNo: std/core/types/int, classes: (std/core/list :: V -> V)<std/core/types/string>, counters: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, keyvals: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (empty : std/core/types/bool, sticky : std/core/types/bool, defaults : std/core/types/bool, text : std/core/types/string, replacers : (std/core/list :: V -> V)<std/core/types/string>, notag : std/core/types/bool, tight : std/core/types/bool, input : input, elem : std/core/types/string, texelem : std/core/types/string, htmlelem : std/core/types/string, name : std/core/types/string, label : std/core/types/string, source : std/core/types/string, lineNo : std/core/types/int, classes : (std/core/list :: V -> V)<std/core/types/string>, counters : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, keyvals : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) -> attrs;
+};
+pub value{0,2} type cell {
+  pub con Cell(text: std/core/types/string, cellAttrs: attrs) : (text : std/core/types/string, cellAttrs : attrs) -> cell;
+};
+// Info for files to embed. Used in a browser
+pub value{0,2} type embedinfo {
+  // Info for files to embed. Used in a browser
+  pub con Embedinfo(embedName: std/core/types/string, embedData: std/core/types/string) : (embedName : std/core/types/string, embedData : std/core/types/string) -> embedinfo;
+};
+// A grammar rule. When "regex" matches, "action" is called with the
+// capture groups and the a parser context ":c". The action returns
+// results of type ":a" (":block" for the block grammar, and ":string"
+// for the inline grammar)
+pub value{0,3} type rule <a,b> :: (V, V) -> V {
+  // A grammar rule. When "regex" matches, "action" is called with the
+// capture groups and the a parser context ":c". The action returns
+// results of type ":a" (":block" for the block grammar, and ":string"
+// for the inline grammar)
+  pub con Rule(name: std/core/types/string, regex: compat/regex/regex, action: (cap : compat/regex/matched, ctx : b) -> a) : forall<a,b> (name : std/core/types/string, regex : compat/regex/regex, action : (cap : compat/regex/matched, ctx : b) -> a) -> (rule :: (V, V) -> V)<a,b>;
+};
+pub alias grammar<a,b> :: (V, V) -> V = (std/core/list :: V -> V)<(rule :: (V, V) -> V)<a,b>> = 1;
+// A label is created for every element with an id.
+pub type label {
+  // A label is created for every element with an id.
+  pub con Label(element: std/core/types/string, labelText: std/core/types/string, labelCaption: std/core/types/string, labelAttrs: attrs) : (element : std/core/types/string, labelText : std/core/types/string, labelCaption : std/core/types/string, labelAttrs : attrs) -> label;
+};
+pub recursive type lineMap {
+  pub con End : lineMap;
+  pub con Include(line: std/core/types/int, start: std/core/types/int, count: std/core/types/int, fileName: std/core/types/string, lineMap: lineMap, rest: lineMap) : (line : std/core/types/int, start : std/core/types/int, count : std/core/types/int, fileName : std/core/types/string, lineMap : lineMap, rest : lineMap) -> lineMap;
+};
+// A url link.
+pub type link {
+  // A url link.
+  pub con Link(href: std/core/types/string, title: std/core/types/string, linkattrs: attrs, linkid: std/core/types/string) : (href : std/core/types/string, title : std/core/types/string, linkattrs : attrs, linkid : std/core/types/string) -> link;
+};
+pub recursive type peano {
+  pub con Succ(prev: peano) : (prev : peano) -> peano;
+  pub con Zero : peano;
+};
+pub value{0,2} type row {
+  pub con Row(cells: (std/core/list :: V -> V)<cell>, rowAttrs: attrs) : (cells : (std/core/list :: V -> V)<cell>, rowAttrs : attrs) -> row;
+};
+ 
+//------------------------------
+//#kki: declarations
+ 
+// Automatically generated. Tests for the `FmtHtml` constructor of the `:formatter` type.
+pub fun is-fmtHtml : (^ formatter : formatter) -> std/core/types/bool;
+// Automatically generated. Tests for the `FmtTex` constructor of the `:formatter` type.
+pub fun is-fmtTex : (^ formatter : formatter) -> std/core/types/bool;
+// Automatically generated. Tests for the `Pre` constructor of the `:input` type.
+pub fun is-pre : (^ input : input) -> std/core/types/bool;
+// Automatically generated. Tests for the `MathPre` constructor of the `:input` type.
+pub fun is-mathPre : (^ input : input) -> std/core/types/bool;
+// Automatically generated. Tests for the `Math` constructor of the `:input` type.
+pub fun is-math : (^ input : input) -> std/core/types/bool;
+// Automatically generated. Tests for the `MathDefs` constructor of the `:input` type.
+pub fun is-mathDefs : (^ input : input) -> std/core/types/bool;
+// Automatically generated. Tests for the `MathPoly` constructor of the `:input` type.
+pub fun is-mathPoly : (^ input : input) -> std/core/types/bool;
+// Automatically generated. Tests for the `Tex` constructor of the `:input` type.
+pub fun is-tex : (^ input : input) -> std/core/types/bool;
+// Automatically generated. Tests for the `Raw` constructor of the `:input` type.
+pub fun is-raw : (^ input : input) -> std/core/types/bool;
+// Automatically generated. Tests for the `Markdown` constructor of the `:input` type.
+pub fun is-markdown : (^ input : input) -> std/core/types/bool;
+// Automatically generated. Retrieves the `empty` constructor field of the `:attrs` type.
+pub fun empty : (^ attrs : attrs) -> std/core/types/bool;
+// Automatically generated. Retrieves the `sticky` constructor field of the `:attrs` type.
+pub fun sticky : (^ attrs : attrs) -> std/core/types/bool;
+// Automatically generated. Retrieves the `defaults` constructor field of the `:attrs` type.
+pub fun defaults : (^ attrs : attrs) -> std/core/types/bool;
+// Automatically generated. Retrieves the `text` constructor field of the `:attrs` type.
+pub fun text : (^ attrs : attrs) -> std/core/types/string;
+// Automatically generated. Retrieves the `replacers` constructor field of the `:attrs` type.
+pub fun replacers : (^ attrs : attrs) -> (std/core/list :: V -> V)<std/core/types/string>;
+// Automatically generated. Retrieves the `notag` constructor field of the `:attrs` type.
+pub fun notag : (^ attrs : attrs) -> std/core/types/bool;
+// Automatically generated. Retrieves the `tight` constructor field of the `:attrs` type.
+pub fun tight : (^ attrs : attrs) -> std/core/types/bool;
+// Automatically generated. Retrieves the `input` constructor field of the `:attrs` type.
+pub fun input : (^ attrs : attrs) -> input;
+// Automatically generated. Retrieves the `elem` constructor field of the `:attrs` type.
+pub fun elem : (^ attrs : attrs) -> std/core/types/string;
+// Automatically generated. Retrieves the `texelem` constructor field of the `:attrs` type.
+pub fun texelem : (^ attrs : attrs) -> std/core/types/string;
+// Automatically generated. Retrieves the `htmlelem` constructor field of the `:attrs` type.
+pub fun htmlelem : (^ attrs : attrs) -> std/core/types/string;
+// Automatically generated. Retrieves the `name` constructor field of the `:attrs` type.
+pub fun name : (^ attrs : attrs) -> std/core/types/string;
+// Automatically generated. Retrieves the `label` constructor field of the `:attrs` type.
+pub fun label : (^ attrs : attrs) -> std/core/types/string;
+// Automatically generated. Retrieves the `source` constructor field of the `:attrs` type.
+pub fun source : (^ attrs : attrs) -> std/core/types/string;
+// Automatically generated. Retrieves the `lineNo` constructor field of the `:attrs` type.
+pub fun lineNo : (^ attrs : attrs) -> std/core/types/int;
+// Automatically generated. Retrieves the `classes` constructor field of the `:attrs` type.
+pub fun classes : (^ attrs : attrs) -> (std/core/list :: V -> V)<std/core/types/string>;
+// Automatically generated. Retrieves the `counters` constructor field of the `:attrs` type.
+pub fun counters : (^ attrs : attrs) -> (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>;
+// Automatically generated. Retrieves the `keyvals` constructor field of the `:attrs` type.
+pub fun keyvals : (^ attrs : attrs) -> (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>;
+pub fun .copy : (.this : attrs, empty : (std/core/types/optional :: V -> V)<std/core/types/bool>, sticky : (std/core/types/optional :: V -> V)<std/core/types/bool>, defaults : (std/core/types/optional :: V -> V)<std/core/types/bool>, text : (std/core/types/optional :: V -> V)<std/core/types/string>, replacers : (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>>, notag : (std/core/types/optional :: V -> V)<std/core/types/bool>, tight : (std/core/types/optional :: V -> V)<std/core/types/bool>, input : (std/core/types/optional :: V -> V)<input>, elem : (std/core/types/optional :: V -> V)<std/core/types/string>, texelem : (std/core/types/optional :: V -> V)<std/core/types/string>, htmlelem : (std/core/types/optional :: V -> V)<std/core/types/string>, name : (std/core/types/optional :: V -> V)<std/core/types/string>, label : (std/core/types/optional :: V -> V)<std/core/types/string>, source : (std/core/types/optional :: V -> V)<std/core/types/string>, lineNo : (std/core/types/optional :: V -> V)<std/core/types/int>, classes : (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>>, counters : (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>>, keyvals : (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>>) -> attrs;
+// Automatically generated. Retrieves the `text` constructor field of the `:cell` type.
+pub fun text.1 : (^ cell : cell) -> std/core/types/string;
+// Automatically generated. Retrieves the `cellAttrs` constructor field of the `:cell` type.
+pub fun cellAttrs : (^ cell : cell) -> attrs;
+pub fun .copy.1 : (.this : cell, text : (std/core/types/optional :: V -> V)<std/core/types/string>, cellAttrs : (std/core/types/optional :: V -> V)<attrs>) -> cell;
+// Automatically generated. Retrieves the `embedName` constructor field of the `:embedinfo` type.
+pub fun embedName : (^ embedinfo : embedinfo) -> std/core/types/string;
+// Automatically generated. Retrieves the `embedData` constructor field of the `:embedinfo` type.
+pub fun embedData : (^ embedinfo : embedinfo) -> std/core/types/string;
+pub fun .copy.2 : (.this : embedinfo, embedName : (std/core/types/optional :: V -> V)<std/core/types/string>, embedData : (std/core/types/optional :: V -> V)<std/core/types/string>) -> embedinfo;
+// Automatically generated. Retrieves the `name` constructor field of the `:rule` type.
+pub fun name.1 : forall<a,b> (^ rule : (rule :: (V, V) -> V)<a,b>) -> std/core/types/string;
+// Automatically generated. Retrieves the `regex` constructor field of the `:rule` type.
+pub fun regex : forall<a,b> (^ rule : (rule :: (V, V) -> V)<a,b>) -> compat/regex/regex;
+// Automatically generated. Retrieves the `action` constructor field of the `:rule` type.
+pub fun action : forall<a,b> (^ rule : (rule :: (V, V) -> V)<a,b>) -> ((cap : compat/regex/matched, ctx : b) -> a);
+pub fun .copy.3 : forall<a,b> (.this : (rule :: (V, V) -> V)<a,b>, name : (std/core/types/optional :: V -> V)<std/core/types/string>, regex : (std/core/types/optional :: V -> V)<compat/regex/regex>, action : (std/core/types/optional :: V -> V)<(cap : compat/regex/matched, ctx : b) -> a>) -> (rule :: (V, V) -> V)<a,b>;
+// Automatically generated. Retrieves the `element` constructor field of the `:label` type.
+pub fun element : (^ label : label) -> std/core/types/string;
+// Automatically generated. Retrieves the `labelText` constructor field of the `:label` type.
+pub fun labelText : (^ label : label) -> std/core/types/string;
+// Automatically generated. Retrieves the `labelCaption` constructor field of the `:label` type.
+pub fun labelCaption : (^ label : label) -> std/core/types/string;
+// Automatically generated. Retrieves the `labelAttrs` constructor field of the `:label` type.
+pub fun labelAttrs : (^ label : label) -> attrs;
+pub fun .copy.4 : (.this : label, element : (std/core/types/optional :: V -> V)<std/core/types/string>, labelText : (std/core/types/optional :: V -> V)<std/core/types/string>, labelCaption : (std/core/types/optional :: V -> V)<std/core/types/string>, labelAttrs : (std/core/types/optional :: V -> V)<attrs>) -> label;
+// Automatically generated. Tests for the `End` constructor of the `:lineMap` type.
+pub fun is-end : (^ lineMap : lineMap) -> std/core/types/bool;
+// Automatically generated. Tests for the `Include` constructor of the `:lineMap` type.
+pub fun is-include : (^ lineMap : lineMap) -> std/core/types/bool;
+// Automatically generated. Retrieves the `href` constructor field of the `:link` type.
+pub fun href : (^ link : link) -> std/core/types/string;
+// Automatically generated. Retrieves the `title` constructor field of the `:link` type.
+pub fun title : (^ link : link) -> std/core/types/string;
+// Automatically generated. Retrieves the `linkattrs` constructor field of the `:link` type.
+pub fun linkattrs : (^ link : link) -> attrs;
+// Automatically generated. Retrieves the `linkid` constructor field of the `:link` type.
+pub fun linkid : (^ link : link) -> std/core/types/string;
+pub fun .copy.5 : (.this : link, href : (std/core/types/optional :: V -> V)<std/core/types/string>, title : (std/core/types/optional :: V -> V)<std/core/types/string>, linkattrs : (std/core/types/optional :: V -> V)<attrs>, linkid : (std/core/types/optional :: V -> V)<std/core/types/string>) -> link;
+// Automatically generated. Tests for the `Succ` constructor of the `:peano` type.
+pub fun is-succ : (^ peano : peano) -> std/core/types/bool;
+// Automatically generated. Tests for the `Zero` constructor of the `:peano` type.
+pub fun is-zero : (^ peano : peano) -> std/core/types/bool;
+// Automatically generated. Retrieves the `cells` constructor field of the `:row` type.
+pub fun cells : (^ row : row) -> (std/core/list :: V -> V)<cell>;
+// Automatically generated. Retrieves the `rowAttrs` constructor field of the `:row` type.
+pub fun rowAttrs : (^ row : row) -> attrs;
+pub fun .copy.6 : (.this : row, cells : (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<cell>>, rowAttrs : (std/core/types/optional :: V -> V)<attrs>) -> row;
+pub fun isFmtHtml : (x : formatter) -> std/core/types/bool;
+pub fun isFmtTex : (x : formatter) -> std/core/types/bool;
+pub fun isMarkdown : (x : input) -> std/core/types/bool;
+pub fun showFormatter : (f : formatter) -> std/core/types/string;
+// monadic lift
+fun .mlift10858-combineRules : forall<(_e :: E),a,b> (cap : compat/regex/matched, ctx : b, .y.10846 : (cap : compat/regex/matched, ctx : b) -> <(std/core/types/handled :: HX -> X)<(std/core/exn :: HX)>|(_e :: E)> a) -> <(std/core/types/handled :: HX -> X)<(std/core/exn :: HX)>|(_e :: E)> a;
+// Combine rules into one regular expression.
+// For inline expressions, this does not improve the performance much.
+pub fun combineRules : forall<a,b> (rules : (std/core/list :: V -> V)<(rule :: (V, V) -> V)<a,b>>) -> (rule :: (V, V) -> V)<a,b>;
+val rxspaces : compat/regex/regex;
+val rxChoicePattern : compat/regex/regex;
+// Normalize an identifier: just keep letters, digits, underscores, colons, stars, and dashes,
+// replace whitespace, colons, and stars by a dash, and convert to lower case.
+pub fun normalizeId : (txt : std/core/types/string) -> std/core/types/string;
+val rxamp : compat/regex/regex;
+val rxapos : compat/regex/regex;
+val rxgt : compat/regex/regex;
+// regex(r"""|[&<>]") <-- compilation error - "" Problem
+val rxhtml : compat/regex/regex;
+val rxlt : compat/regex/regex;
+val rxnoEntityAmp : compat/regex/regex;
+val rxquot : compat/regex/regex;
+val rxLineBreak : compat/regex/regex;
+pub fun logLocation : (lineInfo : std/core/types/string, logname : (std/core/types/optional :: V -> V)<std/core/types/string>) -> ();
+val mimes : (compat/dict/dict :: V -> V)<std/core/types/string>;
+pub fun peano : (n : std/core/types/int) -> peano;
+val rxProtocol : compat/regex/regex;
+pub fun removeKeys : (attrs : attrs, keys : (std/core/list :: V -> V)<std/core/types/string>) -> attrs;
+// This is just for statistics
+val ruleHist : (compat/dict/mdict :: (H, V) -> V)<(std/core/types/global :: H),std/core/types/int>;
+pub fun ruleRemove : forall<a,b> (grammar : (grammar :: (V, V) -> V)<a,b>, pred : std/core/types/bool, names : (std/core/list :: V -> V)<std/core/types/string>) -> (grammar :: (V, V) -> V)<a,b>;
+// Replace a rule in a grammar by another one, if the rule name is a prefix of the name of the new rule.
+pub fun ruleReplace : forall<a,b> (grammar : (grammar :: (V, V) -> V)<a,b>, pred : std/core/types/bool, rule : (rule :: (V, V) -> V)<a,b>) -> (grammar :: (V, V) -> V)<a,b>;
+val rxTrimLines : compat/regex/regex;
+pub fun show : (attrs : attrs) -> std/core/types/string;
+// Split semi-colon seperated paths into parts
+pub fun splitPaths : (paths : std/core/types/string) -> (std/core/list :: V -> V)<std/core/types/string>;
+pub fun unquote : (s : std/core/types/string) -> std/core/types/string;
+// Warning messages get logged
+pub fun warning : (message : std/core/types/string, logname : (std/core/types/optional :: V -> V)<std/core/types/string>) -> ();
+pub fun .create-Markdown : (only : (std/core/types/optional :: V -> V)<(std/core/types/maybe :: V -> V)<formatter>>) -> input;
+// Attributes
+pub fun .create-Attrs : (empty : (std/core/types/optional :: V -> V)<std/core/types/bool>, sticky : (std/core/types/optional :: V -> V)<std/core/types/bool>, defaults : (std/core/types/optional :: V -> V)<std/core/types/bool>, text : (std/core/types/optional :: V -> V)<std/core/types/string>, replacers : (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>>, notag : (std/core/types/optional :: V -> V)<std/core/types/bool>, tight : (std/core/types/optional :: V -> V)<std/core/types/bool>, input : (std/core/types/optional :: V -> V)<input>, elem : (std/core/types/optional :: V -> V)<std/core/types/string>, texelem : (std/core/types/optional :: V -> V)<std/core/types/string>, htmlelem : (std/core/types/optional :: V -> V)<std/core/types/string>, name : (std/core/types/optional :: V -> V)<std/core/types/string>, label : (std/core/types/optional :: V -> V)<std/core/types/string>, source : (std/core/types/optional :: V -> V)<std/core/types/string>, lineNo : (std/core/types/optional :: V -> V)<std/core/types/int>, classes : (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>>, counters : (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>>, keyvals : (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>>) -> attrs;
+pub val attrsNone : attrs;
+pub fun .create-Cell : (text : std/core/types/string, cellAttrs : (std/core/types/optional :: V -> V)<attrs>) -> cell;
+// A label is created for every element with an id.
+pub fun .create-Label : (element : std/core/types/string, labelText : std/core/types/string, labelCaption : std/core/types/string, labelAttrs : (std/core/types/optional :: V -> V)<attrs>) -> label;
+// A url link.
+pub fun .create-Link : (href : std/core/types/string, title : (std/core/types/optional :: V -> V)<std/core/types/string>, linkattrs : (std/core/types/optional :: V -> V)<attrs>, linkid : (std/core/types/optional :: V -> V)<std/core/types/string>) -> link;
+pub fun .create-Raw : (only : (std/core/types/optional :: V -> V)<(std/core/types/maybe :: V -> V)<formatter>>) -> input;
+pub fun .create-Row : (cells : (std/core/list :: V -> V)<cell>, rowAttrs : (std/core/types/optional :: V -> V)<attrs>) -> row;
+pub fun (==) : (x : formatter, y : formatter) -> std/core/types/bool;
+pub fun contains : (xs : (std/core/list :: V -> V)<std/core/types/string>, s : std/core/types/string) -> std/core/types/bool;
+fun quote : (s : std/core/types/string) -> std/core/types/string;
+pub fun addClass : (attrs : attrs, cname : std/core/types/string) -> attrs;
+pub fun addClasses : (attrs : attrs, classes : (std/core/list :: V -> V)<std/core/types/string>) -> attrs;
+pub fun showInput : (r : input) -> std/core/types/string;
+pub fun addInputClass : (attrs : attrs) -> attrs;
+pub fun addKeyval : (attrs : attrs, key : std/core/types/string, value : std/core/types/string) -> attrs;
+pub fun addKeyvalIfNotEmpty : (attrs : attrs, key : std/core/types/string, value : std/core/types/string) -> attrs;
+pub fun hasKey : (attrs : attrs, key : std/core/types/string) -> (std/core/types/maybe :: V -> V)<std/core/types/string>;
+pub fun addKeyvalIfNotExist : (attrs : attrs, key : std/core/types/string, value : std/core/types/string) -> attrs;
+pub fun addKeyvals : (attrs : attrs, kvs : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) -> attrs;
+// A definition identifier is always lower case and sequences of spaces are replaced by a single space.
+// Used for links for example.
+pub fun definitionId : (s : std/core/types/string) -> std/core/types/string;
+pub fun elementName : (attrs : attrs, def : std/core/types/string) -> std/core/types/string;
+/* --------------------------------------
+ Expand list style patterns
+---------------------------------------- */
+pub fun expandChoices : (s : std/core/types/string) -> (std/core/list :: V -> V)<std/core/types/string>;
+// Generate a fresh id if it is not specified
+pub fun generateHeaderId : (attrs : attrs, heading : std/core/types/string, pre : (std/core/types/optional :: V -> V)<std/core/types/string>) -> attrs;
+pub fun hasClass : (attrs : attrs, className : std/core/types/string) -> std/core/types/bool;
+pub fun hasBoolKey : (attrs : attrs, key : std/core/types/string) -> std/core/types/bool;
+pub fun htmlEscape : (s : std/core/types/string, allowEntity : (std/core/types/optional :: V -> V)<std/core/types/bool>) -> std/core/types/string;
+// Join lines that were broken using `\` followed by a newline.
+pub fun joinLines : (s : std/core/types/string) -> std/core/types/string;
+pub fun json : (s : std/core/types/string) -> std/core/types/string;
+pub fun lookupKey : (attrs : attrs, key : std/core/types/string, def : std/core/types/string) -> std/core/types/string;
+// Generic rule matcher: takes a list of rules and applies the action that matches
+// on the given "src". Returns the result of the action and the string following the
+// match.
+pub fun matchRules : forall<a,b> (rules : (grammar :: (V, V) -> V)<a,b>, ctx : b, src : std/core/types/string, def : (std/core/types/string) -> a) -> (a, std/core/types/int, std/core/types/string);
+// added effect <string>
+pub fun mimeFromExt : (fname : std/core/types/string) -> std/core/types/string;
+fun newLink : (href : std/core/types/string, title : (std/core/types/optional :: V -> V)<std/core/types/string>, linkattrs : (std/core/types/optional :: V -> V)<attrs>, linkid : (std/core/types/optional :: V -> V)<std/core/types/string>, bench : std/core/types/bool) -> link;
+pub val peano10 : peano;
+pub val peanoN : peano;
+// Picks path that first matches one of the given (lower-case) extensions, or the last one if none matched.
+pub fun pickExtension : (exts : (std/core/list :: V -> V)<std/core/types/string>, paths : (std/core/list :: V -> V)<std/core/types/string>) -> std/core/types/string;
+pub fun relative : (path : std/core/types/string) -> std/core/types/bool;
+fun reverseAcc : (lineMap : lineMap, acc : lineMap) -> lineMap;
+pub fun reverse : (lineMap : lineMap) -> lineMap;
+fun ruleInc : (rule : std/core/types/string) -> ();
+pub fun setLineNo : (attrs : attrs, line : std/core/types/int, dataline : std/core/types/string) -> attrs;
+pub fun traceRuleHist : () -> ();
+pub fun translateLine : (lineInfos : lineMap, lineNo : std/core/types/int) -> std/core/types/string;
+pub fun trimLines : (s : std/core/types/string) -> std/core/types/string;
+pub fun unindent : (txt : std/core/types/string) -> std/core/types/string;
+ 
+//------------------------------
+//#kki: external declarations
+ 
+ 
+//------------------------------
+//#kki: inline definitions
+ 
+//.inline-section
+specialize "_*" fun addClass // inline size: 1
+  = fn(attrs: attrs, cname: std/core/types/string){
+    match ((std/core/(==.3)(cname, ""))) {
+      ((std/core/types/True() : std/core/types/bool ) as .pat: std/core/types/bool)
+         -> attrs;
+      ((.skip std/core/types/False() : std/core/types/bool ) as .pat0: std/core/types/bool)
+         -> (match ((std/core/any<std/core/types/string,(std/core/types/(<>) :: E)>((match (attrs) {
+            ((.skip common/Attrs((.pat00: std/core/types/bool) : std/core/types/bool, (.pat10: std/core/types/bool) : std/core/types/bool, (.pat2: std/core/types/bool) : std/core/types/bool, (.pat3: std/core/types/string) : std/core/types/string, (.pat4: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: std/core/types/bool) : std/core/types/bool, (.pat7: input) : input, (.pat8: std/core/types/string) : std/core/types/string, (.pat9: std/core/types/string) : std/core/types/string, (.pat100: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/string) : std/core/types/string, (.pat14: std/core/types/int) : std/core/types/int, (.x: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat15: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat16: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat1: attrs)
+               -> .x;
+          }), (fn(nm: std/core/types/string){
+            (std/core/(==.3)(nm, cname));
+          })))) {
+          ((std/core/types/True() : std/core/types/bool ) as .pat17: std/core/types/bool)
+             -> attrs;
+          ((.skip std/core/types/False() : std/core/types/bool ) as .pat20: std/core/types/bool)
+             -> val .arg.3817 : (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>>
+                  = std/core/types/Optional<(std/core/list :: V -> V)<std/core/types/string>>((std/core/append<std/core/types/string>((match (attrs) {
+                      ((.skip common/Attrs((.pat01: std/core/types/bool) : std/core/types/bool, (.pat19: std/core/types/bool) : std/core/types/bool, (.pat21: std/core/types/bool) : std/core/types/bool, (.pat30: std/core/types/string) : std/core/types/string, (.pat40: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat50: std/core/types/bool) : std/core/types/bool, (.pat60: std/core/types/bool) : std/core/types/bool, (.pat70: input) : input, (.pat80: std/core/types/string) : std/core/types/string, (.pat90: std/core/types/string) : std/core/types/string, (.pat101: std/core/types/string) : std/core/types/string, (.pat110: std/core/types/string) : std/core/types/string, (.pat120: std/core/types/string) : std/core/types/string, (.pat130: std/core/types/string) : std/core/types/string, (.pat140: std/core/types/int) : std/core/types/int, (.x0: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat150: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat160: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat18: attrs)
+                         -> .x0;
+                    }), (std/core/Cons<std/core/types/string>(cname, (std/core/Nil<std/core/types/string>))))));
+                val left0.10670 : std/core/types/string
+                  = std/core/(++.1)((match (attrs) {
+                      ((.skip common/Attrs((.pat02: std/core/types/bool) : std/core/types/bool, (.pat111: std/core/types/bool) : std/core/types/bool, (.pat23: std/core/types/bool) : std/core/types/bool, (.x1: std/core/types/string) : std/core/types/string, (.pat31: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat41: std/core/types/bool) : std/core/types/bool, (.pat51: std/core/types/bool) : std/core/types/bool, (.pat61: input) : input, (.pat71: std/core/types/string) : std/core/types/string, (.pat81: std/core/types/string) : std/core/types/string, (.pat91: std/core/types/string) : std/core/types/string, (.pat102: std/core/types/string) : std/core/types/string, (.pat112: std/core/types/string) : std/core/types/string, (.pat121: std/core/types/string) : std/core/types/string, (.pat131: std/core/types/int) : std/core/types/int, (.pat141: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat151: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat161: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat22: attrs)
+                         -> .x1;
+                    }), " ; class: ");
+                val right0.10671 : std/core/types/string
+                  = common/quote(cname);
+                val .arg.3805 : (std/core/types/optional :: V -> V)<std/core/types/string>
+                  = std/core/types/Optional<std/core/types/string>((std/core/(++.1)(left0.10670, right0.10671)));
+            common/.copy(attrs, (std/core/types/Optional<std/core/types/bool>(std/core/types/False)), (std/core/types/None<std/core/types/bool>), (std/core/types/None<std/core/types/bool>), .arg.3805, (std/core/types/None<(std/core/list :: V -> V)<std/core/types/string>>), (std/core/types/None<std/core/types/bool>), (std/core/types/None<std/core/types/bool>), (std/core/types/None<input>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/int>), .arg.3817, (std/core/types/None<(std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>>), (std/core/types/None<(std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>>));
+        });
+    };
+  };
+specialize "_*_" fun addKeyval // inline size: 1
+  = fn(attrs: attrs, key: std/core/types/string, value: std/core/types/string){
+    val left.10687 : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>
+      = std/core/filter<(std/core/types/string, std/core/types/string),(std/core/types/(<>) :: E)>((match (attrs) {
+          ((.skip common/Attrs((.pat0: std/core/types/bool) : std/core/types/bool, (.pat1: std/core/types/bool) : std/core/types/bool, (.pat2: std/core/types/bool) : std/core/types/bool, (.pat3: std/core/types/string) : std/core/types/string, (.pat4: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: std/core/types/bool) : std/core/types/bool, (.pat7: input) : input, (.pat8: std/core/types/string) : std/core/types/string, (.pat9: std/core/types/string) : std/core/types/string, (.pat10: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/string) : std/core/types/string, (.pat14: std/core/types/int) : std/core/types/int, (.pat15: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat16: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.x: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat: attrs)
+             -> .x;
+        }), (fn(kv: (std/core/types/string, std/core/types/string)){
+          (std/core/(!=.3)((match (kv) {
+              ((.skip std/core/types/(,)((.x0: std/core/types/string) : std/core/types/string, (.pat00: std/core/types/string) : std/core/types/string) : (std/core/types/string, std/core/types/string) ) as .pat17: (std/core/types/string, std/core/types/string))
+                 -> .x0;
+            }), key));
+        }));
+    val .arg.4871 : (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>>
+      = std/core/types/Optional<(std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>>((std/core/append<(std/core/types/string, std/core/types/string)>(left.10687, (std/core/Cons<(std/core/types/string, std/core/types/string)>((std/core/types/(,)<std/core/types/string,std/core/types/string>(key, value)), (std/core/Nil<(std/core/types/string, std/core/types/string)>))))));
+    val left2.10695 : std/core/types/string
+      = std/core/(++.1)((match (attrs) {
+          ((.skip common/Attrs((.pat01: std/core/types/bool) : std/core/types/bool, (.pat19: std/core/types/bool) : std/core/types/bool, (.pat20: std/core/types/bool) : std/core/types/bool, (.x1: std/core/types/string) : std/core/types/string, (.pat30: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat40: std/core/types/bool) : std/core/types/bool, (.pat50: std/core/types/bool) : std/core/types/bool, (.pat60: input) : input, (.pat70: std/core/types/string) : std/core/types/string, (.pat80: std/core/types/string) : std/core/types/string, (.pat90: std/core/types/string) : std/core/types/string, (.pat100: std/core/types/string) : std/core/types/string, (.pat110: std/core/types/string) : std/core/types/string, (.pat120: std/core/types/string) : std/core/types/string, (.pat130: std/core/types/int) : std/core/types/int, (.pat140: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat150: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat160: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat18: attrs)
+             -> .x1;
+        }), " ; ");
+    val left1.10693 : std/core/types/string
+      = std/core/(++.1)(left2.10695, key);
+    val left0.10691 : std/core/types/string
+      = std/core/(++.1)(left1.10693, ": ");
+    val right0.10692 : std/core/types/string
+      = common/quote(value);
+    val .arg.4857 : (std/core/types/optional :: V -> V)<std/core/types/string>
+      = std/core/types/Optional<std/core/types/string>((std/core/(++.1)(left0.10691, right0.10692)));
+    common/.copy(attrs, (std/core/types/Optional<std/core/types/bool>(std/core/types/False)), (std/core/types/None<std/core/types/bool>), (std/core/types/None<std/core/types/bool>), .arg.4857, (std/core/types/None<(std/core/list :: V -> V)<std/core/types/string>>), (std/core/types/None<std/core/types/bool>), (std/core/types/None<std/core/types/bool>), (std/core/types/None<input>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/int>), (std/core/types/None<(std/core/list :: V -> V)<std/core/types/string>>), (std/core/types/None<(std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>>), .arg.4871);
+  };
+specialize "_*_" fun addKeyvalIfNotEmpty // inline size: 1
+  = fn(attrs: attrs, key: std/core/types/string, value: std/core/types/string){
+    match ((std/core/(==.3)(value, ""))) {
+      ((std/core/types/True() : std/core/types/bool ) as .pat: std/core/types/bool)
+         -> attrs;
+      (.pat0: std/core/types/bool)
+         -> (match ((std/core/(==.3)(key, ""))) {
+          ((std/core/types/True() : std/core/types/bool ) as .pat1: std/core/types/bool)
+             -> attrs;
+          ((.skip std/core/types/False() : std/core/types/bool ) as .pat2: std/core/types/bool)
+             -> common/addKeyval(attrs, key, value);
+        });
+    };
+  };
+specialize "_*_" fun addKeyvalIfNotExist // inline size: 1
+  = fn(attrs: attrs, key: std/core/types/string, value: std/core/types/string){
+    val m.10700 : (std/core/types/maybe :: V -> V)<(std/core/types/string, std/core/types/string)>
+          = std/core/find<(std/core/types/string, std/core/types/string)>((match (attrs) {
+              ((.skip common/Attrs((.pat00: std/core/types/bool) : std/core/types/bool, (.pat10: std/core/types/bool) : std/core/types/bool, (.pat2: std/core/types/bool) : std/core/types/bool, (.pat3: std/core/types/string) : std/core/types/string, (.pat4: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: std/core/types/bool) : std/core/types/bool, (.pat7: input) : input, (.pat8: std/core/types/string) : std/core/types/string, (.pat9: std/core/types/string) : std/core/types/string, (.pat100: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/string) : std/core/types/string, (.pat14: std/core/types/int) : std/core/types/int, (.pat15: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat16: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.x: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat1: attrs)
+                 -> .x;
+            }), (fn(kv: (std/core/types/string, std/core/types/string)){
+              (std/core/(==.3)((match (kv) {
+                  ((.skip std/core/types/(,)((.x0: std/core/types/string) : std/core/types/string, (.pat01: std/core/types/string) : std/core/types/string) : (std/core/types/string, std/core/types/string) ) as .pat17: (std/core/types/string, std/core/types/string))
+                     -> .x0;
+                }), key));
+            }));
+    match (m.10700) {
+      ((std/core/types/Nothing() : (std/core/types/maybe :: V -> V)<(std/core/types/string, std/core/types/string)> ) as .pat: ((std/core/types/maybe :: V -> V)<(std/core/types/string, std/core/types/string)>))
+         -> (match ((std/core/types/Nothing<std/core/types/string>)) {
+          ((std/core/types/Nothing() : (std/core/types/maybe :: V -> V)<std/core/types/string> ) as .pat19: ((std/core/types/maybe :: V -> V)<std/core/types/string>))
+             -> common/addKeyval(attrs, key, value);
+          (.pat03: ((std/core/types/maybe :: V -> V)<std/core/types/string>))
+             -> attrs;
+        });
+      ((.skip std/core/types/Just((x: (std/core/types/string, std/core/types/string)) : (std/core/types/string, std/core/types/string)) : (std/core/types/maybe :: V -> V)<(std/core/types/string, std/core/types/string)> ) as .pat0: ((std/core/types/maybe :: V -> V)<(std/core/types/string, std/core/types/string)>))
+         -> attrs;
+    };
+  };
+specialize "_*" fun contains // inline size: 1
+  = fn(xs: (std/core/list :: V -> V)<std/core/types/string>, s: std/core/types/string){
+    val m.10657 : (std/core/types/maybe :: V -> V)<std/core/types/string>
+          = std/core/find<std/core/types/string>(xs, (fn(x: std/core/types/string){
+              (std/core/(==.3)(x, s));
+            }));
+    match (m.10657) {
+      ((std/core/types/Nothing() : (std/core/types/maybe :: V -> V)<std/core/types/string> ) as .pat: ((std/core/types/maybe :: V -> V)<std/core/types/string>))
+         -> std/core/types/False;
+      (.pat0: ((std/core/types/maybe :: V -> V)<std/core/types/string>))
+         -> std/core/types/True;
+    };
+  };
+specialize "_*" fun hasBoolKey // inline size: 1
+  = fn(attrs: attrs, key: std/core/types/string){
+    val m.10700 : (std/core/types/maybe :: V -> V)<(std/core/types/string, std/core/types/string)>
+      = std/core/find<(std/core/types/string, std/core/types/string)>((match (attrs) {
+          ((.skip common/Attrs((.pat00: std/core/types/bool) : std/core/types/bool, (.pat10: std/core/types/bool) : std/core/types/bool, (.pat2: std/core/types/bool) : std/core/types/bool, (.pat3: std/core/types/string) : std/core/types/string, (.pat4: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: std/core/types/bool) : std/core/types/bool, (.pat7: input) : input, (.pat8: std/core/types/string) : std/core/types/string, (.pat9: std/core/types/string) : std/core/types/string, (.pat100: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/string) : std/core/types/string, (.pat14: std/core/types/int) : std/core/types/int, (.pat15: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat16: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.x: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat1: attrs)
+             -> .x;
+        }), (fn(kv: (std/core/types/string, std/core/types/string)){
+          (std/core/(==.3)((match (kv) {
+              ((.skip std/core/types/(,)((.x0: std/core/types/string) : std/core/types/string, (.pat01: std/core/types/string) : std/core/types/string) : (std/core/types/string, std/core/types/string) ) as .pat17: (std/core/types/string, std/core/types/string))
+                 -> .x0;
+            }), key));
+        }));
+    val value : std/core/types/string
+      = compat/toLower((match (m.10700) {
+        ((std/core/types/Nothing() : (std/core/types/maybe :: V -> V)<(std/core/types/string, std/core/types/string)> ) as .pat: ((std/core/types/maybe :: V -> V)<(std/core/types/string, std/core/types/string)>))
+           -> (match ((std/core/types/Nothing<std/core/types/string>)) {
+            ((std/core/types/Nothing() : (std/core/types/maybe :: V -> V)<std/core/types/string> ) as .pat19: ((std/core/types/maybe :: V -> V)<std/core/types/string>))
+               -> "";
+            ((.skip std/core/types/Just((x0: std/core/types/string) : std/core/types/string) : (std/core/types/maybe :: V -> V)<std/core/types/string> ) as .pat03: ((std/core/types/maybe :: V -> V)<std/core/types/string>))
+               -> x0;
+          });
+        ((.skip std/core/types/Just((x: (std/core/types/string, std/core/types/string)) : (std/core/types/string, std/core/types/string)) : (std/core/types/maybe :: V -> V)<(std/core/types/string, std/core/types/string)> ) as .pat0: ((std/core/types/maybe :: V -> V)<(std/core/types/string, std/core/types/string)>))
+           -> (match (x) {
+            ((.skip std/core/types/(,)((.pat02: std/core/types/string) : std/core/types/string, (.x1: std/core/types/string) : std/core/types/string) : (std/core/types/string, std/core/types/string) ) as .pat18: (std/core/types/string, std/core/types/string))
+               -> .x1;
+          });
+      }));
+    val m.10737 : (std/core/types/maybe :: V -> V)<std/core/types/string>
+      = std/core/find<std/core/types/string>((match (attrs) {
+          ((.skip common/Attrs((.pat000: std/core/types/bool) : std/core/types/bool, (.pat101: std/core/types/bool) : std/core/types/bool, (.pat20: std/core/types/bool) : std/core/types/bool, (.pat30: std/core/types/string) : std/core/types/string, (.pat40: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat50: std/core/types/bool) : std/core/types/bool, (.pat60: std/core/types/bool) : std/core/types/bool, (.pat70: input) : input, (.pat80: std/core/types/string) : std/core/types/string, (.pat90: std/core/types/string) : std/core/types/string, (.pat1000: std/core/types/string) : std/core/types/string, (.pat111: std/core/types/string) : std/core/types/string, (.pat120: std/core/types/string) : std/core/types/string, (.pat130: std/core/types/string) : std/core/types/string, (.pat140: std/core/types/int) : std/core/types/int, (.x2: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat150: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat160: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat110: attrs)
+             -> .x2;
+        }), (fn(cname: std/core/types/string){
+          (std/core/(==.3)(cname, key));
+        }));
+    match (m.10737) {
+      ((std/core/types/Nothing() : (std/core/types/maybe :: V -> V)<std/core/types/string> ) as .pat21: ((std/core/types/maybe :: V -> V)<std/core/types/string>))
+         -> (match ((std/core/(==.3)(value, "true"))) {
+          ((std/core/types/True() : std/core/types/bool ) as .pat102: std/core/types/bool)
+             -> std/core/types/True;
+          (.pat22: std/core/types/bool)
+             -> std/core/(==.3)(value, "1");
+        });
+      (.pat04: ((std/core/types/maybe :: V -> V)<std/core/types/string>))
+         -> std/core/types/True;
+    };
+  };
+specialize "_*" fun hasClass // inline size: 1
+  = fn(attrs: attrs, className: std/core/types/string){
+    val m.10737 : (std/core/types/maybe :: V -> V)<std/core/types/string>
+          = std/core/find<std/core/types/string>((match (attrs) {
+              ((.skip common/Attrs((.pat00: std/core/types/bool) : std/core/types/bool, (.pat10: std/core/types/bool) : std/core/types/bool, (.pat2: std/core/types/bool) : std/core/types/bool, (.pat3: std/core/types/string) : std/core/types/string, (.pat4: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: std/core/types/bool) : std/core/types/bool, (.pat7: input) : input, (.pat8: std/core/types/string) : std/core/types/string, (.pat9: std/core/types/string) : std/core/types/string, (.pat100: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/string) : std/core/types/string, (.pat14: std/core/types/int) : std/core/types/int, (.x: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat15: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat16: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat1: attrs)
+                 -> .x;
+            }), (fn(cname: std/core/types/string){
+              (std/core/(==.3)(cname, className));
+            }));
+    match (m.10737) {
+      ((std/core/types/Nothing() : (std/core/types/maybe :: V -> V)<std/core/types/string> ) as .pat: ((std/core/types/maybe :: V -> V)<std/core/types/string>))
+         -> std/core/types/False;
+      (.pat0: ((std/core/types/maybe :: V -> V)<std/core/types/string>))
+         -> std/core/types/True;
+    };
+  };
+specialize "_*" fun hasKey // inline size: 1
+  = fn(attrs: attrs, key: std/core/types/string){
+    val m.10700 : (std/core/types/maybe :: V -> V)<(std/core/types/string, std/core/types/string)>
+          = std/core/find<(std/core/types/string, std/core/types/string)>((match (attrs) {
+              ((.skip common/Attrs((.pat00: std/core/types/bool) : std/core/types/bool, (.pat10: std/core/types/bool) : std/core/types/bool, (.pat2: std/core/types/bool) : std/core/types/bool, (.pat3: std/core/types/string) : std/core/types/string, (.pat4: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: std/core/types/bool) : std/core/types/bool, (.pat7: input) : input, (.pat8: std/core/types/string) : std/core/types/string, (.pat9: std/core/types/string) : std/core/types/string, (.pat100: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/string) : std/core/types/string, (.pat14: std/core/types/int) : std/core/types/int, (.pat15: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat16: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.x: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat1: attrs)
+                 -> .x;
+            }), (fn(kv: (std/core/types/string, std/core/types/string)){
+              (std/core/(==.3)((match (kv) {
+                  ((.skip std/core/types/(,)((.x0: std/core/types/string) : std/core/types/string, (.pat01: std/core/types/string) : std/core/types/string) : (std/core/types/string, std/core/types/string) ) as .pat17: (std/core/types/string, std/core/types/string))
+                     -> .x0;
+                }), key));
+            }));
+    match (m.10700) {
+      ((std/core/types/Nothing() : (std/core/types/maybe :: V -> V)<(std/core/types/string, std/core/types/string)> ) as .pat: ((std/core/types/maybe :: V -> V)<(std/core/types/string, std/core/types/string)>))
+         -> std/core/types/Nothing<std/core/types/string>;
+      ((.skip std/core/types/Just((x: (std/core/types/string, std/core/types/string)) : (std/core/types/string, std/core/types/string)) : (std/core/types/maybe :: V -> V)<(std/core/types/string, std/core/types/string)> ) as .pat0: ((std/core/types/maybe :: V -> V)<(std/core/types/string, std/core/types/string)>))
+         -> std/core/types/Just<std/core/types/string>((match (x) {
+          ((.skip std/core/types/(,)((.pat02: std/core/types/string) : std/core/types/string, (.x1: std/core/types/string) : std/core/types/string) : (std/core/types/string, std/core/types/string) ) as .pat18: (std/core/types/string, std/core/types/string))
+             -> .x1;
+        }));
+    };
+  };
+specialize "_*_" fun lookupKey // inline size: 1
+  = fn(attrs: attrs, key: std/core/types/string, def: std/core/types/string){
+    val m.10700 : (std/core/types/maybe :: V -> V)<(std/core/types/string, std/core/types/string)>
+          = std/core/find<(std/core/types/string, std/core/types/string)>((match (attrs) {
+              ((.skip common/Attrs((.pat00: std/core/types/bool) : std/core/types/bool, (.pat10: std/core/types/bool) : std/core/types/bool, (.pat2: std/core/types/bool) : std/core/types/bool, (.pat3: std/core/types/string) : std/core/types/string, (.pat4: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: std/core/types/bool) : std/core/types/bool, (.pat7: input) : input, (.pat8: std/core/types/string) : std/core/types/string, (.pat9: std/core/types/string) : std/core/types/string, (.pat100: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/string) : std/core/types/string, (.pat14: std/core/types/int) : std/core/types/int, (.pat15: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat16: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.x: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat1: attrs)
+                 -> .x;
+            }), (fn(kv: (std/core/types/string, std/core/types/string)){
+              (std/core/(==.3)((match (kv) {
+                  ((.skip std/core/types/(,)((.x0: std/core/types/string) : std/core/types/string, (.pat01: std/core/types/string) : std/core/types/string) : (std/core/types/string, std/core/types/string) ) as .pat17: (std/core/types/string, std/core/types/string))
+                     -> .x0;
+                }), key));
+            }));
+    match (m.10700) {
+      ((std/core/types/Nothing() : (std/core/types/maybe :: V -> V)<(std/core/types/string, std/core/types/string)> ) as .pat: ((std/core/types/maybe :: V -> V)<(std/core/types/string, std/core/types/string)>))
+         -> (match ((std/core/types/Nothing<std/core/types/string>)) {
+          ((std/core/types/Nothing() : (std/core/types/maybe :: V -> V)<std/core/types/string> ) as .pat19: ((std/core/types/maybe :: V -> V)<std/core/types/string>))
+             -> def;
+          ((.skip std/core/types/Just((x0: std/core/types/string) : std/core/types/string) : (std/core/types/maybe :: V -> V)<std/core/types/string> ) as .pat03: ((std/core/types/maybe :: V -> V)<std/core/types/string>))
+             -> x0;
+        });
+      ((.skip std/core/types/Just((x: (std/core/types/string, std/core/types/string)) : (std/core/types/string, std/core/types/string)) : (std/core/types/maybe :: V -> V)<(std/core/types/string, std/core/types/string)> ) as .pat0: ((std/core/types/maybe :: V -> V)<(std/core/types/string, std/core/types/string)>))
+         -> (match (x) {
+          ((.skip std/core/types/(,)((.pat02: std/core/types/string) : std/core/types/string, (.x1: std/core/types/string) : std/core/types/string) : (std/core/types/string, std/core/types/string) ) as .pat18: (std/core/types/string, std/core/types/string))
+             -> .x1;
+        });
+    };
+  };
+recursive specialize "___*" fun matchRules // inline size: 11
+  = forall<a,b> fn(rules: (grammar :: (V, V) -> V)<a,b>, ctx: b, src: std/core/types/string, def: (std/core/types/string) -> a){
+    (match (rules) {
+      ((std/core/Nil() : (std/core/list :: V -> V)<(rule :: (V, V) -> V)<a,b>> ) as .pat: ((grammar :: (V, V) -> V)<a,b>))
+         -> val matched : std/core/types/string
+                  = (match ((std/core/(<=.1)(1, 0))) {
+                    ((std/core/types/True() : std/core/types/bool ) as .pat0: std/core/types/bool)
+                       -> "";
+                    ((.skip std/core/types/False() : std/core/types/bool ) as .pat00: std/core/types/bool)
+                       -> compat/substr2(src, 0, 1);
+                  });
+        std/core/types/(,,)<a,std/core/types/int,std/core/types/string>((def(matched)), 1, matched);
+      ((.skip std/core/Cons((rule: (rule :: (V, V) -> V)<a,b>) : (rule :: (V, V) -> V)<a,b>, (rulesNext: (std/core/list :: V -> V)<(rule :: (V, V) -> V)<a,b>>) : (std/core/list :: V -> V)<(rule :: (V, V) -> V)<a,b>>) : (std/core/list :: V -> V)<(rule :: (V, V) -> V)<a,b>> ) as .pat01: ((grammar :: (V, V) -> V)<a,b>))
+         -> (match ((compat/regex/find(src, (match (rule) {
+            ((.skip common/Rule((.pat02: std/core/types/string) : std/core/types/string, ((.skip compat/regex/Regex((.pat10: std/core/types/any) : std/core/types/any) : compat/regex/regex ) as .x: compat/regex/regex) : compat/regex/regex, (.pat2: (cap : compat/regex/matched, ctx : b) -> a) : (cap : compat/regex/matched, ctx : b) -> a) : (rule :: (V, V) -> V)<a,b> ) as .pat1: ((rule :: (V, V) -> V)<a,b>))
+               -> .x;
+          }), (std/core/types/None<std/core/types/int>)))) {
+          ((std/core/types/Just(((.skip compat/regex/Matched((.pat20: std/core/types/int) : std/core/types/int, (.pat3: std/core/types/int) : std/core/types/int, (.pat4: std/core/types/string) : std/core/types/string, (.pat5: compat/regex/groups) : compat/regex/groups) : compat/regex/matched ) as cap: compat/regex/matched) : compat/regex/matched) : (std/core/types/maybe :: V -> V)<compat/regex/matched> ) as .pat11: ((std/core/types/maybe :: V -> V)<compat/regex/matched>))
+             -> std/core/types/(,,)<a,std/core/types/int,std/core/types/string>((match (rule) {
+                ((.skip common/Rule((.pat03: std/core/types/string) : std/core/types/string, ((.skip compat/regex/Regex((.pat21: std/core/types/any) : std/core/types/any) : compat/regex/regex ) as .pat12: compat/regex/regex) : compat/regex/regex, (.x0: (cap : compat/regex/matched, ctx : b) -> a) : (cap : compat/regex/matched, ctx : b) -> a) : (rule :: (V, V) -> V)<a,b> ) as .pat6: ((rule :: (V, V) -> V)<a,b>))
+                   -> .x0(cap, ctx);
+              }), (match (cap) {
+                ((.skip compat/regex/Matched((.pat04: std/core/types/int) : std/core/types/int, (.x1: std/core/types/int) : std/core/types/int, (.pat13: std/core/types/string) : std/core/types/string, ((.skip compat/regex/Groups((.pat30: std/core/types/any) : std/core/types/any) : compat/regex/groups ) as .pat22: compat/regex/groups) : compat/regex/groups) : compat/regex/matched ) as .pat7: compat/regex/matched)
+                   -> .x1;
+              }), (match (cap) {
+                ((.skip compat/regex/Matched((.pat05: std/core/types/int) : std/core/types/int, (.pat14: std/core/types/int) : std/core/types/int, (.x2: std/core/types/string) : std/core/types/string, ((.skip compat/regex/Groups((.pat31: std/core/types/any) : std/core/types/any) : compat/regex/groups ) as .pat23: compat/regex/groups) : compat/regex/groups) : compat/regex/matched ) as .pat8: compat/regex/matched)
+                   -> .x2;
+              }));
+          ((.skip std/core/types/Nothing() : (std/core/types/maybe :: V -> V)<compat/regex/matched> ) as .pat60: ((std/core/types/maybe :: V -> V)<compat/regex/matched>))
+             -> common/matchRules<a,b>(rulesNext, ctx, src, def);
+        });
+    });
+  };
+specialize "_*" fun removeKeys // inline size: 1
+  = fn(attrs: attrs, keys: (std/core/list :: V -> V)<std/core/types/string>){
+    val .arg.2538 : (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>>
+          = std/core/types/Optional<(std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>>((std/core/filter<(std/core/types/string, std/core/types/string),(std/core/types/(<>) :: E)>((match (attrs) {
+              ((.skip common/Attrs((.pat0: std/core/types/bool) : std/core/types/bool, (.pat1: std/core/types/bool) : std/core/types/bool, (.pat2: std/core/types/bool) : std/core/types/bool, (.pat3: std/core/types/string) : std/core/types/string, (.pat4: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: std/core/types/bool) : std/core/types/bool, (.pat7: input) : input, (.pat8: std/core/types/string) : std/core/types/string, (.pat9: std/core/types/string) : std/core/types/string, (.pat10: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/string) : std/core/types/string, (.pat14: std/core/types/int) : std/core/types/int, (.pat15: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat16: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.x: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat: attrs)
+                 -> .x;
+            }), (fn(kv: (std/core/types/string, std/core/types/string)){
+              (std/core/all<std/core/types/string,(std/core/types/(<>) :: E)>(keys, (fn(key: std/core/types/string){
+                  (std/core/(!=.3)((match (kv) {
+                      ((.skip std/core/types/(,)((.x0: std/core/types/string) : std/core/types/string, (.pat00: std/core/types/string) : std/core/types/string) : (std/core/types/string, std/core/types/string) ) as .pat17: (std/core/types/string, std/core/types/string))
+                         -> .x0;
+                    }), key));
+                })));
+            }))));
+    common/.copy(attrs, (std/core/types/None<std/core/types/bool>), (std/core/types/None<std/core/types/bool>), (std/core/types/None<std/core/types/bool>), (std/core/types/None<std/core/types/string>), (std/core/types/None<(std/core/list :: V -> V)<std/core/types/string>>), (std/core/types/None<std/core/types/bool>), (std/core/types/None<std/core/types/bool>), (std/core/types/None<input>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/int>), (std/core/types/None<(std/core/list :: V -> V)<std/core/types/string>>), (std/core/types/None<(std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>>), .arg.2538);
+  };
+specialize "__*" fun ruleRemove // inline size: 1
+  = forall<a,b> fn(grammar: (grammar :: (V, V) -> V)<a,b>, pred: std/core/types/bool, names: (std/core/list :: V -> V)<std/core/types/string>){
+    (match (pred) {
+      ((std/core/types/True() : std/core/types/bool ) as .pat: std/core/types/bool)
+         -> std/core/filter<(rule :: (V, V) -> V)<a,b>,(std/core/types/(<>) :: E)>(grammar, (fn(rule: (rule :: (V, V) -> V)<a,b>){
+            (std/core/all<std/core/types/string,(std/core/types/(<>) :: E)>(names, (fn(nm: std/core/types/string){
+                val b0.10603 : std/core/types/bool
+                      = (compat/startsWith((match (rule) {
+                          ((.skip common/Rule((.x: std/core/types/string) : std/core/types/string, ((.skip compat/regex/Regex((.pat10: std/core/types/any) : std/core/types/any) : compat/regex/regex ) as .pat02: compat/regex/regex) : compat/regex/regex, (.pat20: (cap : compat/regex/matched, ctx : b) -> a) : (cap : compat/regex/matched, ctx : b) -> a) : (rule :: (V, V) -> V)<a,b> ) as .pat3: ((rule :: (V, V) -> V)<a,b>))
+                             -> .x;
+                        }), nm));
+                (match (b0.10603) {
+                  ((std/core/types/True() : std/core/types/bool ) as .pat2: std/core/types/bool)
+                     -> std/core/types/False;
+                  ((.skip std/core/types/False() : std/core/types/bool ) as .pat01: std/core/types/bool)
+                     -> std/core/types/True;
+                });
+              })));
+          }));
+      ((.skip std/core/types/False() : std/core/types/bool ) as .pat0: std/core/types/bool)
+         -> grammar;
+    });
+  };
+specialize "__*" fun ruleReplace // inline size: 1
+  = forall<a,b> fn(grammar: (grammar :: (V, V) -> V)<a,b>, pred: std/core/types/bool, rule: (rule :: (V, V) -> V)<a,b>){
+    (match (pred) {
+      ((std/core/types/True() : std/core/types/bool ) as .pat: std/core/types/bool)
+         -> std/core/map.5<(rule :: (V, V) -> V)<a,b>,(rule :: (V, V) -> V)<a,b>,(std/core/types/(<>) :: E)>(grammar, (fn(r: (rule :: (V, V) -> V)<a,b>){
+            (match ((compat/startsWith((match (rule) {
+                ((.skip common/Rule((.x: std/core/types/string) : std/core/types/string, ((.skip compat/regex/Regex((.pat10: std/core/types/any) : std/core/types/any) : compat/regex/regex ) as .pat01: compat/regex/regex) : compat/regex/regex, (.pat20: (cap : compat/regex/matched, ctx : b) -> a) : (cap : compat/regex/matched, ctx : b) -> a) : (rule :: (V, V) -> V)<a,b> ) as .pat2: ((rule :: (V, V) -> V)<a,b>))
+                   -> .x;
+              }), (match (r) {
+                ((.skip common/Rule((.x0: std/core/types/string) : std/core/types/string, ((.skip compat/regex/Regex((.pat11: std/core/types/any) : std/core/types/any) : compat/regex/regex ) as .pat02: compat/regex/regex) : compat/regex/regex, (.pat21: (cap : compat/regex/matched, ctx : b) -> a) : (cap : compat/regex/matched, ctx : b) -> a) : (rule :: (V, V) -> V)<a,b> ) as .pat3: ((rule :: (V, V) -> V)<a,b>))
+                   -> .x0;
+              })))) {
+              ((std/core/types/True() : std/core/types/bool ) as .pat12: std/core/types/bool)
+                 -> rule;
+              ((.skip std/core/types/False() : std/core/types/bool ) as .pat22: std/core/types/bool)
+                 -> r;
+            });
+          }));
+      ((.skip std/core/types/False() : std/core/types/bool ) as .pat0: std/core/types/bool)
+         -> grammar;
+    });
+  };
+inline borrow "^" fun is-fmtHtml // inline size: 1
+  = fn(formatter: formatter){
+    match (formatter) {
+      ((common/FmtHtml() : formatter ) as .pat: formatter)
+         -> std/core/types/True;
+      ((.skip common/FmtTex() : formatter ) as .pat0: formatter)
+         -> std/core/types/False;
+    };
+  };
+inline borrow "^" fun is-fmtTex // inline size: 1
+  = fn(formatter: formatter){
+    match (formatter) {
+      ((common/FmtTex() : formatter ) as .pat: formatter)
+         -> std/core/types/True;
+      ((.skip common/FmtHtml() : formatter ) as .pat0: formatter)
+         -> std/core/types/False;
+    };
+  };
+inline borrow "^" fun is-pre // inline size: 1
+  = fn(input0: input){
+    match (input0) {
+      ((common/Pre() : input ) as .pat: input)
+         -> std/core/types/True;
+      (.pat0: input)
+         -> std/core/types/False;
+    };
+  };
+inline borrow "^" fun is-mathPre // inline size: 1
+  = fn(input0: input){
+    match (input0) {
+      ((common/MathPre() : input ) as .pat: input)
+         -> std/core/types/True;
+      (.pat0: input)
+         -> std/core/types/False;
+    };
+  };
+inline borrow "^" fun is-math // inline size: 1
+  = fn(input0: input){
+    match (input0) {
+      ((common/Math() : input ) as .pat: input)
+         -> std/core/types/True;
+      (.pat0: input)
+         -> std/core/types/False;
+    };
+  };
+inline borrow "^" fun is-mathDefs // inline size: 1
+  = fn(input0: input){
+    match (input0) {
+      ((common/MathDefs() : input ) as .pat: input)
+         -> std/core/types/True;
+      (.pat0: input)
+         -> std/core/types/False;
+    };
+  };
+inline borrow "^" fun is-mathPoly // inline size: 1
+  = fn(input0: input){
+    match (input0) {
+      ((common/MathPoly() : input ) as .pat: input)
+         -> std/core/types/True;
+      (.pat0: input)
+         -> std/core/types/False;
+    };
+  };
+inline borrow "^" fun is-tex // inline size: 1
+  = fn(input0: input){
+    match (input0) {
+      ((common/Tex() : input ) as .pat: input)
+         -> std/core/types/True;
+      (.pat0: input)
+         -> std/core/types/False;
+    };
+  };
+inline borrow "^" fun is-raw // inline size: 1
+  = fn(input0: input){
+    match (input0) {
+      ((common/Raw((.pat0: (std/core/types/maybe :: V -> V)<formatter>) : (std/core/types/maybe :: V -> V)<formatter>) : input ) as .pat: input)
+         -> std/core/types/True;
+      (.pat1: input)
+         -> std/core/types/False;
+    };
+  };
+inline borrow "^" fun is-markdown // inline size: 1
+  = fn(input0: input){
+    match (input0) {
+      ((common/Markdown((.pat0: (std/core/types/maybe :: V -> V)<formatter>) : (std/core/types/maybe :: V -> V)<formatter>) : input ) as .pat: input)
+         -> std/core/types/True;
+      (.pat1: input)
+         -> std/core/types/False;
+    };
+  };
+inline borrow "^" fun empty // inline size: 0
+  = fn(attrs: attrs){
+    match (attrs) {
+      ((.skip common/Attrs((.x: std/core/types/bool) : std/core/types/bool, (.pat0: std/core/types/bool) : std/core/types/bool, (.pat1: std/core/types/bool) : std/core/types/bool, (.pat2: std/core/types/string) : std/core/types/string, (.pat3: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat4: std/core/types/bool) : std/core/types/bool, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: input) : input, (.pat7: std/core/types/string) : std/core/types/string, (.pat8: std/core/types/string) : std/core/types/string, (.pat9: std/core/types/string) : std/core/types/string, (.pat10: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/int) : std/core/types/int, (.pat14: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat15: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat16: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat: attrs)
+         -> .x;
+    };
+  };
+inline borrow "^" fun sticky // inline size: 0
+  = fn(attrs: attrs){
+    match (attrs) {
+      ((.skip common/Attrs((.pat0: std/core/types/bool) : std/core/types/bool, (.x: std/core/types/bool) : std/core/types/bool, (.pat1: std/core/types/bool) : std/core/types/bool, (.pat2: std/core/types/string) : std/core/types/string, (.pat3: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat4: std/core/types/bool) : std/core/types/bool, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: input) : input, (.pat7: std/core/types/string) : std/core/types/string, (.pat8: std/core/types/string) : std/core/types/string, (.pat9: std/core/types/string) : std/core/types/string, (.pat10: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/int) : std/core/types/int, (.pat14: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat15: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat16: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat: attrs)
+         -> .x;
+    };
+  };
+inline borrow "^" fun defaults // inline size: 0
+  = fn(attrs: attrs){
+    match (attrs) {
+      ((.skip common/Attrs((.pat0: std/core/types/bool) : std/core/types/bool, (.pat1: std/core/types/bool) : std/core/types/bool, (.x: std/core/types/bool) : std/core/types/bool, (.pat2: std/core/types/string) : std/core/types/string, (.pat3: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat4: std/core/types/bool) : std/core/types/bool, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: input) : input, (.pat7: std/core/types/string) : std/core/types/string, (.pat8: std/core/types/string) : std/core/types/string, (.pat9: std/core/types/string) : std/core/types/string, (.pat10: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/int) : std/core/types/int, (.pat14: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat15: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat16: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat: attrs)
+         -> .x;
+    };
+  };
+inline borrow "^" fun text // inline size: 0
+  = fn(attrs: attrs){
+    match (attrs) {
+      ((.skip common/Attrs((.pat0: std/core/types/bool) : std/core/types/bool, (.pat1: std/core/types/bool) : std/core/types/bool, (.pat2: std/core/types/bool) : std/core/types/bool, (.x: std/core/types/string) : std/core/types/string, (.pat3: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat4: std/core/types/bool) : std/core/types/bool, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: input) : input, (.pat7: std/core/types/string) : std/core/types/string, (.pat8: std/core/types/string) : std/core/types/string, (.pat9: std/core/types/string) : std/core/types/string, (.pat10: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/int) : std/core/types/int, (.pat14: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat15: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat16: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat: attrs)
+         -> .x;
+    };
+  };
+inline borrow "^" fun replacers // inline size: 0
+  = fn(attrs: attrs){
+    match (attrs) {
+      ((.skip common/Attrs((.pat0: std/core/types/bool) : std/core/types/bool, (.pat1: std/core/types/bool) : std/core/types/bool, (.pat2: std/core/types/bool) : std/core/types/bool, (.pat3: std/core/types/string) : std/core/types/string, (.x: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat4: std/core/types/bool) : std/core/types/bool, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: input) : input, (.pat7: std/core/types/string) : std/core/types/string, (.pat8: std/core/types/string) : std/core/types/string, (.pat9: std/core/types/string) : std/core/types/string, (.pat10: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/int) : std/core/types/int, (.pat14: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat15: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat16: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat: attrs)
+         -> .x;
+    };
+  };
+inline borrow "^" fun notag // inline size: 0
+  = fn(attrs: attrs){
+    match (attrs) {
+      ((.skip common/Attrs((.pat0: std/core/types/bool) : std/core/types/bool, (.pat1: std/core/types/bool) : std/core/types/bool, (.pat2: std/core/types/bool) : std/core/types/bool, (.pat3: std/core/types/string) : std/core/types/string, (.pat4: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.x: std/core/types/bool) : std/core/types/bool, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: input) : input, (.pat7: std/core/types/string) : std/core/types/string, (.pat8: std/core/types/string) : std/core/types/string, (.pat9: std/core/types/string) : std/core/types/string, (.pat10: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/int) : std/core/types/int, (.pat14: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat15: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat16: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat: attrs)
+         -> .x;
+    };
+  };
+inline borrow "^" fun tight // inline size: 0
+  = fn(attrs: attrs){
+    match (attrs) {
+      ((.skip common/Attrs((.pat0: std/core/types/bool) : std/core/types/bool, (.pat1: std/core/types/bool) : std/core/types/bool, (.pat2: std/core/types/bool) : std/core/types/bool, (.pat3: std/core/types/string) : std/core/types/string, (.pat4: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat5: std/core/types/bool) : std/core/types/bool, (.x: std/core/types/bool) : std/core/types/bool, (.pat6: input) : input, (.pat7: std/core/types/string) : std/core/types/string, (.pat8: std/core/types/string) : std/core/types/string, (.pat9: std/core/types/string) : std/core/types/string, (.pat10: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/int) : std/core/types/int, (.pat14: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat15: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat16: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat: attrs)
+         -> .x;
+    };
+  };
+inline borrow "^" fun input // inline size: 0
+  = fn(attrs: attrs){
+    match (attrs) {
+      ((.skip common/Attrs((.pat0: std/core/types/bool) : std/core/types/bool, (.pat1: std/core/types/bool) : std/core/types/bool, (.pat2: std/core/types/bool) : std/core/types/bool, (.pat3: std/core/types/string) : std/core/types/string, (.pat4: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: std/core/types/bool) : std/core/types/bool, (.x: input) : input, (.pat7: std/core/types/string) : std/core/types/string, (.pat8: std/core/types/string) : std/core/types/string, (.pat9: std/core/types/string) : std/core/types/string, (.pat10: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/int) : std/core/types/int, (.pat14: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat15: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat16: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat: attrs)
+         -> .x;
+    };
+  };
+inline borrow "^" fun elem // inline size: 0
+  = fn(attrs: attrs){
+    match (attrs) {
+      ((.skip common/Attrs((.pat0: std/core/types/bool) : std/core/types/bool, (.pat1: std/core/types/bool) : std/core/types/bool, (.pat2: std/core/types/bool) : std/core/types/bool, (.pat3: std/core/types/string) : std/core/types/string, (.pat4: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: std/core/types/bool) : std/core/types/bool, (.pat7: input) : input, (.x: std/core/types/string) : std/core/types/string, (.pat8: std/core/types/string) : std/core/types/string, (.pat9: std/core/types/string) : std/core/types/string, (.pat10: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/int) : std/core/types/int, (.pat14: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat15: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat16: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat: attrs)
+         -> .x;
+    };
+  };
+inline borrow "^" fun texelem // inline size: 0
+  = fn(attrs: attrs){
+    match (attrs) {
+      ((.skip common/Attrs((.pat0: std/core/types/bool) : std/core/types/bool, (.pat1: std/core/types/bool) : std/core/types/bool, (.pat2: std/core/types/bool) : std/core/types/bool, (.pat3: std/core/types/string) : std/core/types/string, (.pat4: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: std/core/types/bool) : std/core/types/bool, (.pat7: input) : input, (.pat8: std/core/types/string) : std/core/types/string, (.x: std/core/types/string) : std/core/types/string, (.pat9: std/core/types/string) : std/core/types/string, (.pat10: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/int) : std/core/types/int, (.pat14: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat15: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat16: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat: attrs)
+         -> .x;
+    };
+  };
+inline borrow "^" fun htmlelem // inline size: 0
+  = fn(attrs: attrs){
+    match (attrs) {
+      ((.skip common/Attrs((.pat0: std/core/types/bool) : std/core/types/bool, (.pat1: std/core/types/bool) : std/core/types/bool, (.pat2: std/core/types/bool) : std/core/types/bool, (.pat3: std/core/types/string) : std/core/types/string, (.pat4: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: std/core/types/bool) : std/core/types/bool, (.pat7: input) : input, (.pat8: std/core/types/string) : std/core/types/string, (.pat9: std/core/types/string) : std/core/types/string, (.x: std/core/types/string) : std/core/types/string, (.pat10: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/int) : std/core/types/int, (.pat14: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat15: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat16: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat: attrs)
+         -> .x;
+    };
+  };
+inline borrow "^" fun name // inline size: 0
+  = fn(attrs: attrs){
+    match (attrs) {
+      ((.skip common/Attrs((.pat0: std/core/types/bool) : std/core/types/bool, (.pat1: std/core/types/bool) : std/core/types/bool, (.pat2: std/core/types/bool) : std/core/types/bool, (.pat3: std/core/types/string) : std/core/types/string, (.pat4: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: std/core/types/bool) : std/core/types/bool, (.pat7: input) : input, (.pat8: std/core/types/string) : std/core/types/string, (.pat9: std/core/types/string) : std/core/types/string, (.pat10: std/core/types/string) : std/core/types/string, (.x: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/int) : std/core/types/int, (.pat14: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat15: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat16: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat: attrs)
+         -> .x;
+    };
+  };
+inline borrow "^" fun label // inline size: 0
+  = fn(attrs: attrs){
+    match (attrs) {
+      ((.skip common/Attrs((.pat0: std/core/types/bool) : std/core/types/bool, (.pat1: std/core/types/bool) : std/core/types/bool, (.pat2: std/core/types/bool) : std/core/types/bool, (.pat3: std/core/types/string) : std/core/types/string, (.pat4: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: std/core/types/bool) : std/core/types/bool, (.pat7: input) : input, (.pat8: std/core/types/string) : std/core/types/string, (.pat9: std/core/types/string) : std/core/types/string, (.pat10: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.x: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/int) : std/core/types/int, (.pat14: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat15: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat16: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat: attrs)
+         -> .x;
+    };
+  };
+inline borrow "^" fun source // inline size: 0
+  = fn(attrs: attrs){
+    match (attrs) {
+      ((.skip common/Attrs((.pat0: std/core/types/bool) : std/core/types/bool, (.pat1: std/core/types/bool) : std/core/types/bool, (.pat2: std/core/types/bool) : std/core/types/bool, (.pat3: std/core/types/string) : std/core/types/string, (.pat4: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: std/core/types/bool) : std/core/types/bool, (.pat7: input) : input, (.pat8: std/core/types/string) : std/core/types/string, (.pat9: std/core/types/string) : std/core/types/string, (.pat10: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.x: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/int) : std/core/types/int, (.pat14: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat15: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat16: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat: attrs)
+         -> .x;
+    };
+  };
+inline borrow "^" fun lineNo // inline size: 0
+  = fn(attrs: attrs){
+    match (attrs) {
+      ((.skip common/Attrs((.pat0: std/core/types/bool) : std/core/types/bool, (.pat1: std/core/types/bool) : std/core/types/bool, (.pat2: std/core/types/bool) : std/core/types/bool, (.pat3: std/core/types/string) : std/core/types/string, (.pat4: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: std/core/types/bool) : std/core/types/bool, (.pat7: input) : input, (.pat8: std/core/types/string) : std/core/types/string, (.pat9: std/core/types/string) : std/core/types/string, (.pat10: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/string) : std/core/types/string, (.x: std/core/types/int) : std/core/types/int, (.pat14: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat15: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat16: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat: attrs)
+         -> .x;
+    };
+  };
+inline borrow "^" fun classes // inline size: 0
+  = fn(attrs: attrs){
+    match (attrs) {
+      ((.skip common/Attrs((.pat0: std/core/types/bool) : std/core/types/bool, (.pat1: std/core/types/bool) : std/core/types/bool, (.pat2: std/core/types/bool) : std/core/types/bool, (.pat3: std/core/types/string) : std/core/types/string, (.pat4: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: std/core/types/bool) : std/core/types/bool, (.pat7: input) : input, (.pat8: std/core/types/string) : std/core/types/string, (.pat9: std/core/types/string) : std/core/types/string, (.pat10: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/string) : std/core/types/string, (.pat14: std/core/types/int) : std/core/types/int, (.x: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat15: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat16: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat: attrs)
+         -> .x;
+    };
+  };
+inline borrow "^" fun counters // inline size: 0
+  = fn(attrs: attrs){
+    match (attrs) {
+      ((.skip common/Attrs((.pat0: std/core/types/bool) : std/core/types/bool, (.pat1: std/core/types/bool) : std/core/types/bool, (.pat2: std/core/types/bool) : std/core/types/bool, (.pat3: std/core/types/string) : std/core/types/string, (.pat4: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: std/core/types/bool) : std/core/types/bool, (.pat7: input) : input, (.pat8: std/core/types/string) : std/core/types/string, (.pat9: std/core/types/string) : std/core/types/string, (.pat10: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/string) : std/core/types/string, (.pat14: std/core/types/int) : std/core/types/int, (.pat15: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.x: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat16: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat: attrs)
+         -> .x;
+    };
+  };
+inline borrow "^" fun keyvals // inline size: 0
+  = fn(attrs: attrs){
+    match (attrs) {
+      ((.skip common/Attrs((.pat0: std/core/types/bool) : std/core/types/bool, (.pat1: std/core/types/bool) : std/core/types/bool, (.pat2: std/core/types/bool) : std/core/types/bool, (.pat3: std/core/types/string) : std/core/types/string, (.pat4: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: std/core/types/bool) : std/core/types/bool, (.pat7: input) : input, (.pat8: std/core/types/string) : std/core/types/string, (.pat9: std/core/types/string) : std/core/types/string, (.pat10: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/string) : std/core/types/string, (.pat14: std/core/types/int) : std/core/types/int, (.pat15: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat16: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.x: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat: attrs)
+         -> .x;
+    };
+  };
+inline borrow "^" fun text.1 // inline size: 0
+  = fn(cell: cell){
+    match (cell) {
+      ((.skip common/Cell((.x: std/core/types/string) : std/core/types/string, ((.skip common/Attrs((.pat1: std/core/types/bool) : std/core/types/bool, (.pat2: std/core/types/bool) : std/core/types/bool, (.pat3: std/core/types/bool) : std/core/types/bool, (.pat4: std/core/types/string) : std/core/types/string, (.pat5: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat6: std/core/types/bool) : std/core/types/bool, (.pat7: std/core/types/bool) : std/core/types/bool, (.pat8: input) : input, (.pat9: std/core/types/string) : std/core/types/string, (.pat10: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/string) : std/core/types/string, (.pat14: std/core/types/string) : std/core/types/string, (.pat15: std/core/types/int) : std/core/types/int, (.pat16: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat17: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat18: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat0: attrs) : attrs) : cell ) as .pat: cell)
+         -> .x;
+    };
+  };
+inline borrow "^" fun cellAttrs // inline size: 0
+  = fn(cell: cell){
+    match (cell) {
+      ((.skip common/Cell((.pat0: std/core/types/string) : std/core/types/string, ((.skip common/Attrs((.pat1: std/core/types/bool) : std/core/types/bool, (.pat2: std/core/types/bool) : std/core/types/bool, (.pat3: std/core/types/bool) : std/core/types/bool, (.pat4: std/core/types/string) : std/core/types/string, (.pat5: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat6: std/core/types/bool) : std/core/types/bool, (.pat7: std/core/types/bool) : std/core/types/bool, (.pat8: input) : input, (.pat9: std/core/types/string) : std/core/types/string, (.pat10: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/string) : std/core/types/string, (.pat14: std/core/types/string) : std/core/types/string, (.pat15: std/core/types/int) : std/core/types/int, (.pat16: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat17: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat18: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .x: attrs) : attrs) : cell ) as .pat: cell)
+         -> .x;
+    };
+  };
+fun .copy.1 // inline size: 3
+  = fn(.this: cell, text0: (std/core/types/optional :: V -> V)<std/core/types/string>, cellAttrs0: (std/core/types/optional :: V -> V)<attrs>){
+    common/Cell((match (text0) {
+        ((std/core/types/Optional((.text.614: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> .text.614;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat0: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> (match (.this) {
+            ((.skip common/Cell((.x: std/core/types/string) : std/core/types/string, ((.skip common/Attrs((.pat10: std/core/types/bool) : std/core/types/bool, (.pat2: std/core/types/bool) : std/core/types/bool, (.pat3: std/core/types/bool) : std/core/types/bool, (.pat4: std/core/types/string) : std/core/types/string, (.pat5: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat6: std/core/types/bool) : std/core/types/bool, (.pat7: std/core/types/bool) : std/core/types/bool, (.pat8: input) : input, (.pat9: std/core/types/string) : std/core/types/string, (.pat100: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/string) : std/core/types/string, (.pat14: std/core/types/string) : std/core/types/string, (.pat15: std/core/types/int) : std/core/types/int, (.pat16: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat17: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat18: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat00: attrs) : attrs) : cell ) as .pat1: cell)
+               -> .x;
+          });
+      }), (match (cellAttrs0) {
+        ((std/core/types/Optional((.cellAttrs.620: attrs) : attrs) : (std/core/types/optional :: V -> V)<attrs> ) as .pat19: ((std/core/types/optional :: V -> V)<attrs>))
+           -> .cellAttrs.620;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<attrs> ) as .pat20: ((std/core/types/optional :: V -> V)<attrs>))
+           -> (match (.this) {
+            ((.skip common/Cell((.pat01: std/core/types/string) : std/core/types/string, ((.skip common/Attrs((.pat110: std/core/types/bool) : std/core/types/bool, (.pat22: std/core/types/bool) : std/core/types/bool, (.pat30: std/core/types/bool) : std/core/types/bool, (.pat40: std/core/types/string) : std/core/types/string, (.pat50: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat60: std/core/types/bool) : std/core/types/bool, (.pat70: std/core/types/bool) : std/core/types/bool, (.pat80: input) : input, (.pat90: std/core/types/string) : std/core/types/string, (.pat101: std/core/types/string) : std/core/types/string, (.pat111: std/core/types/string) : std/core/types/string, (.pat120: std/core/types/string) : std/core/types/string, (.pat130: std/core/types/string) : std/core/types/string, (.pat140: std/core/types/string) : std/core/types/string, (.pat150: std/core/types/int) : std/core/types/int, (.pat160: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat170: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat180: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .x0: attrs) : attrs) : cell ) as .pat21: cell)
+               -> .x0;
+          });
+      }));
+  };
+inline borrow "^" fun embedName // inline size: 0
+  = fn(embedinfo: embedinfo){
+    match (embedinfo) {
+      ((.skip common/Embedinfo((.x: std/core/types/string) : std/core/types/string, (.pat0: std/core/types/string) : std/core/types/string) : embedinfo ) as .pat: embedinfo)
+         -> .x;
+    };
+  };
+inline borrow "^" fun embedData // inline size: 0
+  = fn(embedinfo: embedinfo){
+    match (embedinfo) {
+      ((.skip common/Embedinfo((.pat0: std/core/types/string) : std/core/types/string, (.x: std/core/types/string) : std/core/types/string) : embedinfo ) as .pat: embedinfo)
+         -> .x;
+    };
+  };
+fun .copy.2 // inline size: 3
+  = fn(.this: embedinfo, embedName0: (std/core/types/optional :: V -> V)<std/core/types/string>, embedData0: (std/core/types/optional :: V -> V)<std/core/types/string>){
+    common/Embedinfo((match (embedName0) {
+        ((std/core/types/Optional((.embedName.648: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> .embedName.648;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat0: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> (match (.this) {
+            ((.skip common/Embedinfo((.x: std/core/types/string) : std/core/types/string, (.pat00: std/core/types/string) : std/core/types/string) : embedinfo ) as .pat1: embedinfo)
+               -> .x;
+          });
+      }), (match (embedData0) {
+        ((std/core/types/Optional((.embedData.654: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat10: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> .embedData.654;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat2: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> (match (.this) {
+            ((.skip common/Embedinfo((.pat01: std/core/types/string) : std/core/types/string, (.x0: std/core/types/string) : std/core/types/string) : embedinfo ) as .pat3: embedinfo)
+               -> .x0;
+          });
+      }));
+  };
+inline borrow "^" fun name.1 // inline size: 0
+  = forall<a,b> fn(rule: (rule :: (V, V) -> V)<a,b>){
+    (match (rule) {
+      ((.skip common/Rule((.x: std/core/types/string) : std/core/types/string, ((.skip compat/regex/Regex((.pat1: std/core/types/any) : std/core/types/any) : compat/regex/regex ) as .pat0: compat/regex/regex) : compat/regex/regex, (.pat2: (cap : compat/regex/matched, ctx : b) -> a) : (cap : compat/regex/matched, ctx : b) -> a) : (rule :: (V, V) -> V)<a,b> ) as .pat: ((rule :: (V, V) -> V)<a,b>))
+         -> .x;
+    });
+  };
+inline borrow "^" fun regex // inline size: 0
+  = forall<a,b> fn(rule: (rule :: (V, V) -> V)<a,b>){
+    (match (rule) {
+      ((.skip common/Rule((.pat0: std/core/types/string) : std/core/types/string, ((.skip compat/regex/Regex((.pat1: std/core/types/any) : std/core/types/any) : compat/regex/regex ) as .x: compat/regex/regex) : compat/regex/regex, (.pat2: (cap : compat/regex/matched, ctx : b) -> a) : (cap : compat/regex/matched, ctx : b) -> a) : (rule :: (V, V) -> V)<a,b> ) as .pat: ((rule :: (V, V) -> V)<a,b>))
+         -> .x;
+    });
+  };
+inline borrow "^" fun action // inline size: 0
+  = forall<a,b> fn(rule: (rule :: (V, V) -> V)<a,b>){
+    (match (rule) {
+      ((.skip common/Rule((.pat0: std/core/types/string) : std/core/types/string, ((.skip compat/regex/Regex((.pat2: std/core/types/any) : std/core/types/any) : compat/regex/regex ) as .pat1: compat/regex/regex) : compat/regex/regex, (.x: (cap : compat/regex/matched, ctx : b) -> a) : (cap : compat/regex/matched, ctx : b) -> a) : (rule :: (V, V) -> V)<a,b> ) as .pat: ((rule :: (V, V) -> V)<a,b>))
+         -> .x;
+    });
+  };
+fun .copy.3 // inline size: 4
+  = forall<a,b> fn(.this: (rule :: (V, V) -> V)<a,b>, name0: (std/core/types/optional :: V -> V)<std/core/types/string>, regex0: (std/core/types/optional :: V -> V)<compat/regex/regex>, action0: (std/core/types/optional :: V -> V)<(cap : compat/regex/matched, ctx : b) -> a>){
+    common/Rule<a,b>((match (name0) {
+        ((std/core/types/Optional((.name.753: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> .name.753;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat0: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> (match (.this) {
+            ((.skip common/Rule((.x: std/core/types/string) : std/core/types/string, ((.skip compat/regex/Regex((.pat10: std/core/types/any) : std/core/types/any) : compat/regex/regex ) as .pat00: compat/regex/regex) : compat/regex/regex, (.pat2: (cap : compat/regex/matched, ctx : b) -> a) : (cap : compat/regex/matched, ctx : b) -> a) : (rule :: (V, V) -> V)<a,b> ) as .pat1: ((rule :: (V, V) -> V)<a,b>))
+               -> .x;
+          });
+      }), (match (regex0) {
+        ((std/core/types/Optional((.regex.777: compat/regex/regex) : compat/regex/regex) : (std/core/types/optional :: V -> V)<compat/regex/regex> ) as .pat11: ((std/core/types/optional :: V -> V)<compat/regex/regex>))
+           -> .regex.777;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<compat/regex/regex> ) as .pat20: ((std/core/types/optional :: V -> V)<compat/regex/regex>))
+           -> (match (.this) {
+            ((.skip common/Rule((.pat01: std/core/types/string) : std/core/types/string, ((.skip compat/regex/Regex((.pat12: std/core/types/any) : std/core/types/any) : compat/regex/regex ) as .x0: compat/regex/regex) : compat/regex/regex, (.pat21: (cap : compat/regex/matched, ctx : b) -> a) : (cap : compat/regex/matched, ctx : b) -> a) : (rule :: (V, V) -> V)<a,b> ) as .pat3: ((rule :: (V, V) -> V)<a,b>))
+               -> .x0;
+          });
+      }), (match (action0) {
+        ((std/core/types/Optional((.action.786: (cap : compat/regex/matched, ctx : b) -> a) : (cap : compat/regex/matched, ctx : b) -> a) : (std/core/types/optional :: V -> V)<(cap : compat/regex/matched, ctx : b) -> a> ) as .pat30: ((std/core/types/optional :: V -> V)<(cap : compat/regex/matched, ctx : b) -> a>))
+           -> .action.786;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<(cap : compat/regex/matched, ctx : b) -> a> ) as .pat4: ((std/core/types/optional :: V -> V)<(cap : compat/regex/matched, ctx : b) -> a>))
+           -> (match (.this) {
+            ((.skip common/Rule((.pat02: std/core/types/string) : std/core/types/string, ((.skip compat/regex/Regex((.pat22: std/core/types/any) : std/core/types/any) : compat/regex/regex ) as .pat13: compat/regex/regex) : compat/regex/regex, (.x1: (cap : compat/regex/matched, ctx : b) -> a) : (cap : compat/regex/matched, ctx : b) -> a) : (rule :: (V, V) -> V)<a,b> ) as .pat5: ((rule :: (V, V) -> V)<a,b>))
+               -> .x1;
+          });
+      }));
+  };
+inline borrow "^" fun element // inline size: 0
+  = fn(label0: label){
+    match (label0) {
+      ((.skip common/Label((.x: std/core/types/string) : std/core/types/string, (.pat0: std/core/types/string) : std/core/types/string, (.pat1: std/core/types/string) : std/core/types/string, ((.skip common/Attrs((.pat3: std/core/types/bool) : std/core/types/bool, (.pat4: std/core/types/bool) : std/core/types/bool, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: std/core/types/string) : std/core/types/string, (.pat7: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat8: std/core/types/bool) : std/core/types/bool, (.pat9: std/core/types/bool) : std/core/types/bool, (.pat10: input) : input, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/string) : std/core/types/string, (.pat14: std/core/types/string) : std/core/types/string, (.pat15: std/core/types/string) : std/core/types/string, (.pat16: std/core/types/string) : std/core/types/string, (.pat17: std/core/types/int) : std/core/types/int, (.pat18: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat19: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat20: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat2: attrs) : attrs) : label ) as .pat: label)
+         -> .x;
+    };
+  };
+inline borrow "^" fun labelText // inline size: 0
+  = fn(label0: label){
+    match (label0) {
+      ((.skip common/Label((.pat0: std/core/types/string) : std/core/types/string, (.x: std/core/types/string) : std/core/types/string, (.pat1: std/core/types/string) : std/core/types/string, ((.skip common/Attrs((.pat3: std/core/types/bool) : std/core/types/bool, (.pat4: std/core/types/bool) : std/core/types/bool, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: std/core/types/string) : std/core/types/string, (.pat7: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat8: std/core/types/bool) : std/core/types/bool, (.pat9: std/core/types/bool) : std/core/types/bool, (.pat10: input) : input, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/string) : std/core/types/string, (.pat14: std/core/types/string) : std/core/types/string, (.pat15: std/core/types/string) : std/core/types/string, (.pat16: std/core/types/string) : std/core/types/string, (.pat17: std/core/types/int) : std/core/types/int, (.pat18: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat19: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat20: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat2: attrs) : attrs) : label ) as .pat: label)
+         -> .x;
+    };
+  };
+inline borrow "^" fun labelCaption // inline size: 0
+  = fn(label0: label){
+    match (label0) {
+      ((.skip common/Label((.pat0: std/core/types/string) : std/core/types/string, (.pat1: std/core/types/string) : std/core/types/string, (.x: std/core/types/string) : std/core/types/string, ((.skip common/Attrs((.pat3: std/core/types/bool) : std/core/types/bool, (.pat4: std/core/types/bool) : std/core/types/bool, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: std/core/types/string) : std/core/types/string, (.pat7: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat8: std/core/types/bool) : std/core/types/bool, (.pat9: std/core/types/bool) : std/core/types/bool, (.pat10: input) : input, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/string) : std/core/types/string, (.pat14: std/core/types/string) : std/core/types/string, (.pat15: std/core/types/string) : std/core/types/string, (.pat16: std/core/types/string) : std/core/types/string, (.pat17: std/core/types/int) : std/core/types/int, (.pat18: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat19: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat20: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat2: attrs) : attrs) : label ) as .pat: label)
+         -> .x;
+    };
+  };
+inline borrow "^" fun labelAttrs // inline size: 0
+  = fn(label0: label){
+    match (label0) {
+      ((.skip common/Label((.pat0: std/core/types/string) : std/core/types/string, (.pat1: std/core/types/string) : std/core/types/string, (.pat2: std/core/types/string) : std/core/types/string, ((.skip common/Attrs((.pat3: std/core/types/bool) : std/core/types/bool, (.pat4: std/core/types/bool) : std/core/types/bool, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: std/core/types/string) : std/core/types/string, (.pat7: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat8: std/core/types/bool) : std/core/types/bool, (.pat9: std/core/types/bool) : std/core/types/bool, (.pat10: input) : input, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/string) : std/core/types/string, (.pat14: std/core/types/string) : std/core/types/string, (.pat15: std/core/types/string) : std/core/types/string, (.pat16: std/core/types/string) : std/core/types/string, (.pat17: std/core/types/int) : std/core/types/int, (.pat18: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat19: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat20: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .x: attrs) : attrs) : label ) as .pat: label)
+         -> .x;
+    };
+  };
+inline borrow "^" fun is-end // inline size: 1
+  = fn(lineMap: lineMap){
+    match (lineMap) {
+      ((common/End() : lineMap ) as .pat: lineMap)
+         -> std/core/types/True;
+      ((.skip common/Include((.pat1: std/core/types/int) : std/core/types/int, (.pat2: std/core/types/int) : std/core/types/int, (.pat3: std/core/types/int) : std/core/types/int, (.pat4: std/core/types/string) : std/core/types/string, (.pat5: lineMap) : lineMap, (.pat6: lineMap) : lineMap) : lineMap ) as .pat0: lineMap)
+         -> std/core/types/False;
+    };
+  };
+inline borrow "^" fun is-include // inline size: 1
+  = fn(lineMap: lineMap){
+    match (lineMap) {
+      ((common/Include((.pat0: std/core/types/int) : std/core/types/int, (.pat1: std/core/types/int) : std/core/types/int, (.pat2: std/core/types/int) : std/core/types/int, (.pat3: std/core/types/string) : std/core/types/string, (.pat4: lineMap) : lineMap, (.pat5: lineMap) : lineMap) : lineMap ) as .pat: lineMap)
+         -> std/core/types/True;
+      ((.skip common/End() : lineMap ) as .pat6: lineMap)
+         -> std/core/types/False;
+    };
+  };
+inline borrow "^" fun href // inline size: 0
+  = fn(link: link){
+    match (link) {
+      ((.skip common/Link((.x: std/core/types/string) : std/core/types/string, (.pat0: std/core/types/string) : std/core/types/string, ((.skip common/Attrs((.pat2: std/core/types/bool) : std/core/types/bool, (.pat3: std/core/types/bool) : std/core/types/bool, (.pat4: std/core/types/bool) : std/core/types/bool, (.pat5: std/core/types/string) : std/core/types/string, (.pat6: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat7: std/core/types/bool) : std/core/types/bool, (.pat8: std/core/types/bool) : std/core/types/bool, (.pat9: input) : input, (.pat10: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/string) : std/core/types/string, (.pat14: std/core/types/string) : std/core/types/string, (.pat15: std/core/types/string) : std/core/types/string, (.pat16: std/core/types/int) : std/core/types/int, (.pat17: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat18: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat19: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat1: attrs) : attrs, (.pat20: std/core/types/string) : std/core/types/string) : link ) as .pat: link)
+         -> .x;
+    };
+  };
+inline borrow "^" fun title // inline size: 0
+  = fn(link: link){
+    match (link) {
+      ((.skip common/Link((.pat0: std/core/types/string) : std/core/types/string, (.x: std/core/types/string) : std/core/types/string, ((.skip common/Attrs((.pat2: std/core/types/bool) : std/core/types/bool, (.pat3: std/core/types/bool) : std/core/types/bool, (.pat4: std/core/types/bool) : std/core/types/bool, (.pat5: std/core/types/string) : std/core/types/string, (.pat6: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat7: std/core/types/bool) : std/core/types/bool, (.pat8: std/core/types/bool) : std/core/types/bool, (.pat9: input) : input, (.pat10: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/string) : std/core/types/string, (.pat14: std/core/types/string) : std/core/types/string, (.pat15: std/core/types/string) : std/core/types/string, (.pat16: std/core/types/int) : std/core/types/int, (.pat17: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat18: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat19: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat1: attrs) : attrs, (.pat20: std/core/types/string) : std/core/types/string) : link ) as .pat: link)
+         -> .x;
+    };
+  };
+inline borrow "^" fun linkattrs // inline size: 0
+  = fn(link: link){
+    match (link) {
+      ((.skip common/Link((.pat0: std/core/types/string) : std/core/types/string, (.pat1: std/core/types/string) : std/core/types/string, ((.skip common/Attrs((.pat2: std/core/types/bool) : std/core/types/bool, (.pat3: std/core/types/bool) : std/core/types/bool, (.pat4: std/core/types/bool) : std/core/types/bool, (.pat5: std/core/types/string) : std/core/types/string, (.pat6: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat7: std/core/types/bool) : std/core/types/bool, (.pat8: std/core/types/bool) : std/core/types/bool, (.pat9: input) : input, (.pat10: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/string) : std/core/types/string, (.pat14: std/core/types/string) : std/core/types/string, (.pat15: std/core/types/string) : std/core/types/string, (.pat16: std/core/types/int) : std/core/types/int, (.pat17: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat18: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat19: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .x: attrs) : attrs, (.pat20: std/core/types/string) : std/core/types/string) : link ) as .pat: link)
+         -> .x;
+    };
+  };
+inline borrow "^" fun linkid // inline size: 0
+  = fn(link: link){
+    match (link) {
+      ((.skip common/Link((.pat0: std/core/types/string) : std/core/types/string, (.pat1: std/core/types/string) : std/core/types/string, ((.skip common/Attrs((.pat3: std/core/types/bool) : std/core/types/bool, (.pat4: std/core/types/bool) : std/core/types/bool, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: std/core/types/string) : std/core/types/string, (.pat7: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat8: std/core/types/bool) : std/core/types/bool, (.pat9: std/core/types/bool) : std/core/types/bool, (.pat10: input) : input, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/string) : std/core/types/string, (.pat14: std/core/types/string) : std/core/types/string, (.pat15: std/core/types/string) : std/core/types/string, (.pat16: std/core/types/string) : std/core/types/string, (.pat17: std/core/types/int) : std/core/types/int, (.pat18: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat19: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat20: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat2: attrs) : attrs, (.x: std/core/types/string) : std/core/types/string) : link ) as .pat: link)
+         -> .x;
+    };
+  };
+inline borrow "^" fun is-succ // inline size: 1
+  = fn(peano0: peano){
+    match (peano0) {
+      ((common/Succ((.pat0: peano) : peano) : peano ) as .pat: peano)
+         -> std/core/types/True;
+      ((.skip common/Zero() : peano ) as .pat1: peano)
+         -> std/core/types/False;
+    };
+  };
+inline borrow "^" fun is-zero // inline size: 1
+  = fn(peano0: peano){
+    match (peano0) {
+      ((common/Zero() : peano ) as .pat: peano)
+         -> std/core/types/True;
+      ((.skip common/Succ((.pat1: peano) : peano) : peano ) as .pat0: peano)
+         -> std/core/types/False;
+    };
+  };
+inline borrow "^" fun cells // inline size: 0
+  = fn(row: row){
+    match (row) {
+      ((.skip common/Row((.x: (std/core/list :: V -> V)<cell>) : (std/core/list :: V -> V)<cell>, ((.skip common/Attrs((.pat1: std/core/types/bool) : std/core/types/bool, (.pat2: std/core/types/bool) : std/core/types/bool, (.pat3: std/core/types/bool) : std/core/types/bool, (.pat4: std/core/types/string) : std/core/types/string, (.pat5: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat6: std/core/types/bool) : std/core/types/bool, (.pat7: std/core/types/bool) : std/core/types/bool, (.pat8: input) : input, (.pat9: std/core/types/string) : std/core/types/string, (.pat10: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/string) : std/core/types/string, (.pat14: std/core/types/string) : std/core/types/string, (.pat15: std/core/types/int) : std/core/types/int, (.pat16: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat17: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat18: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat0: attrs) : attrs) : row ) as .pat: row)
+         -> .x;
+    };
+  };
+inline borrow "^" fun rowAttrs // inline size: 0
+  = fn(row: row){
+    match (row) {
+      ((.skip common/Row((.pat0: (std/core/list :: V -> V)<cell>) : (std/core/list :: V -> V)<cell>, ((.skip common/Attrs((.pat1: std/core/types/bool) : std/core/types/bool, (.pat2: std/core/types/bool) : std/core/types/bool, (.pat3: std/core/types/bool) : std/core/types/bool, (.pat4: std/core/types/string) : std/core/types/string, (.pat5: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat6: std/core/types/bool) : std/core/types/bool, (.pat7: std/core/types/bool) : std/core/types/bool, (.pat8: input) : input, (.pat9: std/core/types/string) : std/core/types/string, (.pat10: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/string) : std/core/types/string, (.pat14: std/core/types/string) : std/core/types/string, (.pat15: std/core/types/int) : std/core/types/int, (.pat16: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat17: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat18: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .x: attrs) : attrs) : row ) as .pat: row)
+         -> .x;
+    };
+  };
+fun .copy.6 // inline size: 3
+  = fn(.this: row, cells0: (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<cell>>, rowAttrs0: (std/core/types/optional :: V -> V)<attrs>){
+    common/Row((match (cells0) {
+        ((std/core/types/Optional((.cells.1025: (std/core/list :: V -> V)<cell>) : (std/core/list :: V -> V)<cell>) : (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<cell>> ) as .pat: ((std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<cell>>))
+           -> .cells.1025;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<cell>> ) as .pat0: ((std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<cell>>))
+           -> (match (.this) {
+            ((.skip common/Row((.x: (std/core/list :: V -> V)<cell>) : (std/core/list :: V -> V)<cell>, ((.skip common/Attrs((.pat10: std/core/types/bool) : std/core/types/bool, (.pat2: std/core/types/bool) : std/core/types/bool, (.pat3: std/core/types/bool) : std/core/types/bool, (.pat4: std/core/types/string) : std/core/types/string, (.pat5: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat6: std/core/types/bool) : std/core/types/bool, (.pat7: std/core/types/bool) : std/core/types/bool, (.pat8: input) : input, (.pat9: std/core/types/string) : std/core/types/string, (.pat100: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/string) : std/core/types/string, (.pat14: std/core/types/string) : std/core/types/string, (.pat15: std/core/types/int) : std/core/types/int, (.pat16: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat17: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat18: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat00: attrs) : attrs) : row ) as .pat1: row)
+               -> .x;
+          });
+      }), (match (rowAttrs0) {
+        ((std/core/types/Optional((.rowAttrs.1031: attrs) : attrs) : (std/core/types/optional :: V -> V)<attrs> ) as .pat19: ((std/core/types/optional :: V -> V)<attrs>))
+           -> .rowAttrs.1031;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<attrs> ) as .pat20: ((std/core/types/optional :: V -> V)<attrs>))
+           -> (match (.this) {
+            ((.skip common/Row((.pat01: (std/core/list :: V -> V)<cell>) : (std/core/list :: V -> V)<cell>, ((.skip common/Attrs((.pat110: std/core/types/bool) : std/core/types/bool, (.pat22: std/core/types/bool) : std/core/types/bool, (.pat30: std/core/types/bool) : std/core/types/bool, (.pat40: std/core/types/string) : std/core/types/string, (.pat50: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat60: std/core/types/bool) : std/core/types/bool, (.pat70: std/core/types/bool) : std/core/types/bool, (.pat80: input) : input, (.pat90: std/core/types/string) : std/core/types/string, (.pat101: std/core/types/string) : std/core/types/string, (.pat111: std/core/types/string) : std/core/types/string, (.pat120: std/core/types/string) : std/core/types/string, (.pat130: std/core/types/string) : std/core/types/string, (.pat140: std/core/types/string) : std/core/types/string, (.pat150: std/core/types/int) : std/core/types/int, (.pat160: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat170: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat180: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .x0: attrs) : attrs) : row ) as .pat21: row)
+               -> .x0;
+          });
+      }));
+  };
+fun isFmtHtml // inline size: 1
+  = fn(x: formatter){
+    match (x) {
+      ((common/FmtHtml() : formatter ) as .pat: formatter)
+         -> std/core/types/True;
+      ((.skip common/FmtTex() : formatter ) as .pat0: formatter)
+         -> std/core/types/False;
+    };
+  };
+fun isFmtTex // inline size: 1
+  = fn(x: formatter){
+    match (x) {
+      ((common/FmtHtml() : formatter ) as .pat: formatter)
+         -> std/core/types/False;
+      ((.skip common/FmtTex() : formatter ) as .pat0: formatter)
+         -> std/core/types/True;
+    };
+  };
+fun isMarkdown // inline size: 1
+  = fn(x: input){
+    match (x) {
+      ((common/Markdown((.pat0: (std/core/types/maybe :: V -> V)<formatter>) : (std/core/types/maybe :: V -> V)<formatter>) : input ) as .pat: input)
+         -> std/core/types/True;
+      (.pat1: input)
+         -> std/core/types/False;
+    };
+  };
+fun showFormatter // inline size: 1
+  = fn(f: formatter){
+    match (f) {
+      ((common/FmtTex() : formatter ) as .pat: formatter)
+         -> "tex";
+      ((.skip common/FmtHtml() : formatter ) as .pat0: formatter)
+         -> "html";
+    };
+  };
+fun logLocation // inline size: 3
+  = fn(lineInfo: std/core/types/string, logname: (std/core/types/optional :: V -> V)<std/core/types/string>){
+    compat/log/log((match (logname) {
+        ((std/core/types/Optional((.logname.1730: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> .logname.1730;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat0: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> "warning";
+      }), (std/core/(++.1)("  location: ", lineInfo)));
+  };
+fun ruleReplace // inline size: 4
+  = forall<a,b> fn(grammar: (grammar :: (V, V) -> V)<a,b>, pred: std/core/types/bool, rule: (rule :: (V, V) -> V)<a,b>){
+    (match (pred) {
+      ((std/core/types/True() : std/core/types/bool ) as .pat: std/core/types/bool)
+         -> std/core/map.5<(rule :: (V, V) -> V)<a,b>,(rule :: (V, V) -> V)<a,b>,(std/core/types/(<>) :: E)>(grammar, (fn(r: (rule :: (V, V) -> V)<a,b>){
+            (match ((compat/startsWith((match (rule) {
+                ((.skip common/Rule((.x: std/core/types/string) : std/core/types/string, ((.skip compat/regex/Regex((.pat10: std/core/types/any) : std/core/types/any) : compat/regex/regex ) as .pat01: compat/regex/regex) : compat/regex/regex, (.pat20: (cap : compat/regex/matched, ctx : b) -> a) : (cap : compat/regex/matched, ctx : b) -> a) : (rule :: (V, V) -> V)<a,b> ) as .pat2: ((rule :: (V, V) -> V)<a,b>))
+                   -> .x;
+              }), (match (r) {
+                ((.skip common/Rule((.x0: std/core/types/string) : std/core/types/string, ((.skip compat/regex/Regex((.pat11: std/core/types/any) : std/core/types/any) : compat/regex/regex ) as .pat02: compat/regex/regex) : compat/regex/regex, (.pat21: (cap : compat/regex/matched, ctx : b) -> a) : (cap : compat/regex/matched, ctx : b) -> a) : (rule :: (V, V) -> V)<a,b> ) as .pat3: ((rule :: (V, V) -> V)<a,b>))
+                   -> .x0;
+              })))) {
+              ((std/core/types/True() : std/core/types/bool ) as .pat12: std/core/types/bool)
+                 -> rule;
+              ((.skip std/core/types/False() : std/core/types/bool ) as .pat22: std/core/types/bool)
+                 -> r;
+            });
+          }));
+      ((.skip std/core/types/False() : std/core/types/bool ) as .pat0: std/core/types/bool)
+         -> grammar;
+    });
+  };
+fun show // inline size: 2
+  = fn(attrs: attrs){
+    val left.10608 : std/core/types/string
+          = std/core/(++.1)("{", (match (attrs) {
+              ((.skip common/Attrs((.pat0: std/core/types/bool) : std/core/types/bool, (.pat1: std/core/types/bool) : std/core/types/bool, (.pat2: std/core/types/bool) : std/core/types/bool, (.x: std/core/types/string) : std/core/types/string, (.pat3: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat4: std/core/types/bool) : std/core/types/bool, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: input) : input, (.pat7: std/core/types/string) : std/core/types/string, (.pat8: std/core/types/string) : std/core/types/string, (.pat9: std/core/types/string) : std/core/types/string, (.pat10: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/int) : std/core/types/int, (.pat14: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat15: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat16: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat: attrs)
+                 -> .x;
+            }));
+    std/core/(++.1)(left.10608, "}");
+  };
+fun splitPaths // inline size: 4
+  = fn(paths: std/core/types/string){
+    val v.17122 : (std/core/types/vector :: V -> V)<std/core/types/string>
+          = std/core/splitv(paths, ";");
+    std/core/filter<std/core/types/string,(std/core/types/(<>) :: E)>((std/core/vlist<std/core/types/string>(v.17122, (std/core/types/None<(std/core/list :: V -> V)<std/core/types/string>>))), (fn(s0: std/core/types/string){
+        (std/core/(!=.3)(s0, ""));
+      }));
+  };
+fun warning // inline size: 3
+  = fn(message: std/core/types/string, logname: (std/core/types/optional :: V -> V)<std/core/types/string>){
+    compat/log/log((match (logname) {
+        ((std/core/types/Optional((.logname.3094: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> .logname.3094;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat0: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> "warning";
+      }), (std/core/(++.1)("  warning: ", message)));
+  };
+inline fun .create-Markdown // inline size: 2
+  = fn(only: (std/core/types/optional :: V -> V)<(std/core/types/maybe :: V -> V)<formatter>>){
+    common/Markdown((match (only) {
+      ((std/core/types/Optional((.only.3123: (std/core/types/maybe :: V -> V)<formatter>) : (std/core/types/maybe :: V -> V)<formatter>) : (std/core/types/optional :: V -> V)<(std/core/types/maybe :: V -> V)<formatter>> ) as .pat: ((std/core/types/optional :: V -> V)<(std/core/types/maybe :: V -> V)<formatter>>))
+         -> .only.3123;
+      ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<(std/core/types/maybe :: V -> V)<formatter>> ) as .pat0: ((std/core/types/optional :: V -> V)<(std/core/types/maybe :: V -> V)<formatter>>))
+         -> std/core/types/Nothing<formatter>;
+    }));
+  };
+inline fun .create-Attrs // inline size: 21
+  = fn(empty0: (std/core/types/optional :: V -> V)<std/core/types/bool>, sticky0: (std/core/types/optional :: V -> V)<std/core/types/bool>, defaults0: (std/core/types/optional :: V -> V)<std/core/types/bool>, text0: (std/core/types/optional :: V -> V)<std/core/types/string>, replacers0: (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>>, notag0: (std/core/types/optional :: V -> V)<std/core/types/bool>, tight0: (std/core/types/optional :: V -> V)<std/core/types/bool>, input0: (std/core/types/optional :: V -> V)<input>, elem0: (std/core/types/optional :: V -> V)<std/core/types/string>, texelem0: (std/core/types/optional :: V -> V)<std/core/types/string>, htmlelem0: (std/core/types/optional :: V -> V)<std/core/types/string>, name0: (std/core/types/optional :: V -> V)<std/core/types/string>, label0: (std/core/types/optional :: V -> V)<std/core/types/string>, source0: (std/core/types/optional :: V -> V)<std/core/types/string>, lineNo0: (std/core/types/optional :: V -> V)<std/core/types/int>, classes0: (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>>, counters0: (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>>, keyvals0: (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>>){
+    common/Attrs((match (empty0) {
+        ((std/core/types/Optional((.empty.3132: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat1: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+           -> .empty.3132;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat00: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+           -> std/core/types/False;
+      }), (match (sticky0) {
+        ((std/core/types/Optional((.sticky.3136: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat10: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+           -> .sticky.3136;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat2: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+           -> std/core/types/False;
+      }), (match (defaults0) {
+        ((std/core/types/Optional((.defaults.3140: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat3: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+           -> .defaults.3140;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat4: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+           -> std/core/types/True;
+      }), (match (text0) {
+        ((std/core/types/Optional((.text.3144: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat5: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> .text.3144;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat6: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> "";
+      }), (match (replacers0) {
+        ((std/core/types/Optional((.replacers.3149: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>) : (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>> ) as .pat7: ((std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>>))
+           -> .replacers.3149;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>> ) as .pat8: ((std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>>))
+           -> std/core/Nil<std/core/types/string>;
+      }), (match (notag0) {
+        ((std/core/types/Optional((.notag.3153: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat9: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+           -> .notag.3153;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat100: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+           -> std/core/types/False;
+      }), (match (tight0) {
+        ((std/core/types/Optional((.tight.3157: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat11: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+           -> .tight.3157;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat12: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+           -> std/core/types/False;
+      }), (match (input0) {
+        ((std/core/types/Optional((.input.3164: input) : input) : (std/core/types/optional :: V -> V)<input> ) as .pat13: ((std/core/types/optional :: V -> V)<input>))
+           -> .input.3164;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<input> ) as .pat14: ((std/core/types/optional :: V -> V)<input>))
+           -> common/Markdown((match ((std/core/types/None<(std/core/types/maybe :: V -> V)<formatter>>)) {
+            ((std/core/types/Optional((.only.3123: (std/core/types/maybe :: V -> V)<formatter>) : (std/core/types/maybe :: V -> V)<formatter>) : (std/core/types/optional :: V -> V)<(std/core/types/maybe :: V -> V)<formatter>> ) as .pat: ((std/core/types/optional :: V -> V)<(std/core/types/maybe :: V -> V)<formatter>>))
+               -> .only.3123;
+            ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<(std/core/types/maybe :: V -> V)<formatter>> ) as .pat0: ((std/core/types/optional :: V -> V)<(std/core/types/maybe :: V -> V)<formatter>>))
+               -> std/core/types/Nothing<formatter>;
+          }));
+      }), (match (elem0) {
+        ((std/core/types/Optional((.elem.3168: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat15: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> .elem.3168;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat16: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> "";
+      }), (match (texelem0) {
+        ((std/core/types/Optional((.texelem.3172: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat17: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> .texelem.3172;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat18: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> "";
+      }), (match (htmlelem0) {
+        ((std/core/types/Optional((.htmlelem.3176: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat19: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> .htmlelem.3176;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat20: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> "";
+      }), (match (name0) {
+        ((std/core/types/Optional((.name.3180: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat21: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> .name.3180;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat22: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> "";
+      }), (match (label0) {
+        ((std/core/types/Optional((.label.3184: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat23: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> .label.3184;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat24: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> "";
+      }), (match (source0) {
+        ((std/core/types/Optional((.source.3188: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat25: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> .source.3188;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat26: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> "";
+      }), (match (lineNo0) {
+        ((std/core/types/Optional((.lineNo.3192: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat27: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+           -> .lineNo.3192;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat28: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+           -> 0;
+      }), (match (classes0) {
+        ((std/core/types/Optional((.classes.3197: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>) : (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>> ) as .pat29: ((std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>>))
+           -> .classes.3197;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>> ) as .pat30: ((std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>>))
+           -> std/core/Nil<std/core/types/string>;
+      }), (match (counters0) {
+        ((std/core/types/Optional((.counters.3202: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>> ) as .pat31: ((std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>>))
+           -> .counters.3202;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>> ) as .pat32: ((std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>>))
+           -> std/core/Nil<(std/core/types/string, std/core/types/string)>;
+      }), (match (keyvals0) {
+        ((std/core/types/Optional((.keyvals.3207: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>> ) as .pat33: ((std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>>))
+           -> .keyvals.3207;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>> ) as .pat34: ((std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>>))
+           -> std/core/Nil<(std/core/types/string, std/core/types/string)>;
+      }));
+  };
+inline fun .create-Cell // inline size: 2
+  = fn(text0: std/core/types/string, cellAttrs0: (std/core/types/optional :: V -> V)<attrs>){
+    common/Cell(text0, (match (cellAttrs0) {
+        ((std/core/types/Optional((.cellAttrs.3273: attrs) : attrs) : (std/core/types/optional :: V -> V)<attrs> ) as .pat: ((std/core/types/optional :: V -> V)<attrs>))
+           -> .cellAttrs.3273;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<attrs> ) as .pat0: ((std/core/types/optional :: V -> V)<attrs>))
+           -> common/attrsNone;
+      }));
+  };
+inline fun .create-Label // inline size: 2
+  = fn(element0: std/core/types/string, labelText0: std/core/types/string, labelCaption0: std/core/types/string, labelAttrs0: (std/core/types/optional :: V -> V)<attrs>){
+    common/Label(element0, labelText0, labelCaption0, (match (labelAttrs0) {
+        ((std/core/types/Optional((.labelAttrs.3283: attrs) : attrs) : (std/core/types/optional :: V -> V)<attrs> ) as .pat: ((std/core/types/optional :: V -> V)<attrs>))
+           -> .labelAttrs.3283;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<attrs> ) as .pat0: ((std/core/types/optional :: V -> V)<attrs>))
+           -> common/attrsNone;
+      }));
+  };
+inline fun .create-Link // inline size: 4
+  = fn(href0: std/core/types/string, title0: (std/core/types/optional :: V -> V)<std/core/types/string>, linkattrs0: (std/core/types/optional :: V -> V)<attrs>, linkid0: (std/core/types/optional :: V -> V)<std/core/types/string>){
+    common/Link(href0, (match (title0) {
+        ((std/core/types/Optional((.title.3295: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> .title.3295;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat0: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> "";
+      }), (match (linkattrs0) {
+        ((std/core/types/Optional((.linkattrs.3299: attrs) : attrs) : (std/core/types/optional :: V -> V)<attrs> ) as .pat1: ((std/core/types/optional :: V -> V)<attrs>))
+           -> .linkattrs.3299;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<attrs> ) as .pat2: ((std/core/types/optional :: V -> V)<attrs>))
+           -> common/attrsNone;
+      }), (match (linkid0) {
+        ((std/core/types/Optional((.linkid.3303: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat3: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> .linkid.3303;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat4: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> "";
+      }));
+  };
+inline fun .create-Raw // inline size: 2
+  = fn(only: (std/core/types/optional :: V -> V)<(std/core/types/maybe :: V -> V)<formatter>>){
+    common/Raw((match (only) {
+      ((std/core/types/Optional((.only.3316: (std/core/types/maybe :: V -> V)<formatter>) : (std/core/types/maybe :: V -> V)<formatter>) : (std/core/types/optional :: V -> V)<(std/core/types/maybe :: V -> V)<formatter>> ) as .pat: ((std/core/types/optional :: V -> V)<(std/core/types/maybe :: V -> V)<formatter>>))
+         -> .only.3316;
+      ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<(std/core/types/maybe :: V -> V)<formatter>> ) as .pat0: ((std/core/types/optional :: V -> V)<(std/core/types/maybe :: V -> V)<formatter>>))
+         -> std/core/types/Nothing<formatter>;
+    }));
+  };
+inline fun .create-Row // inline size: 2
+  = fn(cells0: (std/core/list :: V -> V)<cell>, rowAttrs0: (std/core/types/optional :: V -> V)<attrs>){
+    common/Row(cells0, (match (rowAttrs0) {
+        ((std/core/types/Optional((.rowAttrs.3325: attrs) : attrs) : (std/core/types/optional :: V -> V)<attrs> ) as .pat: ((std/core/types/optional :: V -> V)<attrs>))
+           -> .rowAttrs.3325;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<attrs> ) as .pat0: ((std/core/types/optional :: V -> V)<attrs>))
+           -> common/attrsNone;
+      }));
+  };
+fun (==) // inline size: 3
+  = fn(x: formatter, y: formatter){
+    match (x) {
+      ((common/FmtHtml() : formatter ) as .pat: formatter)
+         -> (match (y) {
+          ((common/FmtHtml() : formatter ) as .pat0: formatter)
+             -> std/core/types/True;
+          ((.skip common/FmtTex() : formatter ) as .pat00: formatter)
+             -> std/core/types/False;
+        });
+      ((.skip common/FmtTex() : formatter ) as .pat01: formatter)
+         -> (match (y) {
+          ((common/FmtHtml() : formatter ) as .pat1: formatter)
+             -> std/core/types/False;
+          ((.skip common/FmtTex() : formatter ) as .pat02: formatter)
+             -> std/core/types/True;
+        });
+    };
+  };
+fun contains // inline size: 3
+  = fn(xs: (std/core/list :: V -> V)<std/core/types/string>, s: std/core/types/string){
+    val m.10657 : (std/core/types/maybe :: V -> V)<std/core/types/string>
+          = std/core/find<std/core/types/string>(xs, (fn(x: std/core/types/string){
+              (std/core/(==.3)(x, s));
+            }));
+    match (m.10657) {
+      ((std/core/types/Nothing() : (std/core/types/maybe :: V -> V)<std/core/types/string> ) as .pat: ((std/core/types/maybe :: V -> V)<std/core/types/string>))
+         -> std/core/types/False;
+      (.pat0: ((std/core/types/maybe :: V -> V)<std/core/types/string>))
+         -> std/core/types/True;
+    };
+  };
+fun addClasses // inline size: 1
+  = fn(attrs: attrs, classes0: (std/core/list :: V -> V)<std/core/types/string>){
+    std/core/foldl<std/core/types/string,attrs,(std/core/types/(<>) :: E)>(classes0, attrs, common/addClass);
+  };
+fun addInputClass // inline size: 4
+  = fn(attrs: attrs){
+    match (attrs) {
+      ((.skip common/Attrs((.pat00: std/core/types/bool) : std/core/types/bool, (.pat10: std/core/types/bool) : std/core/types/bool, (.pat20: std/core/types/bool) : std/core/types/bool, (.pat3: std/core/types/string) : std/core/types/string, (.pat4: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: std/core/types/bool) : std/core/types/bool, (.x: input) : input, (.pat7: std/core/types/string) : std/core/types/string, (.pat8: std/core/types/string) : std/core/types/string, (.pat9: std/core/types/string) : std/core/types/string, (.pat100: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/int) : std/core/types/int, (.pat14: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat15: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat16: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat2: attrs)
+         -> (match (.x) {
+          ((common/Markdown((.pat0: (std/core/types/maybe :: V -> V)<formatter>) : (std/core/types/maybe :: V -> V)<formatter>) : input ) as .pat: input)
+             -> attrs;
+          (.pat1: input)
+             -> val right.10685 : std/core/types/string
+                      = common/showInput((match (attrs) {
+                        ((.skip common/Attrs((.pat02: std/core/types/bool) : std/core/types/bool, (.pat19: std/core/types/bool) : std/core/types/bool, (.pat21: std/core/types/bool) : std/core/types/bool, (.pat30: std/core/types/string) : std/core/types/string, (.pat40: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat50: std/core/types/bool) : std/core/types/bool, (.pat60: std/core/types/bool) : std/core/types/bool, (.x0: input) : input, (.pat70: std/core/types/string) : std/core/types/string, (.pat80: std/core/types/string) : std/core/types/string, (.pat90: std/core/types/string) : std/core/types/string, (.pat101: std/core/types/string) : std/core/types/string, (.pat110: std/core/types/string) : std/core/types/string, (.pat120: std/core/types/string) : std/core/types/string, (.pat130: std/core/types/int) : std/core/types/int, (.pat140: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat150: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat160: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat18: attrs)
+                           -> .x0;
+                      }));
+            common/addClass(attrs, (std/core/(++.1)("input-", right.10685)));
+        });
+    };
+  };
+fun hasKey // inline size: 4
+  = fn(attrs: attrs, key: std/core/types/string){
+    val m.10700 : (std/core/types/maybe :: V -> V)<(std/core/types/string, std/core/types/string)>
+          = std/core/find<(std/core/types/string, std/core/types/string)>((match (attrs) {
+              ((.skip common/Attrs((.pat00: std/core/types/bool) : std/core/types/bool, (.pat10: std/core/types/bool) : std/core/types/bool, (.pat2: std/core/types/bool) : std/core/types/bool, (.pat3: std/core/types/string) : std/core/types/string, (.pat4: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: std/core/types/bool) : std/core/types/bool, (.pat7: input) : input, (.pat8: std/core/types/string) : std/core/types/string, (.pat9: std/core/types/string) : std/core/types/string, (.pat100: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/string) : std/core/types/string, (.pat14: std/core/types/int) : std/core/types/int, (.pat15: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat16: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.x: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat1: attrs)
+                 -> .x;
+            }), (fn(kv: (std/core/types/string, std/core/types/string)){
+              (std/core/(==.3)((match (kv) {
+                  ((.skip std/core/types/(,)((.x0: std/core/types/string) : std/core/types/string, (.pat01: std/core/types/string) : std/core/types/string) : (std/core/types/string, std/core/types/string) ) as .pat17: (std/core/types/string, std/core/types/string))
+                     -> .x0;
+                }), key));
+            }));
+    match (m.10700) {
+      ((std/core/types/Nothing() : (std/core/types/maybe :: V -> V)<(std/core/types/string, std/core/types/string)> ) as .pat: ((std/core/types/maybe :: V -> V)<(std/core/types/string, std/core/types/string)>))
+         -> std/core/types/Nothing<std/core/types/string>;
+      ((.skip std/core/types/Just((x: (std/core/types/string, std/core/types/string)) : (std/core/types/string, std/core/types/string)) : (std/core/types/maybe :: V -> V)<(std/core/types/string, std/core/types/string)> ) as .pat0: ((std/core/types/maybe :: V -> V)<(std/core/types/string, std/core/types/string)>))
+         -> std/core/types/Just<std/core/types/string>((match (x) {
+          ((.skip std/core/types/(,)((.pat02: std/core/types/string) : std/core/types/string, (.x1: std/core/types/string) : std/core/types/string) : (std/core/types/string, std/core/types/string) ) as .pat18: (std/core/types/string, std/core/types/string))
+             -> .x1;
+        }));
+    };
+  };
+fun addKeyvals // inline size: 2
+  = fn(attrs: attrs, kvs: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>){
+    std/core/foldl<(std/core/types/string, std/core/types/string),attrs,(std/core/types/(<>) :: E)>(kvs, attrs, (fn(acc: attrs, kv: (std/core/types/string, std/core/types/string)){
+        (common/addKeyval(acc, (match (kv) {
+            ((.skip std/core/types/(,)((.x: std/core/types/string) : std/core/types/string, (.pat0: std/core/types/string) : std/core/types/string) : (std/core/types/string, std/core/types/string) ) as .pat: (std/core/types/string, std/core/types/string))
+               -> .x;
+          }), (match (kv) {
+            ((.skip std/core/types/(,)((.pat00: std/core/types/string) : std/core/types/string, (.x0: std/core/types/string) : std/core/types/string) : (std/core/types/string, std/core/types/string) ) as .pat1: (std/core/types/string, std/core/types/string))
+               -> .x0;
+          })));
+      }));
+  };
+fun elementName // inline size: 2
+  = fn(attrs: attrs, def: std/core/types/string){
+    match ((std/core/(==.3)((match (attrs) {
+        ((.skip common/Attrs((.pat0: std/core/types/bool) : std/core/types/bool, (.pat1: std/core/types/bool) : std/core/types/bool, (.pat2: std/core/types/bool) : std/core/types/bool, (.pat3: std/core/types/string) : std/core/types/string, (.pat4: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: std/core/types/bool) : std/core/types/bool, (.pat7: input) : input, (.x: std/core/types/string) : std/core/types/string, (.pat8: std/core/types/string) : std/core/types/string, (.pat9: std/core/types/string) : std/core/types/string, (.pat10: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/int) : std/core/types/int, (.pat14: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat15: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat16: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat: attrs)
+           -> .x;
+      }), ""))) {
+      ((std/core/types/True() : std/core/types/bool ) as .pat17: std/core/types/bool)
+         -> def;
+      ((.skip std/core/types/False() : std/core/types/bool ) as .pat00: std/core/types/bool)
+         -> (match (attrs) {
+          ((.skip common/Attrs((.pat01: std/core/types/bool) : std/core/types/bool, (.pat19: std/core/types/bool) : std/core/types/bool, (.pat20: std/core/types/bool) : std/core/types/bool, (.pat30: std/core/types/string) : std/core/types/string, (.pat40: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat50: std/core/types/bool) : std/core/types/bool, (.pat60: std/core/types/bool) : std/core/types/bool, (.pat70: input) : input, (.x0: std/core/types/string) : std/core/types/string, (.pat80: std/core/types/string) : std/core/types/string, (.pat90: std/core/types/string) : std/core/types/string, (.pat100: std/core/types/string) : std/core/types/string, (.pat110: std/core/types/string) : std/core/types/string, (.pat120: std/core/types/string) : std/core/types/string, (.pat130: std/core/types/int) : std/core/types/int, (.pat140: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat150: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat160: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat18: attrs)
+             -> .x0;
+        });
+    };
+  };
+fun hasClass // inline size: 3
+  = fn(attrs: attrs, className: std/core/types/string){
+    val m.10737 : (std/core/types/maybe :: V -> V)<std/core/types/string>
+          = std/core/find<std/core/types/string>((match (attrs) {
+              ((.skip common/Attrs((.pat00: std/core/types/bool) : std/core/types/bool, (.pat10: std/core/types/bool) : std/core/types/bool, (.pat2: std/core/types/bool) : std/core/types/bool, (.pat3: std/core/types/string) : std/core/types/string, (.pat4: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: std/core/types/bool) : std/core/types/bool, (.pat7: input) : input, (.pat8: std/core/types/string) : std/core/types/string, (.pat9: std/core/types/string) : std/core/types/string, (.pat100: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/string) : std/core/types/string, (.pat14: std/core/types/int) : std/core/types/int, (.x: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat15: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.pat16: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat1: attrs)
+                 -> .x;
+            }), (fn(cname: std/core/types/string){
+              (std/core/(==.3)(cname, className));
+            }));
+    match (m.10737) {
+      ((std/core/types/Nothing() : (std/core/types/maybe :: V -> V)<std/core/types/string> ) as .pat: ((std/core/types/maybe :: V -> V)<std/core/types/string>))
+         -> std/core/types/False;
+      (.pat0: ((std/core/types/maybe :: V -> V)<std/core/types/string>))
+         -> std/core/types/True;
+    };
+  };
+fun joinLines // inline size: 4
+  = fn(s: std/core/types/string){
+    compat/regex/replaceEx.1(s, common/rxLineBreak, "", (std/core/types/Optional<std/core/types/bool>(std/core/types/True)), (std/core/types/Optional<std/core/types/int>((match ((std/core/types/None<std/core/types/int>)) {
+        ((std/core/types/Optional((.start.826: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+           -> .start.826;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat0: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+           -> 0;
+      }))));
+  };
+fun lookupKey // inline size: 4
+  = fn(attrs: attrs, key: std/core/types/string, def: std/core/types/string){
+    val m.10700 : (std/core/types/maybe :: V -> V)<(std/core/types/string, std/core/types/string)>
+          = std/core/find<(std/core/types/string, std/core/types/string)>((match (attrs) {
+              ((.skip common/Attrs((.pat00: std/core/types/bool) : std/core/types/bool, (.pat10: std/core/types/bool) : std/core/types/bool, (.pat2: std/core/types/bool) : std/core/types/bool, (.pat3: std/core/types/string) : std/core/types/string, (.pat4: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: std/core/types/bool) : std/core/types/bool, (.pat7: input) : input, (.pat8: std/core/types/string) : std/core/types/string, (.pat9: std/core/types/string) : std/core/types/string, (.pat100: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/string) : std/core/types/string, (.pat14: std/core/types/int) : std/core/types/int, (.pat15: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat16: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>, (.x: (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>) : attrs ) as .pat1: attrs)
+                 -> .x;
+            }), (fn(kv: (std/core/types/string, std/core/types/string)){
+              (std/core/(==.3)((match (kv) {
+                  ((.skip std/core/types/(,)((.x0: std/core/types/string) : std/core/types/string, (.pat01: std/core/types/string) : std/core/types/string) : (std/core/types/string, std/core/types/string) ) as .pat17: (std/core/types/string, std/core/types/string))
+                     -> .x0;
+                }), key));
+            }));
+    match (m.10700) {
+      ((std/core/types/Nothing() : (std/core/types/maybe :: V -> V)<(std/core/types/string, std/core/types/string)> ) as .pat: ((std/core/types/maybe :: V -> V)<(std/core/types/string, std/core/types/string)>))
+         -> (match ((std/core/types/Nothing<std/core/types/string>)) {
+          ((std/core/types/Nothing() : (std/core/types/maybe :: V -> V)<std/core/types/string> ) as .pat19: ((std/core/types/maybe :: V -> V)<std/core/types/string>))
+             -> def;
+          ((.skip std/core/types/Just((x0: std/core/types/string) : std/core/types/string) : (std/core/types/maybe :: V -> V)<std/core/types/string> ) as .pat03: ((std/core/types/maybe :: V -> V)<std/core/types/string>))
+             -> x0;
+        });
+      ((.skip std/core/types/Just((x: (std/core/types/string, std/core/types/string)) : (std/core/types/string, std/core/types/string)) : (std/core/types/maybe :: V -> V)<(std/core/types/string, std/core/types/string)> ) as .pat0: ((std/core/types/maybe :: V -> V)<(std/core/types/string, std/core/types/string)>))
+         -> (match (x) {
+          ((.skip std/core/types/(,)((.pat02: std/core/types/string) : std/core/types/string, (.x1: std/core/types/string) : std/core/types/string) : (std/core/types/string, std/core/types/string) ) as .pat18: (std/core/types/string, std/core/types/string))
+             -> .x1;
+        });
+    };
+  };
+fun relative // inline size: 2
+  = fn(path: std/core/types/string){
+    val b.10792 : std/core/types/bool
+          = compat/regex/contains(path, common/rxProtocol, (std/core/types/None<std/core/types/int>));
+    match (b.10792) {
+      ((std/core/types/True() : std/core/types/bool ) as .pat: std/core/types/bool)
+         -> std/core/types/False;
+      ((.skip std/core/types/False() : std/core/types/bool ) as .pat0: std/core/types/bool)
+         -> std/core/types/True;
+    };
+  };
+fun reverse // inline size: 1
+  = fn(lineMap: lineMap){
+    common/reverseAcc(lineMap, common/End);
+  };
+fun trimLines // inline size: 4
+  = fn(s: std/core/types/string){
+    compat/regex/replaceEx.1(s, common/rxTrimLines, "", (std/core/types/Optional<std/core/types/bool>(std/core/types/True)), (std/core/types/Optional<std/core/types/int>((match ((std/core/types/None<std/core/types/int>)) {
+        ((std/core/types/Optional((.start.826: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+           -> .start.826;
+        ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat0: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+           -> 0;
+      }))));
+  };

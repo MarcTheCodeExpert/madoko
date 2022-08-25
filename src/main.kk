@@ -9,21 +9,21 @@
 // Main Madoko command line interface
 module main
 
-import std/path
-import std/regex
+import std/os/path
+import std/text/regex
 import common
 import options
 import storage
 import driver
 import version
 
-public function main() : io () {
-  markdownFiles("") fun(html,inName,outName,opts) {
+pub fun main() : io () {
+  markdownFiles("") fn(html,inName,outName,opts) {
     ()
   }
 }
 
-public function test( s : string = "code_blocks", moreargs = "" ) {
+pub fun test( s : string = "code_blocks", moreargs = "" ) {
   //main("test/code_blocks.text")
   val root = if (s.contains(path/sep)) then combine("test",s) else combine(["test","new",s])
   val input  = root + ".text"
@@ -31,12 +31,12 @@ public function test( s : string = "code_blocks", moreargs = "" ) {
   val target = root + ".html"
 
   markdownFiles("-v --tex --installdir=src --odir=" + outputDir + " " + moreargs + " " + input)
-    fun(outText,_input,output,_options) {
+  fn(outText,_input,output,_options) {
     //trace("-----\n" + outText + "\n-----")
     val targetText = target.readTextFileDef("")
-    val outStrip = outText.replaceAll(regex(@"\s"),"")
-                      //.replaceAll(regex(@"class=""indent"""),"")
-    val targetStrip = targetText.replaceAll(regex(@"\s"),"")
+    val outStrip = outText.replaceAll(regex(r"\s"),"")
+    // .replaceAll(regex(@"class=""indent"""),"")                  
+    val targetStrip = targetText.replaceAll(regex(r"\s"),"")
     if (outStrip != targetStrip) {
       trace("\n*** test failed ***")
       //trace(targetText + "\n***")
@@ -53,10 +53,10 @@ public function test( s : string = "code_blocks", moreargs = "" ) {
     else {
       trace("*** test success (modulo whitespace)")
     }
-  }
+}
 }
 
-public function markdownFiles(args : string, action : (string,string,string,options) -> io ()) : io () {
+pub fun markdownFiles(args : string, action : (string,string,string,options) -> io ()) : io () {
   val mbopts = parseOptions(version,args);
   match(mbopts) {
     Nothing -> ()
@@ -65,7 +65,7 @@ public function markdownFiles(args : string, action : (string,string,string,opti
         mkdirp(opts.outputDir)
       }
 
-      opts.inputs.foreach fun(input0) {
+      opts.inputs.foreach fn(input0) {
         val input   = if (input0.extname=="") then input0 + ".mdk" else input0
         val outName = outputName(input,opts)
         if (opts.options.verbose > 0) println("process: " + input + " -> " + outName )

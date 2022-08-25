@@ -9,12 +9,12 @@
 // The parsing and formatting of _inline_ elements (i.e. emphasis, links, etc.)
 module formatInline
 
-import std/log
-import std/dict
-import std/string
-import std/regex
-import std/crypto
-import std/path   // extname
+import v1/std/log
+import std/data/dict
+import v1/std/text/string
+import std/text/regex
+import v1/std/crypto
+import std/os/path  // extname
 import common
 import attributes
 import inline
@@ -39,9 +39,9 @@ val xlinkid   = @"((?:[^\[\]\n]|\[[^\]\n]*\])*)"
 val linktxt  = @"\[(?!\^)((?:\[(?:[^\[\]]|\[(?:[^\[\]]|\[[^\]]*\])*\])*\]|\\.|[^\\\]]|\](?=[^\[{]*\]))*)\]"
 val linkreg  = linktxt + @"((?:\(" + linkhref + @"\)|\s*\[" + xlinkid + @"\])?(?:" + attrs + @")?)"
 
-public val rxLink = regex(linkreg)
+pub val rxLink = regex(linkreg)
 
-function inlineCoreGrammar( fmt : formatter ) : grammar<string,inlineContext> = [
+fun inlineCoreGrammar( fmt : formatter ) : grammar<string,inlineContext> = [
   Rule("itext",     regex(@"^" + normal + "+"), inlineNormal ),
 
   Rule("iquotes",   regex(@"^(?:'(?!\s|s\b|re\b)((?:[^\\'`\$\[<]|\\.|'[a-zA-Z])*)'(?![a-zA-Z])|""((?:[^\\""`\$\[<]|\\.)*)"")"), inlineQuotes ),
@@ -82,26 +82,26 @@ function inlineCoreGrammar( fmt : formatter ) : grammar<string,inlineContext> = 
 val benchGrammar
   = inlineCoreGrammar(FmtHtml).stripFancyRules
 
-function stripFancyRules( g : grammar<string,inlineContext> ) : grammar<string,inlineContext> {
+fun stripFancyRules( g : grammar<string,inlineContext> ) : grammar<string,inlineContext> {
   g.ruleReplace(True, Rule("itext", regex("^" + normalbench + "+"), inlineNormal ))
    .ruleReplace(True, Rule("iquotes", regex(@"^[""']"), inlineQuot ))
    .ruleRemove(True,["idashes","ielipsis","tex","iguil","textcite"])
 }
 
-public function inlineGrammar( fmt : formatter, bench : bool = False ) {
+pub fun inlineGrammar( fmt : formatter, bench : bool = False ) {
   if (bench) then benchGrammar else inlineCoreGrammar(fmt)
 }
 
 
 /* --------------------------------------
- Inline grammar functions
+ Inline grammar funs
 ---------------------------------------- */
 
-function inlineBreak( cap : matched, context ) {
+fun inlineBreak( cap : matched, context ) {
   context.fmtCmd("br","")
 }
 
-function inlineEntity( cap : matched, context : inlineContext ) : string {
+fun inlineEntity( cap : matched, context : inlineContext ) : string {
   val key = cap.groups[1]
   if (key.startsWith("#")) // character code
    then context.fmtText(cap.matched)
@@ -113,22 +113,22 @@ function inlineEntity( cap : matched, context : inlineContext ) : string {
   }
 }
 
-function inlineNormal( cap : matched, context : inlineContext ) : string {
+fun inlineNormal( cap : matched, context : inlineContext ) : string {
   context.fmtText(cap.matched)
 }
 
-function inlineMath( cap : matched, context : inlineContext ) : string {
+fun inlineMath( cap : matched, context : inlineContext ) : string {
   val attrs = cap.groups[2].parseAttrs("math-inline");
   context.fmtSpan( cap.groups[1], attrs ); // can be taken over by the user
 }
 
 
-function inlineMathBlock( cap : matched, context : inlineContext ) : string {
+fun inlineMathBlock( cap : matched, context : inlineContext ) : string {
   val attrsd = context.defaults.matchRules("math-display",attrsNone)
   context.fmtMath(True,cap.groups[1],attrsd)
 }
 
-public function fmtMath( context : inlineContext, isDisplay : bool, txt0 : string, attrs : attrs = attrsNone) : string {
+pub fun fmtMath( context : inlineContext, isDisplay : bool, txt0 : string, attrs : attrs = attrsNone) : string {
   val (kind,left,right,rightx) =
     if (attrs.hasClass("snippet"))
      then (if (isDisplay) then "Display" else "Inline","","","")
@@ -149,59 +149,59 @@ public function fmtMath( context : inlineContext, isDisplay : bool, txt0 : strin
     else context.fmtMathEnv("div",  left+txt+right+rightx, attrsd)
 }
 
-function logMathLocation(digest: string, attrs: attrs) {
+fun logMathLocation(digest: string, attrs: attrs) {
   val start = attrs.lookupKey("data-line-start", "")
   val end   = attrs.lookupKey("data-line-end", "")
   if (start == "" || end == "") return ()
   else log("math-locations", start + "," + end + "," + digest)
 }
 
-function escapeMath( txt : string, fmt : formatter ) : string {
+fun escapeMath( txt : string, fmt : formatter ) : string {
   txt
 }
 
 
-function inlineQuot( cap : matched, context ) : string {
+fun inlineQuot( cap : matched, context ) : string {
   context.formatInline(if (cap.matched=="\"") then "&quot;" else "&apos;")
 }
 
-function inlineStrong( cap : matched, context ) : string {
+fun inlineStrong( cap : matched, context ) : string {
   val tag = if (context.starBold && cap.matched.startsWith("_")) then "em" else "strong"
   val class = tag + (if (cap.matched.startsWith("*")) then "-star" else "-low") + cap.groups[1].length.show
   val attrs = context.defaults.matchRules( tag, attrsNone.addClass(class) )
   context.fmtCmd(tag, formatInline(context,cap.groups[2]), attrs)
 }
 
-function inlineEmph( cap : matched, context ) : string {
+fun inlineEmph( cap : matched, context ) : string {
   val tag = if (context.starBold && cap.matched.startsWith("*")) then "strong" else "em"
   val class = tag + (if (cap.matched.startsWith("*")) then "-star" else "-low") + cap.groups[1].length.show
   val attrs = context.defaults.matchRules( tag, attrsNone.addClass(class) )
   context.fmtCmd(tag, formatInline(context,cap.groups[2]), attrs )
 }
 
-function inlineSup( cap : matched, context ) : string {
+fun inlineSup( cap : matched, context ) : string {
   context.fmtCmd("sup", formatInline(context,cap.groups[1]), context.defaults.matchRules("sup",attrsNone))
 }
 
-function inlineSub( cap : matched, context ) : string {
+fun inlineSub( cap : matched, context ) : string {
   context.fmtCmd("sub", formatInline(context,cap.groups[1]), context.defaults.matchRules("sub",attrsNone))
 }
 
-function inlineDel( cap : matched, context ) : string {
+fun inlineDel( cap : matched, context ) : string {
   context.fmtCmd("del", formatInline(context,cap.groups[1]), context.defaults.matchRules("del",attrsNone))
 }
 
-function inlineTag( cap : matched, context : inlineContext ) : string {
+fun inlineTag( cap : matched, context : inlineContext ) : string {
   inlineTagX(cap.matched,context)
 }
 
-function inlineTagX( tag : string, context : inlineContext ) : string {
+fun inlineTagX( tag : string, context : inlineContext ) : string {
   if (context.sanitize || !(context.fmt.isFmtHtml))
    then "\\mdline{inlineTagX}"
    else tag
 }
 
-function inlineTagCode( cap : matched, context : inlineContext ) : string {
+fun inlineTagCode( cap : matched, context : inlineContext ) : string {
   // TODO: we do not process fully inside <code> for now; remove this later
   // when koka documentation generates markdown instead of html.
   val icontext = context.copy(grammar = context.grammar.stripFancyRules)
@@ -210,7 +210,7 @@ function inlineTagCode( cap : matched, context : inlineContext ) : string {
    inlineTagX(cap.groups[3],context)
 }
 
-function inlineCode( cap : matched, context ) : string {
+fun inlineCode( cap : matched, context ) : string {
   val txt0 = cap.groups[2]
   val txt1 = if (txt0.startsWith(" `")) then txt0.substr(1) else txt0
   val txt  = if (txt0.endsWith("` ")) then txt1.substr(0,txt1.length-1) else txt1
@@ -222,7 +222,7 @@ function inlineCode( cap : matched, context ) : string {
           attrs.addClasses(["code","code" + cap.groups[1].length.show]))
 }
 
-public function fmtCode( context : inlineContext, env0 : string, txt : string, attrs0 : attrs = attrsNone ) : string {
+pub fun fmtCode( context : inlineContext, env0 : string, txt : string, attrs0 : attrs = attrsNone ) : string {
   val env = if (env0=="") then "code" else env0
   //trace("code: " + env + ": " + attrs0.show)
   val lang   = attrs0.hasKey("language").maybe("",id)
@@ -248,7 +248,7 @@ public function fmtCode( context : inlineContext, env0 : string, txt : string, a
   }
 
 
-  function colorize( code : string, mode : maybe<hilitemode> ) : (string,maybe<hilitemode>) {
+  fun colorize( code : string, mode : maybe<hilitemode> ) : (string,maybe<hilitemode>) {
     if (plain)
      then (code, mode)
      else match(code.hilitePartial(lang,mode)) {
@@ -257,16 +257,16 @@ public function fmtCode( context : inlineContext, env0 : string, txt : string, a
           }
   }
 
-  function colorToken( classes : list<string>, content : string ) : string {
+  fun colorToken( classes : list<string>, content : string ) : string {
     if (plain || classes.isNil) then content else {
-      val pclasses = if (!pretty) then classes else Cons("ptoken",classes.filter(fun(cname) { cname!="token" } ))
+      val pclasses = if (!pretty) then classes else Cons("ptoken",classes.filter(fn(cname) { cname!="token" } ))
       val tokAttrs = context.formatDefaults( attrsNone(elem="span").addClasses(pclasses) )
       context.fmtCodeToken(pclasses,content,lang,tokAttrs)
     }
   }
 
-  function colorCode( content : string, startline : bool ) : string {
-    content.replaceAll("<br>","\n").replaceAll(rxEndSpaces," ").replaceAll( rxTokens, fun(cap) {
+  fun colorCode( content : string, startline : bool ) : string {
+    content.replaceAll("<br>","\n").replaceAll(rxEndSpaces," ").replaceAll( rxTokens, fn(cap) {
       val nl = (pretty && ((cap.index==0 && startline) || (content.substr(cap.index-1,1) == "\n")))
       if (cap.groups[2].bool) {  // token span
         val classes = cap.groups[2].split(" ").list
@@ -281,12 +281,12 @@ public function fmtCode( context : inlineContext, env0 : string, txt : string, a
     });
   }
 
-  function codeEscape( code : string ) : string {
+  fun codeEscape( code : string ) : string {
     context.fmtCodeEscaped(txt,colorize,colorToken,attrs).fst   // possibly tokenize with colors, and process escapes
   }
 
-  function codeUnescape( ecode : string, col : int ) : string {
-    fmtCodeUnescape( ecode, fun(s,startLine) {
+  fun codeUnescape( ecode : string, col : int ) : string {
+    fmtCodeUnescape( ecode, fn(s,startLine) {
       if (plain) then context.fmtCodePlain(s) else colorCode(s, startLine /* col==0 */)
     })
   }
@@ -311,8 +311,8 @@ val rxEndSpaces = regex(@"  +$",multiline=True)
 val rxTokens = regex( @"([^<>]+)|" + rxToken + "|(<([^>]*)>)|(.)", ignoreCase=True)
 val rxToken  = @"(?:<span\s+.*?\bclass=['""]?([^""']+)['""]?[^>]*>([\s\S]*?)</span>)"
 
-function htmlUnescape( s : string ) : string {
-  s.replaceAll( rxEntity, fun(cap) {
+fun htmlUnescape( s : string ) : string {
+  s.replaceAll( rxEntity, fn(cap) {
     match(entityToNum(cap.groups[1])) {
       Nothing -> cap.matched;
       Just(i) -> string(1,i.char)
@@ -321,8 +321,8 @@ function htmlUnescape( s : string ) : string {
 }
 val rxEntity = regex( @"&(#[xX]\d+|\w+);" )
 
-function fmtCodeUnescape( txt : string, fmt : (string,bool) -> string ) : string {
-  function unspan(caps : list<matched>, i : int ) {
+fun fmtCodeUnescape( txt : string, fmt : (string,bool) -> string ) : string {
+  fun unspan(caps : list<matched>, i : int ) {
     match(caps) {
       Nil -> txt.substr(i).fmt(i==0)
       Cons(cap,rest) -> {
@@ -335,12 +335,12 @@ function fmtCodeUnescape( txt : string, fmt : (string,bool) -> string ) : string
 }
 val rxEscaped = regex(@"<ESCAPED\b[^>]*>([\s\S]*?)</ESCAPED>")
 
-function fmtCodeEscaped( context : inlineContext, txt : string, format : (string,maybe<a>) -> (string,maybe<a>),
+fun fmtCodeEscaped( context : inlineContext, txt : string, format : (string,maybe<a>) -> (string,maybe<a>),
                          formatToken : (list<string>,string) -> string,
                          attrs : attrs = attrsNone, st : maybe<a> = Nothing ) : (string,maybe<a>) {
   if (attrs.hasClass("noescape")) return format(txt,st)
 
-  function codeEscape( src : string, st0 : maybe<_a> ) : (string,maybe<_a>) {
+  fun codeEscape( src : string, st0 : maybe<_a> ) : (string,maybe<_a>) {
     match( src.find(rxCodeEscaped)) {
       Nothing   -> format(src,st0)
       Just(cap) -> {
@@ -372,17 +372,17 @@ function fmtCodeEscaped( context : inlineContext, txt : string, format : (string
 val rxCodeEscaped = regex(@"\\\((?:(\d+):)?(?:((?:[^\\\|]|\\[^\)])*)\|)?((?:[^\\\r\n]|\\\n|\\[^\)])*)\\\)")
 val rxClass       = regex(@"^<span\s+class=(?:""([^""]*)""|'([^']*)'|([^\s\&<>]+))\s*>",ignoreCase=True)
 
-function escapeTexPre( txt : string ) : string {
+fun escapeTexPre( txt : string ) : string {
   txt.replaceAll(regex(@"\$"),@"$\text{\tt\textdollar}$")
      .replaceAll(regex(@"\|"),@"$\text{\tt\textbar}$")
 }
 
-function inlineDashes( cap : matched, context ) : string {
+fun inlineDashes( cap : matched, context ) : string {
   context.formatInline(if (cap.groups[1] != "") then "&mdash;" else "&ndash;")
 }
 
 
-function inlineQuotes( cap : matched, context : inlineContext ) : string {
+fun inlineQuotes( cap : matched, context : inlineContext ) : string {
   val quote = cap.matched.substr(0,1)
   if (quote == "'")
    then context.formatInline("&lsquo;" + cap.groups[1] + "&rsquo;")
@@ -391,16 +391,16 @@ function inlineQuotes( cap : matched, context : inlineContext ) : string {
    else context.formatInline("&ldquo;" + cap.groups[2] + "&rdquo;")
 }
 
-function inlineDots( cap : matched, context ) : string {
+fun inlineDots( cap : matched, context ) : string {
   context.formatInline("&hellip;")
 }
 
-function inlineOther( cap : matched, context ) : string {
+fun inlineOther( cap : matched, context ) : string {
   //trace("other: " + cap.matched)
   context.fmtEscape(cap.matched)
 }
 
-function inlineEscape( cap : matched, context : inlineContext ) : string {
+fun inlineEscape( cap : matched, context : inlineContext ) : string {
   val txt = cap.groups[1]
   if (txt==" ") then context.formatInline("&nbsp;")
   elif (txt=="\n") then inlineBreak(cap,context)
@@ -409,13 +409,13 @@ function inlineEscape( cap : matched, context : inlineContext ) : string {
   else context.fmtText(txt)
 }
 
-function hypenateUrl( url : string ) : string {
+fun hypenateUrl( url : string ) : string {
   url.replaceAll(rxPostHyphen,"$1&#8203;").replaceAll("%","&#8203;%")
 }
 val rxPostHyphen = regex(@"([\-\._/\?#\[\]@!$&'\(\)\*\+,;=]+)")
 
 
-function inlineAutoLink( cap : matched, context : inlineContext ) : string {
+fun inlineAutoLink( cap : matched, context : inlineContext ) : string {
   val attrs  = if (cap.groups.matchedOn(3)) then context.formatAttrs(cap.groups[3].parseAttrs) else attrsNone
   val attrsd = context.defaults.matchRules( "a", attrs.addClass("texturl"))
   if (cap.groups[2] == "@") {
@@ -428,21 +428,21 @@ function inlineAutoLink( cap : matched, context : inlineContext ) : string {
   }
 }
 
-function inlineLink( cap : matched, context : inlineContext ) : string {
+fun inlineLink( cap : matched, context : inlineContext ) : string {
   inlineLinkEx(False,cap,context)
 }
 
-function inlineImg( cap : matched, context : inlineContext ) : string {
+fun inlineImg( cap : matched, context : inlineContext ) : string {
   inlineLinkEx(True,cap,context)
 }
 
-function inlineLinkEx( isImage : bool, cap : matched, context : inlineContext ) : string {
+fun inlineLinkEx( isImage : bool, cap : matched, context : inlineContext ) : string {
   // cap.groups = 1:optional spaces, 2:txt, 3:everything after it,
   //               AND 4:href, 5:href-title, OR 6: linkid, AND 7:span attributes
   val attrs  = if (cap.groups.matchedOn(7)) then context.formatAttrs(cap.groups[7].parseAttrs) else attrsNone
   //val attrs   = context.applyDefaults(if (isImage) then "img" else "a", attrs0)
 
-  val nbsp = if (cap.groups[1] != "" && cap.groups[1].list.all(fun(c){c==' '}))
+  val nbsp = if (cap.groups[1] != "" && cap.groups[1].list.all(fn(c){c==' '}))
               then context.fmtText("&nbsp;") else cap.groups[1]
   if (cap.groups.matchedOn(4)) {
     // direct url link:  [text](url title){attrs}
@@ -471,12 +471,12 @@ struct cite(
   ordinal : int
 )
 
-function inlineLinkNoRef( isImage:bool, spaces : string, nbsp : string, txt : string, after : string, attrs : attrs, context : inlineContext ) : string
+fun inlineLinkNoRef( isImage:bool, spaces : string, nbsp : string, txt : string, after : string, attrs : attrs, context : inlineContext ) : string
 {
   // TODO do not look up citation in context.labels[lab] (since we don't use BIB)!
   val citationss
             = if (context.bench || !(txt.contains("@"))) then Nil
-                else txt.splitExclude(rxCiteSep,rxCiteSepExclude).map(fun(elem) {
+                else txt.splitExclude(rxCiteSep,rxCiteSepExclude).map(fn(elem) {
                         match (elem.find(rxCitation)) {
                           Nothing -> []
                           Just(cap) -> {
@@ -503,13 +503,13 @@ val rxCiteSepExclude  = regex(@"[^\\;\s]|\\.")
 val rxCitation        = regex(@"^((?:[^\w\\@+!-]|[+!-](?!@)|\\.|\w(?![+!-]?@))*)(?:([+!-]?)@" + rxCitename + @")([\s\S]*)$")
 val rxCitename        = @"(\w(?:[\w]|[:\-\.]\w)*)"
 
-function inlineCite( cap : matched, context : inlineContext ) : string {
+fun inlineCite( cap : matched, context : inlineContext ) : string {
   log("aux",@"\citation{" + cap.groups[4] + "}")
   context.formatInline(cap.groups[1] + "[" + cap.groups[2] + "]{.textual" +
     (if (cap.groups[3]=="-") then " .free" else "") + "}")
 }
 
-function inlineLinkRef( isImage : bool, spaces : string, nbsp : string, txt : string, after : string, ref : string,
+fun inlineLinkRef( isImage : bool, spaces : string, nbsp : string, txt : string, after : string, ref : string,
                           attrs : attrs, context : inlineContext ) : string
 {
   val id = if (ref != "") then ref.definitionId else txt.definitionId
@@ -573,7 +573,7 @@ function inlineLinkRef( isImage : bool, spaces : string, nbsp : string, txt : st
 val rxCanBeRef = regex(@"^#?[A-Za-z_][\w-]*$")
 
 // get and format default attributes
-function formatDefaults( context : inlineContext, attrs : attrs, elemName : string = "" ) : attrs {
+fun formatDefaults( context : inlineContext, attrs : attrs, elemName : string = "" ) : attrs {
   if (!(attrs.defaults)) return attrs
 
   val sname = if (elemName != "") then elemName
@@ -587,7 +587,7 @@ function formatDefaults( context : inlineContext, attrs : attrs, elemName : stri
 }
 
 // Format a span element
-function fmtSpan( context : inlineContext, txt0 : string, attrs : attrs ) : string {
+fun fmtSpan( context : inlineContext, txt0 : string, attrs : attrs ) : string {
   val sname   = if (attrs.elem != "") then attrs.elem
                 else match (attrs.classes) {
                   Cons(cname,_) -> cname
@@ -617,7 +617,7 @@ function fmtSpan( context : inlineContext, txt0 : string, attrs : attrs ) : stri
   }
 }
 
-public function fmtPoly( context : inlineContext, txt0 : string, attrs : attrs = attrsNone) : string {
+pub fun fmtPoly( context : inlineContext, txt0 : string, attrs : attrs = attrsNone) : string {
   // add newline because of comments in latex (and we do use trimLines on the content)
   val (kind,left,right,rightx) = ("Display","\\[" + (if (attrs.name.isEmpty) then "" else "\\label{" + attrs.name + "}"),"\n\\]","%mdk-614\n")
 
@@ -645,19 +645,19 @@ public function fmtPoly( context : inlineContext, txt0 : string, attrs : attrs =
     else context.fmtMathEnv("div",  left+txt+right+rightx, attrsd)
 }
 
-function mathUnline( txt : string ) {
+fun mathUnline( txt : string ) {
   txt.replaceAll(rxCont,"$1")  // allow line breaks in inline-math
 }
 val rxCont = regex(@"(\\%)|(?:%.*)?\n[ \t]*")
 
 // Format a citation link
-function fmtCite(context : inlineContext, nbsp: string, citations : list<cite>, attrs : attrs ) : string
+fun fmtCite(context : inlineContext, nbsp: string, citations : list<cite>, attrs : attrs ) : string
 {
   val isTextual = (attrs.hasClass("textual"))
 
-  function year(cite: cite) { cite.modifier.contains("-") }
-  function authors(cite: cite) { cite.modifier.contains("!") }
-  function allauthors(cite: cite) { cite.modifier.contains("+") }
+  fun year(cite: cite) { cite.modifier.contains("-") }
+  fun authors(cite: cite) { cite.modifier.contains("!") }
+  fun allauthors(cite: cite) { cite.modifier.contains("+") }
 
   // @Goo93	 Goossens et al. (1993)	Textual style
   // +@Goo93	 Goossens, Mittelbach, and Samarin (1993)	Long – all authors
@@ -687,23 +687,23 @@ function fmtCite(context : inlineContext, nbsp: string, citations : list<cite>, 
   // [+@Goo93]	 (Goossens, Mittelbach, and Samarin, 1993)	Long – all authors
   // [-@Goo93]	 (1993)	Short – just year
   } else {
-    val cites = citations.map(fun(cite){ cite.name }).join(", ")
+    val cites = citations.map(fn(cite){ cite.name }).join(", ")
     // TODO also support other cite styles
     nbsp + "\\citep{" + cites + "}"
   }
 }
 
 // Format attributes
-function formatAttrs( context : inlineContext, attrs : attrs ) : attrs {
+fun formatAttrs( context : inlineContext, attrs : attrs ) : attrs {
   attrs( label = context.formatInline(attrs.label) ).expand(context.metadata )
 }
 
 // Apply defaults
-function applyDefaults( context : inlineContext, sname : string, attrs : attrs ) : attrs {
+fun applyDefaults( context : inlineContext, sname : string, attrs : attrs ) : attrs {
   context.defaults.matchRules(sname,attrs)
 }
 
-function inlineFootnote( cap : matched, context : inlineContext ) : string {
+fun inlineFootnote( cap : matched, context : inlineContext ) : string {
   val id = cap.groups[1].definitionId
   match( context.footnotes[id] ) {
     Just(fn:footnote) -> context.fmtFootnote(id,fn(footnoteNum = context.formatInline(fn.footnoteNum),
@@ -715,14 +715,14 @@ function inlineFootnote( cap : matched, context : inlineContext ) : string {
   }
 }
 
-function isort( xs : list<a>, gt : (a,a) -> bool ) : list<a> {
+fun isort( xs : list<a>, gt : (a,a) -> bool ) : list<a> {
   match(xs) {
     Cons(x,xx) -> insert(x,xx.isort(gt),gt)
     Nil -> Nil
   }
 }
 
-function insert( x : a, xs : list<a>, gt : (a,a) -> bool ) : list<a> {
+fun insert( x : a, xs : list<a>, gt : (a,a) -> bool ) : list<a> {
   match(xs) {
     Cons(y,yy) -> if (gt(x,y)) then Cons(y,insert(x,yy,gt)) else Cons(x,xs)
     Nil -> [x]

@@ -1,0 +1,112 @@
+/* Mutable arrays.
+
+*/
+module interface compat/array
+ 
+//------------------------------
+//#kki: import declarations
+ 
+import std/core/types = std/core/types = "";
+import std/core/hnd = std/core/hnd = "";
+import std/core = std/core = "";
+ 
+//------------------------------
+//#kki: external imports
+ 
+ 
+//------------------------------
+//#kki: fixity declarations
+ 
+ 
+//------------------------------
+//#kki: local imported aliases
+ 
+// Stateful functions can manipulate heap `:h` using allocations, reads and writes.
+local alias std/core/types/st<(h :: H)> :: H -> E = <(std/core/types/read :: H -> X)<(h :: H)>,(std/core/types/write :: H -> X)<(h :: H)>,(std/core/types/alloc :: H -> X)<(h :: H)>> = 1;
+ 
+//------------------------------
+//#kki: type declarations
+ 
+// The type of mutable arrays. See also `:vector` for immutable arrays.
+pub type array <(h :: H),a> :: (H, V) -> V ;
+ 
+//------------------------------
+//#kki: declarations
+ 
+// Return the `index` element of an array. Raises an exception for out-of-bounds access.
+// effect before : <read<h>,exn|e> with(hdiv<h,a,e>)--> after: <exn,read<h>,div|_e1>
+pub fun ([]) : forall<(h :: H),a,(e :: E)> (self : (array :: (H, V) -> V)<(h :: H),a>, index : std/core/types/int) -> <(std/core/types/handled :: HX -> X)<(std/core/exn :: HX)>,(std/core/types/read :: H -> X)<(h :: H)>|(e :: E)> a;
+// Assign to element `i`  in an array `a` . May raise an out-of-bounds exception
+pub fun ([].1) : forall<(h :: H),a> (a : (array :: (H, V) -> V)<(h :: H),a>, i : std/core/types/int, assigned : a) -> <(std/core/types/write :: H -> X)<(h :: H)>,(std/core/types/handled :: HX -> X)<(std/core/exn :: HX)>> ();
+// Return the length of an `:array`.
+pub fun length : forall<(h :: H),a> (self : (array :: (H, V) -> V)<(h :: H),a>) -> std/core/types/int;
+pub fun unsafe-array : forall<(h :: H),a> (n : std/core/types/int) -> (array :: (H, V) -> V)<(h :: H),a>;
+// Copy an array
+pub fun clone : forall<a,(h :: H)> (self : (array :: (H, V) -> V)<(h :: H),a>) -> <(std/core/types/read :: H -> X)<(h :: H)>> (array :: (H, V) -> V)<(h :: H),a>;
+// used internally to have non-bound-checked access
+pub fun unsafe-idx : forall<(h :: H),a,(e :: E)> (self : (array :: (H, V) -> V)<(h :: H),a>, index : std/core/types/int) -> <(std/core/types/read :: H -> X)<(h :: H)>|(e :: E)> a;
+// Concatenate an array of strings
+pub fun join : forall<(h :: H)> (a : (array :: (H, V) -> V)<(h :: H),std/core/types/string>) -> <(std/core/types/read :: H -> X)<(h :: H)>> std/core/types/string;
+// Concatenate an array of strings with a separator `sep`
+pub fun join.1 : forall<(h :: H)> (v : (array :: (H, V) -> V)<(h :: H),std/core/types/string>, sep : std/core/types/string) -> <(std/core/types/read :: H -> X)<(h :: H)>> std/core/types/string;
+pub fun unsafe-assign : forall<(h :: H),a> (a : (array :: (H, V) -> V)<(h :: H),a>, i : std/core/types/int, x : a) -> <(std/core/types/write :: H -> X)<(h :: H)>> ();
+pub fun unsafe-freeze : forall<(h :: H),a> (self : (array :: (H, V) -> V)<(h :: H),a>) -> <(std/core/types/read :: H -> X)<(h :: H)>> (std/core/types/vector :: V -> V)<a>;
+// Create a new array of length `n`  with initial elements `a` .
+pub fun array : forall<(h :: H),a> (n : std/core/types/int, default : a) -> (array :: (H, V) -> V)<(h :: H),a>;
+// Convert a vector to an array (by making a copy)
+pub fun array.1 : forall<(h :: H),a> (v : (std/core/types/vector :: V -> V)<a>) -> (array :: (H, V) -> V)<(h :: H),a>;
+// monadic lift
+fun .mlift1196-array.2 : forall<(_e :: E),a,(h :: H)> (a : (array :: (H, V) -> V)<(h :: H),a>, wild_ : ()) -> <(std/core/types/handled :: HX -> X)<(std/core/exn :: HX)>,(std/core/types/write :: H -> X)<(h :: H)>|(_e :: E)> (array :: (H, V) -> V)<(h :: H),a>;
+// Convert a list to an array.
+pub fun array.2 : forall<a,(h :: H)> (xs : (std/core/list :: V -> V)<a>) -> (array :: (H, V) -> V)<(h :: H),a>;
+// Invoke a function `f` for each element in a an array `a`.   
+// Note: this can diverge by storing self referential functions in the array
+pub fun foreach : forall<a,(e :: E),(h :: H)> (a : (array :: (H, V) -> V)<(h :: H),a>, f : (a) -> <(std/core/types/read :: H -> X)<(h :: H)>,(std/core/types/div :: X)|(e :: E)> ()) -> <(std/core/types/read :: H -> X)<(h :: H)>,(std/core/types/div :: X)|(e :: E)> ();
+// monadic lift
+fun .mlift1197-op : forall<a,(h :: H)> (a : (array :: (H, V) -> V)<(h :: H),a>, acc : (std/core/list :: V -> V)<a>, i0.1159 : std/core/types/int, .y.1169 : a) -> <(std/core/types/handled :: HX -> X)<(std/core/exn :: HX)>,(std/core/types/read :: H -> X)<(h :: H)>,(std/core/types/div :: E)> (std/core/list :: V -> V)<a>;
+// lifted local: list, build
+fun .lift1158-list : forall<a,(h :: H)> (a : (array :: (H, V) -> V)<(h :: H),a>, i : std/core/types/int, acc : (std/core/list :: V -> V)<a>) -> <(std/core/types/handled :: HX -> X)<(std/core/exn :: HX)>,(std/core/types/read :: H -> X)<(h :: H)>,(std/core/types/div :: E)> (std/core/list :: V -> V)<a>;
+// Convert an array to a list
+pub fun list : forall<a,(h :: H)> (a : (array :: (H, V) -> V)<(h :: H),a>) -> <(std/core/types/read :: H -> X)<(h :: H)>> (std/core/list :: V -> V)<a>;
+// monadic lift
+fun .mlift1198-map : forall<a,(e :: E),(h :: H)> (a : (array :: (H, V) -> V)<(h :: H),a>, i : std/core/types/int, .y.1175 : a) -> <(std/core/types/st :: H -> E)<(h :: H)>,(std/core/types/div :: X)|(e :: E)> ();
+// monadic lift
+fun .mlift1199-map : forall<a,(e :: E),(h :: H)> (a : (array :: (H, V) -> V)<(h :: H),a>, f : (a) -> <(std/core/types/st :: H -> E)<(h :: H)>,(std/core/types/div :: X)|(e :: E)> a, i : std/core/types/int, .y.1174 : a) -> <(std/core/types/read :: H -> X)<(h :: H)>,(std/core/types/alloc :: H -> X)<(h :: H)>,(std/core/types/div :: X),(std/core/types/write :: H -> X)<(h :: H)>|(e :: E)> ();
+// monadic lift
+fun .mlift1200-map : forall<a,(e :: E),(h :: H)> (a : (array :: (H, V) -> V)<(h :: H),a>, wild_ : ()) -> <(std/core/types/alloc :: H -> X)<(h :: H)>,(std/core/types/div :: X),(std/core/types/read :: H -> X)<(h :: H)>,(std/core/types/write :: H -> X)<(h :: H)>|(e :: E)> (array :: (H, V) -> V)<(h :: H),a>;
+// Destructively apply function `f`  to each element in an array `a`.   
+// Note: this can diverge by storing self referential functions in the array
+pub fun map : forall<a,(e :: E),(h :: H)> (a : (array :: (H, V) -> V)<(h :: H),a>, f : (a) -> <(std/core/types/st :: H -> E)<(h :: H)>,(std/core/types/div :: X)|(e :: E)> a) -> <(std/core/types/st :: H -> E)<(h :: H)>,(std/core/types/div :: X)|(e :: E)> (array :: (H, V) -> V)<(h :: H),a>;
+// Convert an array to a vector (to guarantee safety, a copy is made)
+pub fun vector : forall<a,(h :: H)> (self : (array :: (H, V) -> V)<(h :: H),a>) -> <(std/core/types/read :: H -> X)<(h :: H)>> (std/core/types/vector :: V -> V)<a>;
+ 
+//------------------------------
+//#kki: external declarations
+ 
+ 
+//------------------------------
+//#kki: inline definitions
+ 
+//.inline-section
+specialize "**" fun foreach // inline size: 1
+  = forall<a,(e :: E),(h :: H)> fn<<(std/core/types/read :: H -> X)<(h :: H)>,(std/core/types/div :: X)|(e :: E)>>(a: (array :: (H, V) -> V)<(h :: H),a>, f: (a) -> <(std/core/types/read :: H -> X)<(h :: H)>,(std/core/types/div :: X)|(e :: E)> ()){
+    std/core/for<<(std/core/types/div :: X),(std/core/types/read :: H -> X)<(h :: H)>|(e :: E)>>(0, (std/core/types/.open<(std/core/types/(<>) :: E),<(std/core/types/div :: X),(std/core/types/read :: H -> X)<(h :: H)>|(e :: E)>,(x : std/core/types/int, y : std/core/types/int) -> std/core/types/int,(x : std/core/types/int, y : std/core/types/int) -> <(std/core/types/div :: X),(std/core/types/read :: H -> X)<(h :: H)>|(e :: E)> std/core/types/int>((fn(x: std/core/types/int, y: std/core/types/int){
+        (std/core/int-sub(x, y));
+      }))((std/core/types/.open<(std/core/types/(<>) :: E),<(std/core/types/div :: X),(std/core/types/read :: H -> X)<(h :: H)>|(e :: E)>,(self : (array :: (H, V) -> V)<(h :: H),a>) -> std/core/types/int,(self : (array :: (H, V) -> V)<(h :: H),a>) -> <(std/core/types/div :: X),(std/core/types/read :: H -> X)<(h :: H)>|(e :: E)> std/core/types/int>((compat/array/length<(h :: H),a>))(a)), 1)), (fn<<(std/core/types/div :: X),(std/core/types/read :: H -> X)<(h :: H)>|(e :: E)>>(i: std/core/types/int){
+        (f((compat/array/unsafe-idx<(h :: H),a,<(std/core/types/div :: X)|(e :: E)>>(a, i))));
+      }));
+  };
+specialize "**" fun map // inline size: 1
+  = forall<a,(e :: E),(h :: H)> fn<<(std/core/types/st :: H -> E)<(h :: H)>,(std/core/types/div :: X)|(e :: E)>>(a: (array :: (H, V) -> V)<(h :: H),a>, f: (a) -> <(std/core/types/st :: H -> E)<(h :: H)>,(std/core/types/div :: X)|(e :: E)> a){
+    val _ : ()
+          = std/core/for<<(std/core/types/alloc :: H -> X)<(h :: H)>,(std/core/types/div :: X),(std/core/types/read :: H -> X)<(h :: H)>,(std/core/types/write :: H -> X)<(h :: H)>|(e :: E)>>(0, (std/core/types/.open<(std/core/types/(<>) :: E),<(std/core/types/alloc :: H -> X)<(h :: H)>,(std/core/types/div :: X),(std/core/types/read :: H -> X)<(h :: H)>,(std/core/types/write :: H -> X)<(h :: H)>|(e :: E)>,(x : std/core/types/int, y : std/core/types/int) -> std/core/types/int,(x : std/core/types/int, y : std/core/types/int) -> <(std/core/types/alloc :: H -> X)<(h :: H)>,(std/core/types/div :: X),(std/core/types/read :: H -> X)<(h :: H)>,(std/core/types/write :: H -> X)<(h :: H)>|(e :: E)> std/core/types/int>((fn(x: std/core/types/int, y: std/core/types/int){
+              (std/core/int-sub(x, y));
+            }))((std/core/types/.open<(std/core/types/(<>) :: E),<(std/core/types/alloc :: H -> X)<(h :: H)>,(std/core/types/div :: X),(std/core/types/read :: H -> X)<(h :: H)>,(std/core/types/write :: H -> X)<(h :: H)>|(e :: E)>,(self : (array :: (H, V) -> V)<(h :: H),a>) -> std/core/types/int,(self : (array :: (H, V) -> V)<(h :: H),a>) -> <(std/core/types/alloc :: H -> X)<(h :: H)>,(std/core/types/div :: X),(std/core/types/read :: H -> X)<(h :: H)>,(std/core/types/write :: H -> X)<(h :: H)>|(e :: E)> std/core/types/int>((compat/array/length<(h :: H),a>))(a)), 1)), (fn<<(std/core/types/alloc :: H -> X)<(h :: H)>,(std/core/types/div :: X),(std/core/types/read :: H -> X)<(h :: H)>,(std/core/types/write :: H -> X)<(h :: H)>|(e :: E)>>(i: std/core/types/int){
+              (std/core/types/.open<<(std/core/types/write :: H -> X)<(h :: H)>>,<(std/core/types/write :: H -> X)<(h :: H)>,(std/core/types/alloc :: H -> X)<(h :: H)>,(std/core/types/div :: X),(std/core/types/read :: H -> X)<(h :: H)>|(e :: E)>,(a : (array :: (H, V) -> V)<(h :: H),a>, i : std/core/types/int, x : a) -> <(std/core/types/write :: H -> X)<(h :: H)>> (),(a : (array :: (H, V) -> V)<(h :: H),a>, i : std/core/types/int, x : a) -> <(std/core/types/write :: H -> X)<(h :: H)>,(std/core/types/alloc :: H -> X)<(h :: H)>,(std/core/types/div :: X),(std/core/types/read :: H -> X)<(h :: H)>|(e :: E)> ()>((compat/array/unsafe-assign<(h :: H),a>))(a, i, (f((compat/array/unsafe-idx<(h :: H),a,<(std/core/types/alloc :: H -> X)<(h :: H)>,(std/core/types/div :: X),(std/core/types/write :: H -> X)<(h :: H)>|(e :: E)>>(a, i))))));
+            }));
+    a;
+  };
+fun vector // inline size: 2
+  = forall<a,(h :: H)> fn<<(std/core/types/read :: H -> X)<(h :: H)>>>(self: (array :: (H, V) -> V)<(h :: H),a>){
+    compat/array/unsafe-freeze<(h :: H),a>((compat/array/clone<a,(h :: H)>(self)));
+  };

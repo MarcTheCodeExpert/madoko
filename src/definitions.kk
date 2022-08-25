@@ -9,11 +9,11 @@
 // Process definitions: links, footnotes, labels, and counters
 module definitions
 
-import std/dict
-import std/regex
-import std/log
-import std/path
-import std/string
+import std/os/path
+import std/text/regex
+import std/data/dict
+import v1/std/log
+import v1/std/text/string
 import common
 import options
 import attributes
@@ -25,7 +25,7 @@ import texParser
 
 // Parse source into blocks (see "parseBlocks") and
 // process all definitions (see "parseDefinitions").
-public function parseBody( fcontext : formatContext,
+pub fun parseBody( fcontext : formatContext,
                            lineNo : int,
                            src : string,
                            metadata : metadata,
@@ -39,7 +39,7 @@ public function parseBody( fcontext : formatContext,
 
 // Visits all blocks and returns a dictionary of links, labels, footnotes,
 // a footnote block, and a table-of-contents block.
-public function parseDefinitions(
+pub fun parseDefinitions(
                      fcontext : formatContext,
                      blocks : list<block>,
                      metadata : metadata,
@@ -53,13 +53,13 @@ public function parseDefinitions(
 }
 
 // Fast version for benchmarking
-function parseDefinitionsBench(
+fun parseDefinitionsBench(
                      fcontext : formatContext,
                      blocks : list<block> ) :  div (list<block>,formatContext)
 {
   val links  = mdict()
 
-  blocks.foreach fun(block) {
+  blocks.foreach fn(block) {
     match(block) {
       DefLink(id,link) -> {
         links[id] := link
@@ -73,7 +73,7 @@ function parseDefinitionsBench(
 
 
 // Full version that does attribute processing
-function parseDefinitionsFull(
+fun parseDefinitionsFull(
                      fcontext : formatContext,
                      blocks : list<block>,
                      mdata : metadata,
@@ -97,7 +97,7 @@ function parseDefinitionsFull(
   val defaultAttrs : rules = rulesFromMeta(mdata)
 
   // process attributes
-  function process( attrs : attrs, previousPar : parinfo, block : block ) : <div,st<_h>> block {
+  fun process( attrs : attrs, previousPar : parinfo, block : block ) : <div,st<_h>> block {
     val bname = block.blockName
 
     // merge and set default attributes
@@ -113,7 +113,7 @@ function parseDefinitionsFull(
     //adjust counters
     if (bname!="" && attrs.defaults && !attrs.hasClass("clearnum")) counters.adjustCounter(bname,"",nested)
 
-    attrsd.common/counters.foreach fun(cv) {
+    attrsd.common/counters.foreach fn(cv) {
       val (counter,value) = cv
       counters.adjustCounter(counter,value,nested)
     }
@@ -188,7 +188,7 @@ function parseDefinitionsFull(
   }
 
   // process a block
-  function parseDefBlock( previousPar : parinfo,  block : block ) : <st<_h>,div> block {
+  fun parseDefBlock( previousPar : parinfo,  block : block ) : <st<_h>,div> block {
     val attrs : attrs = match(block) {
       DefLink(id,link) -> {
         links[id] := link
@@ -203,7 +203,7 @@ function parseDefinitionsFull(
         footnoteCount := footnoteCount+1
         val ncontent = content.mapBlocks(parseDefBlock)
         footnotes[id] := Footnote("&fn-" + id + ";",
-                                   fun(ictx){ formatBlocks(fcontext(inlineContext=ictx),ncontent) },
+                                   fn(ictx){ formatBlocks(fcontext(inlineContext=ictx),ncontent) },
                                    extractCaption(ncontent))
         footnoteItems := Cons(ncontent,footnoteItems)
         attrsNone
@@ -231,14 +231,14 @@ function parseDefinitionsFull(
     attrs.process( previousPar, block )
   }
 
-  function mapBlock( b : block, f ) {
+  fun mapBlock( b : block, f ) {
     [b].mapBlocks(f).take(1)
   }
 
   val newblocks  = blocks.mapBlocks(parseDefBlock)
   val labelsDict = labels.freeze()
   val tocBlocks  = //if (tocDepth <= 0) then Empty else createToc(headings.reverse)
-                    (tocs.list.map fun(entry) {
+                    (tocs.list.map fn(entry) {
                        (entry.fst,
                           [createToc(entry.fst, entry.snd.reverse,labelsDict,fcontext.inlineContext.metadata,defaultAttrs)]
                             .mapBlocks(parseDefBlock))
@@ -253,7 +253,7 @@ function parseDefinitionsFull(
                                 _ -> newblocks + [Special("FOOTNOTES")]
                              }
 
-  val secblocks = fblocks.sections(secInit(secBase=secBase,secMax=secDepth,secDefaults=fun(a){ defaultAttrs.matchRules("section",a) }))
+  val secblocks = fblocks.sections(secInit(secBase=secBase,secMax=secDepth,secDefaults=fn(a){ defaultAttrs.matchRules("section",a) }))
 
   (secblocks,
    fcontext( fcontext.inlineContext.copy( links=links.freeze, labels=labelsDict,
@@ -277,10 +277,10 @@ type parinfo {
   ParBlock
 }
 
-function mapBlocks( blocks : list<block>,
+fun mapBlocks( blocks : list<block>,
                     action : (parinfo,block) -> <st<h>,div|e> block  ) : <st<h>,div|e> list<block> {
   var previousPar := ParNone
-  blocks.map fun(block) {
+  blocks.map fn(block) {
     val nblock = action(previousPar,block)
 
     match(nblock) {
@@ -311,7 +311,7 @@ function mapBlocks( blocks : list<block>,
 }
 
 // Sets new attributes for a block, and applies conversion to text
-function setAttrs( block : block, xs : attrs, fcontext : formatContext ) : block {
+fun setAttrs( block : block, xs : attrs, fcontext : formatContext ) : block {
   match(block) {
     HLine(_)            -> HLine(xs)
     Para( text )        -> Para(xs.transformText(text,dict(),fcontext.inlineContext.metadata),xs)
@@ -330,7 +330,7 @@ function setAttrs( block : block, xs : attrs, fcontext : formatContext ) : block
   }
 }
 
-function shouldRender( attrs : attrs, fmt : formatter ) :bool {
+fun shouldRender( attrs : attrs, fmt : formatter ) :bool {
   if (attrs.lookupKey("display","") == "none") then False
   else match (attrs.input) {
     Markdown(Just(mfmt)) -> mfmt == fmt
@@ -339,14 +339,14 @@ function shouldRender( attrs : attrs, fmt : formatter ) :bool {
   }
 }
 
-function transformItem( blocks : list<block>, attrs: attrs ) : block {
+fun transformItem( blocks : list<block>, attrs: attrs ) : block {
   match(attrs.hasKey("li-label")) {
     Nothing   -> Item(blocks,attrs)
     Just(txt) -> Item([Line("[" + txt + "]{.li-label}")]+blocks,attrs)
   }
 }
 
-function transformDiv( blocks : list<block>, attrs : attrs, fcontext : formatContext )  : block {
+fun transformDiv( blocks : list<block>, attrs : attrs, fcontext : formatContext )  : block {
   if (attrs.lookupKey("transform","") == "false") return Div(blocks,attrs)
   match(blocks) {                       // needed for internal divs like definition lists
     Nil              -> ()
@@ -386,11 +386,11 @@ function transformDiv( blocks : list<block>, attrs : attrs, fcontext : formatCon
   }
 }
 
-function incLineNo( lineNo : int, inc : int = 1 ) : int {
+fun incLineNo( lineNo : int, inc : int = 1 ) : int {
   if (lineNo > 0) then lineNo + inc else lineNo
 }
 
-function extractCaption( blocks : list<block> ) : string
+fun extractCaption( blocks : list<block> ) : string
 {
   match(blocks) {
     Nil -> ""
@@ -415,7 +415,7 @@ function extractCaption( blocks : list<block> ) : string
 // Divide into sections
 //--------------------------------------------------------
 
-function sections( blocks : list<block>, secinfo : secinfo ) : div list<block>
+fun sections( blocks : list<block>, secinfo : secinfo ) : div list<block>
 {
   if (secinfo.level > secinfo.secMax) return blocks
   match (blocks.findHeading(secinfo)) {
@@ -424,10 +424,10 @@ function sections( blocks : list<block>, secinfo : secinfo ) : div list<block>
   }
 }
 
-function sectionMap( blocks : list<block>, secinfo : secinfo ) : div list<block>
+fun sectionMap( blocks : list<block>, secinfo : secinfo ) : div list<block>
 {
   if (secinfo.level > secinfo.secMax) return blocks
-  blocks.map fun(block) {
+  blocks.map fn(block) {
     match(block) {
       Div(content,attrs) -> {
         Div(content.sections(secinfo),attrs)
@@ -437,17 +437,17 @@ function sectionMap( blocks : list<block>, secinfo : secinfo ) : div list<block>
   }
 }
 
-function sectionSpan( h : block, blocks : list<block>,  secinfo : secinfo  ) : div list<block>
+fun sectionSpan( h : block, blocks : list<block>,  secinfo : secinfo  ) : div list<block>
 {
-  function createSection(content)
+  fun createSection(content)
   {
     val lvl = h.headingLevel(secinfo.level)
     val nsecinfo = secinfo(level=lvl+1)
     val ncontent = content.sections(nsecinfo)
     match(h) {
       Heading(d,txt,attrs) -> {
-        val (skvs,hkvs) = attrs.keyvals.partition(fun(kv) { kv.fst.startsWith("data-") })
-        val (scls,hcls) = attrs.classes.partition(fun(c) { c.startsWith("section-") })
+        val (skvs,hkvs) = attrs.keyvals.partition(fn(kv) { kv.fst.startsWith("data-") })
+        val (scls,hcls) = attrs.classes.partition(fn(c) { c.startsWith("section-") })
         val secattrs = ".section" + d.show +
                        "; data-section-depth: " + d.show +
                         (if (attrs.name=="") then "" else "; id:'" + attrs.name + "'")
@@ -466,10 +466,10 @@ function sectionSpan( h : block, blocks : list<block>,  secinfo : secinfo  ) : d
   }
 }
 
-function findHeading( blocks : list<block>, secinfo : secinfo ) : maybe<(list<block>,block,list<block>)>
+fun findHeading( blocks : list<block>, secinfo : secinfo ) : maybe<(list<block>,block,list<block>)>
 {
   val lvl = max(secinfo.level,secinfo.secBase)
-  val (pre,post) = blocks.span(fun(b) {
+  val (pre,post) = blocks.span(fn(b) {
     val d = b.headingLevel(lvl+1, lvl)
     (d > lvl) //  || d < secinfo.secMin
   })
@@ -480,7 +480,7 @@ function findHeading( blocks : list<block>, secinfo : secinfo ) : maybe<(list<bl
 }
 
 
-function headingLevel( block : block, default : int, defaultSection : int = default ) : int {
+fun headingLevel( block : block, default : int, defaultSection : int = default ) : int {
   match(block) {
     Heading(d,_,attrs)  | !(attrs.hasClass("no-section")) -> d
     Div(_,attrs)        | attrs.hasClass("section") -> {
@@ -499,7 +499,7 @@ function headingLevel( block : block, default : int, defaultSection : int = defa
 
 
 // Create a table of contents
-function createToc( tocName : string, headings : list<(int,attrs)>, labels : dict<label>, metadata : dict<string>, defaultAttrs : rules ) : div block
+fun createToc( tocName : string, headings : list<(int,attrs)>, labels : dict<label>, metadata : dict<string>, defaultAttrs : rules ) : div block
 {
   val tocClass = if (tocName.isEmpty) then ".toc-contents" else ".toc-" + tocName
   val attrsText = ".toc; " + tocClass
@@ -509,7 +509,7 @@ function createToc( tocName : string, headings : list<(int,attrs)>, labels : dic
        //defaultAttrs.matchRules( "toc", attrsNone(elem="toc").addClasses(["toc",tocClass])) )
 }
 
-function tocList( items : string, depth: int, defaultAttrs : rules ) : string {
+fun tocList( items : string, depth: int, defaultAttrs : rules ) : string {
   if (items.isEmpty) then "" else {
     val tildes = string(depth+1,'~') + " "
     tildes + "Begin TocBlock { .tocblock" + (depth+1).show + " }\n" +
@@ -518,7 +518,7 @@ function tocList( items : string, depth: int, defaultAttrs : rules ) : string {
   }
 }
 
-function tocItems( headings : list<(int,attrs)>, outerDepth : int, labels : dict<label>, metadata : dict<string>, defaultAttrs : rules ) : div string {
+fun tocItems( headings : list<(int,attrs)>, outerDepth : int, labels : dict<label>, metadata : dict<string>, defaultAttrs : rules ) : div string {
   match(headings) {
     Nil -> ""
     Cons(hdr,hdrs) -> {
@@ -527,7 +527,7 @@ function tocItems( headings : list<(int,attrs)>, outerDepth : int, labels : dict
         tocItems(headings,outerDepth+1,labels,metadata,defaultAttrs).tocList(outerDepth,defaultAttrs)
       }
       else {
-        val (subs,rest) = hdrs.span( fun(h) { h.fst > depth } )
+        val (subs,rest) = hdrs.span( fn(h) { h.fst > depth } )
         val txt = attrs.lookupKey("toc-line","[??]").expandKeys(attrs.source,attrs,labels,metadata)
         val tocline = @"[\/" + txt + @"\/](#" + attrs.name + ")"
         val item = "~ Begin TocItem { .tocitem" + depth.show +
@@ -549,10 +549,10 @@ function tocItems( headings : list<(int,attrs)>, outerDepth : int, labels : dict
 //--------------------------------------------------------
 
 // expand counters in label,
-function expandCounters( attrs : attrs, counters : mdict<h,counter>, metadata : dict<string>, nested : mdict<h,list<string>> ) : st<h> attrs {
+fun expandCounters( attrs : attrs, counters : mdict<h,counter>, metadata : dict<string>, nested : mdict<h,list<string>> ) : st<h> attrs {
   val xlab = attrs.label.expandKeys(attrs.source,attrs,dict(),metadata).expandCounter(counters, nested)
   val attrs1 = if (xlab != attrs.label) then attrs(label=xlab) else attrs
-  attrs1( keyvals = attrs1.keyvals.map(fun(kv) {
+  attrs1( keyvals = attrs1.keyvals.map(fn(kv) {
     val (key,value) = kv
     if (key=="start" || key.endsWith("-label")) {
       (key, value.expandKeys(attrs1.source,attrs1,dict(),metadata).expandCounter(counters, nested))
@@ -562,9 +562,9 @@ function expandCounters( attrs : attrs, counters : mdict<h,counter>, metadata : 
 }
 
 // expand the counters in a string
-function expandCounter(lab : string, counters : mdict<h,counter>, nested : mdict<h,list<string>> ) : st<h> string
+fun expandCounter(lab : string, counters : mdict<h,counter>, nested : mdict<h,list<string>> ) : st<h> string
 {
-  lab.replaceAll(rxcounter) fun(cap) {
+  lab.replaceAll(rxcounter) fn(cap) {
     //trace("expand: " + lab + ": found: " + cap.groups[1] + " = " + counters[cap.groups[1]].string)
     val cname = cap.groups[1].definitionId
     match(counters[cname]) {
@@ -582,14 +582,14 @@ val rxcounter = regex(@"(?:\\/)?@([\w\-]+)(?:\\/)?")
 
 
 // adjust a counter
-function adjustCounter(counters : mdict<h,counter>,name : string, value : string, nested : mdict<h,list<string>> ) : st<h> () {
+fun adjustCounter(counters : mdict<h,counter>,name : string, value : string, nested : mdict<h,list<string>> ) : st<h> () {
   //trace("increment " + counter + " from " + counters[counter].string + " to " + incrementCounter(counters[counter].string,value))
   counters.setCounter( name, increment(counters[name].maybe(Counter(),id), value), nested )
   counters.resetNestedCounters(name,nested)
 }
 
 // increment or set a count to a value
-function increment(counter :counter, xvalue : string) : counter {
+fun increment(counter :counter, xvalue : string) : counter {
   val v = xvalue.toLower
   if (v=="++" || v=="") then counter(value=counter.value+1)
   elif (v=="--") then counter(value=counter.value-1)
@@ -599,7 +599,7 @@ function increment(counter :counter, xvalue : string) : counter {
   }
 }
 
-function setcounterstyle( counter : counter, xvalue : string, v : string ) : counter
+fun setcounterstyle( counter : counter, xvalue : string, v : string ) : counter
 {
   if (v=="upper-alpha" || v=="upper-case" || v=="upper-latin") then counter(counter.value,Uppercase)
   elif (v=="lower-alpha" || v=="lower-case" || v=="lower-latin") then counter(counter.value,Lowercase)
@@ -652,12 +652,12 @@ val rxUnicodeBase = regex(@"^unicode-base\((\d+)(?: *, *(\d+))?\)$")
 val rxEntityList = regex(@"^entity-list\(([^\s,\)]+(?: *, *[^\s,\)]+)*)\)")
 
 // reset lower counters (ie. for h1-h2, reset h1-h2-h3, h1-h2-h3-h4, ...)
-function resetNestedCounters(counters : mdict<h,counter>, counter : string, nested : mdict<h,list<string>> ) : st<h> ()
+fun resetNestedCounters(counters : mdict<h,counter>, counter : string, nested : mdict<h,list<string>> ) : st<h> ()
 {
   match(nested[counter]) {
     Nothing -> ()
     Just(cnts) -> {
-      cnts.foreach fun(cnt) {
+      cnts.foreach fn(cnt) {
         match(counters[cnt]) {
           Nothing -> ()
           Just(c) -> counters[cnt] := c(value=0)
@@ -667,7 +667,7 @@ function resetNestedCounters(counters : mdict<h,counter>, counter : string, nest
   }
 }
 
-function setCounter( counters : mdict<h,counter>, name : string, counter : counter, nested : mdict<h,list<string>> ) : st<h> counter
+fun setCounter( counters : mdict<h,counter>, name : string, counter : counter, nested : mdict<h,list<string>> ) : st<h> counter
 {
   if (counters[name].isNothing) {
     nested.initializeCounter( name )
@@ -676,10 +676,10 @@ function setCounter( counters : mdict<h,counter>, name : string, counter : count
   counter
 }
 
-function initializeCounter( nested : mdict<h,list<string>>, name : string ) : st<h> ()
+fun initializeCounter( nested : mdict<h,list<string>>, name : string ) : st<h> ()
 {
   val prefixes = name.split("-").list.init
-  prefixes.foreachIndexed fun(i,_) {
+  prefixes.foreachIndexed fn(i,_) {
     val pre = prefixes.take(i+1).join("-")
     nested[pre] := Cons(name, nested[pre].maybe([],id))
     //trace("nested: " + pre + ": " + nested[pre].maybe([],id).join(","))
@@ -709,7 +709,7 @@ type format {
 
 struct counter( value :int = 0, format :format = Arabic()  )
 
-function show( counter : counter ) : string {
+fun show( counter : counter ) : string {
   match(counter.format) {
     Arabic(width)  -> counter.value.show.align(width,'0')
     Lowercase  -> counter.value.showUnicodeBase('a'.int, 'z'.int, showAsChar)
@@ -731,19 +731,19 @@ val cjkDecimals = [0x3007,0x4E00,0x4E8C,0x4E09,0x56DB,0x4E94,0x516D,0x4E03,0x516
 val symbolDecimal = ["&ast;","&dagger;","&Dagger;","&sect;","&para;"]
 
 
-function showEntity( i : int ) : string {
+fun showEntity( i : int ) : string {
   if (i >= 32 && i <= 127)
    then string(1,i.char)
    else "&#" + i.show + ";"
 }
 
-function showAsChar( i : int ) : string {
+fun showAsChar( i : int ) : string {
   string(1,i.char)
 }
 
-function showDigits( i : int, digits : list<int> ) : string {
+fun showDigits( i : int, digits : list<int> ) : string {
   val s = i.show
-  s.list.map( fun(c) {
+  s.list.map( fn(c) {
     val d = (c - '0').int
     match( digits.drop(d) ) {
       Cons(code) -> showEntity(code)
@@ -752,7 +752,7 @@ function showDigits( i : int, digits : list<int> ) : string {
   }).join
 }
 
-function showUnicodeBase( value : int, start : int, end : int = start + 9, showCode : (int) -> string = showEntity ) : string {
+fun showUnicodeBase( value : int, start : int, end : int = start + 9, showCode : (int) -> string = showEntity ) : string {
   if (value <= 0) return "?"
   val base = (end - start) + 1
   val code = (start + ((value-1) % base))
@@ -760,7 +760,7 @@ function showUnicodeBase( value : int, start : int, end : int = start + 9, showC
   replicate(entity, ((value-1) / base) + 1).join()
 }
 
-function showFromList( value : int, items : list<string> ) : string {
+fun showFromList( value : int, items : list<string> ) : string {
   if (value <= 0) return "?"
   val base = items.length
   val item = match(items.drop( (value-1) % base )) {
@@ -770,7 +770,7 @@ function showFromList( value : int, items : list<string> ) : string {
   replicate(item, ((value-1) / base) + 1).join()
 }
 
-function showRoman( value : int ) {
+fun showRoman( value : int ) {
   val huns = ["", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM"]
   val tens = ["", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC"]
   val ones = ["", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"]
@@ -787,15 +787,15 @@ function showRoman( value : int ) {
 // Unformat
 //--------------------------------------------------------
 
-function unformat( s : string ) : string {
-  s.replaceAll(rxLink, fun(cap) { cap.groups[1].replaceAll(rxLink,"$1") } ).trim
+fun unformat( s : string ) : string {
+  s.replaceAll(rxLink, fn(cap) { cap.groups[1].replaceAll(rxLink,"$1") } ).trim
 }
 
 //--------------------------------------------------------
 // Block names
 //--------------------------------------------------------
 
-function blockName(block : block) : string
+fun blockName(block : block) : string
 {
   match(block) {
     Para  -> "p"

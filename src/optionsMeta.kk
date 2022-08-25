@@ -9,23 +9,27 @@
 // Options from metadata
 module optionsMeta
 
-import std/log
-import std/path
-import std/string
+
+import std/os/path
 import common
 import options
 
-public function fromMeta( opts : options, mdata : metadata ) : options {
-  mdata.foldl(opts) fun(options : options, kv : (string,string)) {
+import compat
+import compat/string
+import compat/path
+import compat/log
+
+pub fun fromMeta( opts : options, mdata : metadata ) : options {
+  mdata.foldl(opts) fn(options : options, kv : (string,string)) {
     val (key,xvalue) = kv
     options.update( key, xvalue, mdata )
   }
 }
 
-function update( options : options, key : string, xvalue : string, mdata : metadata ) : options {
+fun update( options : options, key : string, xvalue : string, mdata : metadata ) : options {
   val lvalue = xvalue.toLower
   val value  = if (lvalue=="none" || lvalue=="clear" || lvalue=="false") then "" else xvalue
-  val ivalue = value.parseInt.maybe(~1,id)
+  val ivalue = value.parse-int.maybe(~1,id)
   val bvalue = (value!="" && value!="0")
 
   if   (key=="title")  options(title=value)
@@ -67,12 +71,12 @@ function update( options : options, key : string, xvalue : string, mdata : metad
 }
 
 
-function appendNL(s : string, t : string ) : string {
+fun appendNL(s : string, t : string ) : string {
   if (s == "" || s.endsWith("\n")) then s + t else s + "\n" + t
 }
 
 
-function appendValue( xs : list<string>, x : string, sep : string = "&br;" ) : list<string> {
+fun appendValue( xs : list<string>, x : string, sep : string = "&br;" ) : list<string> {
   match(xs.reverse) {
     Nil -> [x]
     Cons(y,yy) -> if (y=="") then Cons(x,yy).reverse else Cons(y + sep + x,yy).reverse

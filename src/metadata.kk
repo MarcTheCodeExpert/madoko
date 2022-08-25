@@ -9,7 +9,6 @@
 // The parsing of metadata
 module metadata
 
-import v1/std/log
 import std/data/dict
 import std/text/regex
 import std/os/path

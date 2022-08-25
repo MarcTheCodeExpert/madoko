@@ -9,7 +9,7 @@
 // Main Madoko driver: provides files etc. and calls madoko.markdown
 module driver
 
-import v1/std/log
+
 import std/text/regex
 import std/os/path
 import std/data/dict

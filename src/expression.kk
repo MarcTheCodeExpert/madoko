@@ -234,7 +234,9 @@ fun parseAttrSelector() : parser<expr> {
 // value definition is recursive.
 // recursive group: [expression/parseAtom,expression/parseIf,expression/parseExpr,expression/parseBinary,expression/parseUnary] 
 
-val parseExpr = unsafe-total{parseIf()}
+val parseExpr = unsafe-total{
+  parseIf()
+  }
 
 fun parseIf() : div parser<expr> {
   ( string(r"@if\b") *> parseBinary() <* string("@then") <*> parseAtom() <*> 

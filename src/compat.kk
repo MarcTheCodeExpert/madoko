@@ -1,6 +1,9 @@
 
 module compat
 
+extern include {
+  js file "crypto-inline.js"
+}
 /*---------------------------------------------------------------------------
 This module implements functions from the koka version v1
 Most of the functions come from lib/core.kk
@@ -202,13 +205,173 @@ pub fun foreachUntil( xs : list<a>, action : (a) -> e maybe<b> ) : e maybe<b>
     }
   }
 }
-
-
 // Return a default value when an exception is raised
 pub fun onExn( value : a , action : () -> <exn|e> a ) : e a {
   catch( action, fun(_) { value })
 }
 
+// Catch an exception raised by "error" and handle it.
+// Use "onExn" or "onFail" when appropiate.
+pub extern catch_old : forall<e,a> ( action : () -> <exn|e> a, hndl: exception -> e a) -> e a {
+  cs inline "Primitive.Catch<##2>(#1,#2)"
+  js "$primcatch"
+}
+
+pub extern show( exn : exception ) : string {
+  cs inline "#1.ToString()"
+  js inline "(#1 ? #1.toString() : 'unknown exception')"
+}
+
+// Trim whitespace on the left and right side of a string
+// pub fun trim( s : string ) : string {
+//   s.trimLeft.trimRight
+// }
+
+// Trim the starting white space of a string 
+pub extern trimLeft( s : string ) : string {
+  cs inline "(#1).TrimStart()"
+  js inline "((#1).replace(/^\\s\\s*/,''))"
+}
+
+// Trim the ending white space of a string.
+pub extern trimRight( s : string ) : string {
+  cs inline "(#1).TrimEnd()"
+  js inline "((#1).replace(/\\s+$/,''))"
+}
+
+pub extern replaceAll( s : string, pattern : string, repl : string ) : string { 
+  cs inline "(#1).Replace(#2,#3)";
+  js inline r"(#1).replace(new RegExp((#2).replace(/[\\\$\^*+\-{}?().]/g,'\\$&'),'g'),#3)";  
+}
+
+pub fun parseInt( s : string, hex : bool = False) : maybe<int> {
+  val base = if (hex) then 16 else 10
+  match(s.list.dropWhile(isWhite)) {
+    Nil -> Just(0)
+    Cons(c,cc) | c=='-' -> {
+      match(parsePosInt(cc,base)) {
+        Nothing -> Nothing
+        Just(i) -> Just(0-i)
+      }
+    }
+    cs -> parsePosInt(cs,base)     
+  }
+}
+
+pub fun parseIntDefault( s : string, default : int = 0, hex : bool = False ) : int {
+  if (s.is-empty) then default else {
+    match( s.parseInt(hex) ) {
+      Nothing -> default
+      Just(i) -> i
+    }
+  }
+}
+
+fun parsePosInt( s : list<char>, base : int = 10 ) : maybe<int> {
+  match(s) {
+    Cons(c1,Cons(c2,cs)) | c1=='0' && (c2=='x' || c2=='X')
+      -> parseDigits(cs,16)
+    _ -> parseDigits(s,base)
+  }
+}
+
+fun parseDigits( cs : list<char>, base : int = 10, acc : int = 0 ) : maybe<int> {
+  match(cs) {
+    Nil -> Just(acc)
+    Cons(c,cc) -> {
+      val d = if (c >= '0' && c <= (if (base >= 10) then '9' else ('0' + (base - 1).char))) then {
+                (c - '0').int
+              }
+              elif (base > 10 && base <= 36 && c >= 'a' && c <= ('a' + (base - 11).char)) then { 
+                (c - 'a').int + 10
+              }
+              elif (base > 10 && base <= 36 && c >= 'A' && c <= ('A' + (base - 11).char)) then { 
+                (c - 'A').int + 10
+              }
+              else return Nothing   
+      parseDigits(cc, base, base*acc + d)
+    }
+  }
+}
+
+fun dropWhile( xs : list<a>, predicate : a -> e bool ) : e list<a>
+{
+  xs.span(predicate).snd
+}
+
+fun isWhite( c : char )     : bool { (c == ' ' || c == '\t' || c == '\n' || c == '\r')}
+
+
+/**
+ crypto.kk in v1
+*/
+
+
+// Compute an md5 hash of a string.
+pub extern md5( s : string ) : string {
+  js "$md5"
+}
+
+pub fun fill( s : string, width : int, char : char = ' ') : string
+{
+  val n = s.length
+  if (n >= width)
+   then s
+   else s + string(width - n, char)
+}
+
+pub fun zipWithIter( f, i, xs, ys )
+{
+  // recurse for the first "maxListStack" elements over the stack (to avoid extra heap allocation)
+  if (i > maxListStack) then zipWithAcc( f, i, Nil, xs, ys )
+  else {
+    match(xs) {
+      Nil -> Nil
+      Cons(x,xx) ->
+        match(ys) {
+          Nil -> Nil
+          Cons(y,yy) -> Cons( f(i,x,y), zipWithIter(f,i+1,xx,yy))
+        }
+    }
+  }
+}
+
+// Zip two lists together by pairing the corresponding elements.
+// The returned list is only as long as the smallest input list.
+pub fun zip( xs : list<a>, ys : list<b> ) : list<(a,b)>
+{
+  zipWithIndexed( xs, ys, fun(i,x,y) { (x,y) } )
+}
+
+// Zip two lists together by apply a pub fun "f" to all corresponding elements.
+// The returned list is only as long as the smallest input list.
+pub fun zipWith( xs : list<a>, ys :list<b>, f : (a,b) -> e c ) : e list<c>
+{
+  zipWithIndexed(xs,ys,fun(i,x,y) { f(x,y) })
+}
+
+// Zip two lists together by apply a pub fun "f" to all corresponding elements
+// and their index in the list.
+// The returned list is only as long as the smallest input list.
+pub fun zipWithIndexed( xs : list<a>, ys :list<b>, f : (int,a,b) -> e c ) : e list<c>
+{
+  zipWithIter(f,0,xs,ys)
+}
+
+val maxListStack = 200
+
+
+fun zipWithAcc( f, i, acc, xs, ys )
+{
+  match(xs) {
+    Nil -> reverse(acc)
+    Cons(x,xx) ->
+      match(ys) {
+        Nil -> reverse(acc)
+        Cons(y,yy) -> zipWithAcc(f, i+1, Cons( f(i,x,y), acc), xx, yy)
+      }
+  }
+}
 
 
 

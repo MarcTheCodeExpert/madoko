@@ -74,12 +74,33 @@ Files:
 - metadata.kk (lines: 152)
 - storage.kk (lines: 181)
 - expression.kk (lines: 244, 278)
-
-
+- block.kk (lines: 58, 64, 110)
+- entity.kk (lines: 109,125,184,211)
+- attributes.kk (lines: 306)
+- formatInlie.kk (Lines: 34, 35, 38, 40, 50, 65, 66, 67, 92, 376)
+- latexFormatter.kk (Lines: 191,192,193)
+- cssFormatter.kk (lines: 120, 126)
 
 
 ### Effect Problems
 
 Files:
-- expression.kk (lines: 233)
-	- Error : value definition is recursive. recursive group: [expression/parseAtom,expression/parseIf,expression/parseExpr,expression/parseBinary,expression/parseUnary] 
+- attributes.kk (lines 21, 27, 85, 93, 147, 177, 351, 353, 359, 405, 415, 421, 435, 475)
+  - 147: removed fn(exn)
+  - 21, 27, 85, 93, 177, 353, 359, 405, 415, 421, 435, 475 added '<div|e>' effect
+  - 351 added '<div>'effect
+- block.kk (lines: 162, 218, 228, 241, 249, 253, 285, 355, 415, 422, 433, 442, 462, 467 512, 519 )
+  - 162, 218, 228, 241, 249, 253, 285, 355, 415, 422, 433, 442, 462, 467, 512, 519 added '<div|e>' effect
+  - 135 added fn --> val can not have effects
+  - 355 added <div|e> for parameter
+- expression.kk (lines: 76)
+  - removed constant 
+- inline.kk (lines: 206)
+  - 206 changed effect st<_h> --> <div,alloc<_h>, read<_h>,write<_h>>|e  
+
+
+
+### Compiler Bugs
+
+Files:
+- wrong use of recursive identifier doesn't produce correct error -> reference to interface file

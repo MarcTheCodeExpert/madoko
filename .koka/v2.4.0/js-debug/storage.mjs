@@ -9,8 +9,8 @@ import * as $std_text_parse from './std_text_parse.mjs';
 import * as $std_os_path from './std_os_path.mjs';
 import * as $std_text_regex from './std_text_regex.mjs';
 import * as $compat_dict from './compat_dict.mjs';
-import * as $compat from './compat.mjs';
 import * as $compat_log from './compat_log.mjs';
+import * as $compat from './compat.mjs';
 import * as $compat_regex from './compat_regex.mjs';
 import * as $common from './common.mjs';
 import * as $std_os_flags from './std_os_flags.mjs';
@@ -1246,7 +1246,7 @@ export function tryReadFileSync(fileName) /* (fileName : string) -> io maybe<buf
       else {
         return $std_core_types.Just(x_2327);
       }
-    }, function(___wildcard__209__22 /* exception */ ) {
+    }, function(___wildcard__210__22 /* exception */ ) {
       return $std_core_types.Nothing;
     });
 }

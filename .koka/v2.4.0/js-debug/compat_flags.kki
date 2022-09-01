@@ -119,7 +119,7 @@ fun break : (s : std/core/types/string, c : std/core/types/char) -> (std/core/ty
 fun showLongArg : forall<a> (arg : (optionArg :: V -> V)<a>) -> std/core/types/string;
 fun showShortArg : forall<a> (arg : (optionArg :: V -> V)<a>) -> std/core/types/string;
 // lifted local: unzip3, iter
-fun .lift7151-unzip3 : forall<a,b,c> (ys : (std/core/list :: V -> V)<(a, b, c)>, acc1 : (std/core/list :: V -> V)<a>, acc2 : (std/core/list :: V -> V)<b>, acc3 : (std/core/list :: V -> V)<c>) -> ((std/core/list :: V -> V)<a>, (std/core/list :: V -> V)<b>, (std/core/list :: V -> V)<c>);
+fun .lift7167-unzip3 : forall<a,b,c> (ys : (std/core/list :: V -> V)<(a, b, c)>, acc1 : (std/core/list :: V -> V)<a>, acc2 : (std/core/list :: V -> V)<b>, acc3 : (std/core/list :: V -> V)<c>) -> ((std/core/list :: V -> V)<a>, (std/core/list :: V -> V)<b>, (std/core/list :: V -> V)<c>);
 // Unzip a list of triples into three lists
 fun unzip3 : forall<a,b,c> (xs : (std/core/list :: V -> V)<(a, b, c)>) -> ((std/core/list :: V -> V)<a>, (std/core/list :: V -> V)<b>, (std/core/list :: V -> V)<c>);
 fun errorNegate : forall<a> (flagname : std/core/types/string) -> (flagKind :: V -> V)<a>;
@@ -134,7 +134,7 @@ val testOptions : (std/core/list :: V -> V)<(option :: V -> V)<testOptions>>;
 fun .create-TestOptions : (verbose : (std/core/types/optional :: V -> V)<std/core/types/bool>, version : (std/core/types/optional :: V -> V)<std/core/types/bool>, name : (std/core/types/optional :: V -> V)<std/core/types/string>, output : (std/core/types/optional :: V -> V)<std/core/types/string>, arguments : (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>>) -> testOptions;
 fun showFlag : forall<a> (flag : (option :: V -> V)<a>) -> (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string, std/core/types/string)>;
 // monadic lift
-fun .mlift7158-zipWith3Acc : forall<(e :: E),a,b,c,d> (acc : (std/core/list :: V -> V)<b>, f : (a, c, d) -> (e :: E) b, xx : (std/core/list :: V -> V)<a>, yy : (std/core/list :: V -> V)<c>, zz : (std/core/list :: V -> V)<d>, .y.7152 : b) -> (e :: E) (std/core/list :: V -> V)<b>;
+fun .mlift7174-zipWith3Acc : forall<(e :: E),a,b,c,d> (acc : (std/core/list :: V -> V)<b>, f : (a, c, d) -> (e :: E) b, xx : (std/core/list :: V -> V)<a>, yy : (std/core/list :: V -> V)<c>, zz : (std/core/list :: V -> V)<d>, .y.7168 : b) -> (e :: E) (std/core/list :: V -> V)<b>;
 fun zipWith3Acc : forall<a,b,c,d,(e :: E)> ((a, b, c) -> (e :: E) d, (std/core/list :: V -> V)<d>, (std/core/list :: V -> V)<a>, (std/core/list :: V -> V)<b>, (std/core/list :: V -> V)<c>) -> (e :: E) (std/core/list :: V -> V)<d>;
 fun zipWith3 : forall<a,b,c,d,(e :: E)> (f : (a, b, c) -> (e :: E) d, xs : (std/core/list :: V -> V)<a>, ys : (std/core/list :: V -> V)<b>, zs : (std/core/list :: V -> V)<c>) -> (e :: E) (std/core/list :: V -> V)<d>;
 // Return a nicely formatted string describing the usage of a command,
@@ -181,8 +181,8 @@ specialize "_*_*" fun parse // inline size: 1
                                -> std/core/types/local-set<std/core/types/bool,(std/core/total :: E),(h :: H)>(done, std/core/types/True);
                             ((compat/flags/Arg((.pat5: std/core/types/string) : std/core/types/string) : (flagKind :: V -> V)<a> ) as .pat4: ((flagKind :: V -> V)<a>))
                                | (match ((match (ordering) {
-                                ((std/core/types/Optional((.ordering.6157: (optionOrder :: V -> V)<a>) : (optionOrder :: V -> V)<a>) : (std/core/types/optional :: V -> V)<(optionOrder :: V -> V)<a>> ) as .pat6: ((std/core/types/optional :: V -> V)<(optionOrder :: V -> V)<a>>))
-                                   -> .ordering.6157;
+                                ((std/core/types/Optional((.ordering.6173: (optionOrder :: V -> V)<a>) : (optionOrder :: V -> V)<a>) : (std/core/types/optional :: V -> V)<(optionOrder :: V -> V)<a>> ) as .pat6: ((std/core/types/optional :: V -> V)<(optionOrder :: V -> V)<a>>))
+                                   -> .ordering.6173;
                                 ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<(optionOrder :: V -> V)<a>> ) as .pat00: ((std/core/types/optional :: V -> V)<(optionOrder :: V -> V)<a>>))
                                    -> compat/flags/Permute<a>;
                               })) {
@@ -204,9 +204,9 @@ specialize "_*_*" fun parse // inline size: 1
                     ((compat/flags/Flg((set: (a) -> a) : (a) -> a) : (flagKind :: V -> V)<a> ) as .pat8: ((flagKind :: V -> V)<a>))
                        -> std/core/types/(,,)<a,(std/core/list :: V -> V)<std/core/types/string>,(std/core/list :: V -> V)<std/core/types/string>>((set(o)), xs, errs);
                     ((compat/flags/Unknown((e: std/core/types/string) : std/core/types/string) : (flagKind :: V -> V)<a> ) as .pat9: ((flagKind :: V -> V)<a>))
-                       -> val left.7059 : std/core/types/string
+                       -> val left.7075 : std/core/types/string
                                 = std/core/(++.1)("unrecognized option \x22", e);
-                      std/core/types/(,,)<a,(std/core/list :: V -> V)<std/core/types/string>,(std/core/list :: V -> V)<std/core/types/string>>(o, xs, (std/core/Cons<std/core/types/string>((std/core/(++.1)(left.7059, "\x22")), errs)));
+                      std/core/types/(,,)<a,(std/core/list :: V -> V)<std/core/types/string>,(std/core/list :: V -> V)<std/core/types/string>>(o, xs, (std/core/Cons<std/core/types/string>((std/core/(++.1)(left.7075, "\x22")), errs)));
                     ((compat/flags/Error((e0: std/core/types/string) : std/core/types/string) : (flagKind :: V -> V)<a> ) as .pat10: ((flagKind :: V -> V)<a>))
                        -> std/core/types/(,,)<a,(std/core/list :: V -> V)<std/core/types/string>,(std/core/list :: V -> V)<std/core/types/string>>(o, xs, (std/core/Cons<std/core/types/string>(e0, errs)));
                     ((compat/flags/Arg((x: std/core/types/string) : std/core/types/string) : (flagKind :: V -> V)<a> ) as .pat11: ((flagKind :: V -> V)<a>))
@@ -229,10 +229,10 @@ specialize "**" fun parseShorts // inline size: 1
                   ((std/core/types/True() : std/core/types/bool ) as .pat: std/core/types/bool)
                      -> std/core/types/Nothing<(flagKind :: V -> V)<a>>;
                   ((.skip std/core/types/False() : std/core/types/bool ) as .pat0: std/core/types/bool)
-                     -> val right.7044 : std/core/types/string
+                     -> val right.7060 : std/core/types/string
                           = std/core/string(c);
                         val opt : std/core/types/string
-                          = std/core/(++.1)("-", right.7044);
+                          = std/core/(++.1)("-", right.7060);
                         val applicable : (std/core/list :: V -> V)<(option :: V -> V)<a>>
                           = std/core/filter<(option :: V -> V)<a>,<(std/core/types/local :: H -> X)<(h :: H)>>>(flags, (fn<<(std/core/types/local :: H -> X)<(h :: H)>>>(flag: (option :: V -> V)<a>){
                               (compat/contains((match (flag) {
@@ -242,14 +242,14 @@ specialize "**" fun parseShorts // inline size: 1
                             }));
                     (match (applicable) {
                       ((std/core/Nil() : (std/core/list :: V -> V)<(option :: V -> V)<a>> ) as .pat11: ((std/core/list :: V -> V)<(option :: V -> V)<a>>))
-                         -> val left.7023 : std/core/types/string
+                         -> val left.7039 : std/core/types/string
                                   = std/core/(++.1)("unrecognized option \x22", opt);
-                        std/core/types/Just<(flagKind :: V -> V)<a>>((compat/flags/Error<a>((std/core/(++.1)(left.7023, "\x22")))));
+                        std/core/types/Just<(flagKind :: V -> V)<a>>((compat/flags/Error<a>((std/core/(++.1)(left.7039, "\x22")))));
                       ((.skip std/core/Cons((.pat30: (option :: V -> V)<a>) : (option :: V -> V)<a>, ((std/core/Cons((.pat5: (option :: V -> V)<a>) : (option :: V -> V)<a>, (.pat6: (std/core/list :: V -> V)<(option :: V -> V)<a>>) : (std/core/list :: V -> V)<(option :: V -> V)<a>>) : (std/core/list :: V -> V)<(option :: V -> V)<a>> ) as .pat4: (std/core/list :: V -> V)<(option :: V -> V)<a>>) : (std/core/list :: V -> V)<(option :: V -> V)<a>>) : (std/core/list :: V -> V)<(option :: V -> V)<a>> ) as .pat20: ((std/core/list :: V -> V)<(option :: V -> V)<a>>))
-                         -> val left.7018 : std/core/types/string
+                         -> val left.7034 : std/core/types/string
                               = std/core/(++.1)("option \x22", opt);
                             val header : std/core/types/string
-                              = std/core/(++.1)(left.7018, "\x22 is ambiguous. It could be one of:");
+                              = std/core/(++.1)(left.7034, "\x22 is ambiguous. It could be one of:");
                         std/core/types/Just<(flagKind :: V -> V)<a>>((compat/flags/Error<a>((compat/flags/usageInfo<a>(applicable, header)))));
                       ((.skip std/core/Cons((desc: (option :: V -> V)<a>) : (option :: V -> V)<a>, ((.skip std/core/Nil() : (std/core/list :: V -> V)<(option :: V -> V)<a>> ) as .pat8: (std/core/list :: V -> V)<(option :: V -> V)<a>>) : (std/core/list :: V -> V)<(option :: V -> V)<a>>) : (std/core/list :: V -> V)<(option :: V -> V)<a>> ) as .pat7: ((std/core/list :: V -> V)<(option :: V -> V)<a>>))
                          -> (match (desc) {
@@ -270,11 +270,11 @@ specialize "**" fun parseShorts // inline size: 1
                                       (parse0(o0, arg0));
                                     }))));
                                   ((.skip std/core/types/False() : std/core/types/bool ) as .pat120: std/core/types/bool)
-                                     -> val left0.6908 : std/core/types/string
+                                     -> val left0.6924 : std/core/types/string
                                           = std/core/(++.1)("option \x22", opt);
-                                        val left.6906 : std/core/types/string
-                                          = std/core/(++.1)(left0.6908, "\x22 requires an argument ");
-                                    std/core/types/Just<(flagKind :: V -> V)<a>>((compat/flags/Error<a>((std/core/(++.1)(left.6906, help0)))));
+                                        val left.6922 : std/core/types/string
+                                          = std/core/(++.1)(left0.6924, "\x22 requires an argument ");
+                                    std/core/types/Just<(flagKind :: V -> V)<a>>((compat/flags/Error<a>((std/core/(++.1)(left.6922, help0)))));
                                 });
                               ((.skip compat/flags/Opt((parse00: (a, (std/core/types/maybe :: V -> V)<std/core/types/string>) -> a) : (a, (std/core/types/maybe :: V -> V)<std/core/types/string>) -> a, (.pat14: std/core/types/string) : std/core/types/string) : (optionArg :: V -> V)<a> ) as .pat13: ((optionArg :: V -> V)<a>))
                                  -> val arg00 : std/core/types/string
@@ -296,9 +296,9 @@ specialize "**" fun parseShorts // inline size: 1
                     });
                 });
               })));
-          val xss.7053 : ((std/core/list :: V -> V)<(std/core/list :: V -> V)<(flagKind :: V -> V)<a>>>)
+          val xss.7069 : ((std/core/list :: V -> V)<(std/core/list :: V -> V)<(flagKind :: V -> V)<a>>>)
             = (std/core/map.5<(std/core/types/maybe :: V -> V)<(flagKind :: V -> V)<a>>,(std/core/list :: V -> V)<(flagKind :: V -> V)<a>>,<(std/core/types/local :: H -> X)<(h :: H)>>>(fs, (std/core/list.5<(flagKind :: V -> V)<a>>)));
-          (std/core/.lift17183-concat<(flagKind :: V -> V)<a>>((std/core/Nil<(flagKind :: V -> V)<a>>), xss.7053));
+          (std/core/.lift17183-concat<(flagKind :: V -> V)<a>>((std/core/Nil<(flagKind :: V -> V)<a>>), xss.7069));
         }));
     }))();
   };
@@ -328,48 +328,48 @@ specialize "**" fun processNext // inline size: 1
   };
 specialize "*" fun showFlag // inline size: 1
   = forall<a> fn(flag: (option :: V -> V)<a>){
-    val xs.6961 : (std/core/list :: V -> V)<std/core/types/string>
+    val xs.6977 : (std/core/list :: V -> V)<std/core/types/string>
       = std/core/map.5<std/core/types/char,std/core/types/string,(std/core/types/(<>) :: E)>((std/core/list.6((match (flag) {
           ((.skip compat/flags/Option((.x: std/core/types/string) : std/core/types/string, (.pat0: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat1: (optionArg :: V -> V)<a>) : (optionArg :: V -> V)<a>, (.pat2: std/core/types/string) : std/core/types/string, (.pat3: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>) : (option :: V -> V)<a> ) as .pat: ((option :: V -> V)<a>))
              -> .x;
         }))), (fn(c: std/core/types/char){
-          val right0.6967 : std/core/types/string
+          val right0.6983 : std/core/types/string
             = (std/core/string(c));
-          val left.6964 : std/core/types/string
-            = (std/core/(++.1)("-", right0.6967));
-          val right.6965 : std/core/types/string
+          val left.6980 : std/core/types/string
+            = (std/core/(++.1)("-", right0.6983));
+          val right.6981 : std/core/types/string
             = (match (flag) {
               ((.skip compat/flags/Option((.pat000: std/core/types/string) : std/core/types/string, (.pat100: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.x0: (optionArg :: V -> V)<a>) : (optionArg :: V -> V)<a>, (.pat200: std/core/types/string) : std/core/types/string, (.pat300: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>) : (option :: V -> V)<a> ) as .pat41: ((option :: V -> V)<a>))
                  -> (match (.x0) {
                   ((compat/flags/Flag((.pat00: (a, std/core/types/bool) -> a) : (a, std/core/types/bool) -> a) : (optionArg :: V -> V)<a> ) as .pat4: ((optionArg :: V -> V)<a>))
                      -> "";
                   ((compat/flags/Req((.pat20: (a, std/core/types/string) -> a) : (a, std/core/types/string) -> a, (h: std/core/types/string) : std/core/types/string) : (optionArg :: V -> V)<a> ) as .pat10: ((optionArg :: V -> V)<a>))
-                     -> val left.6887 : std/core/types/string
+                     -> val left.6903 : std/core/types/string
                               = std/core/(++.1)("<", h);
-                    std/core/(++.1)(left.6887, ">");
+                    std/core/(++.1)(left.6903, ">");
                   ((.skip compat/flags/Opt((.pat40: (a, (std/core/types/maybe :: V -> V)<std/core/types/string>) -> a) : (a, (std/core/types/maybe :: V -> V)<std/core/types/string>) -> a, (h0: std/core/types/string) : std/core/types/string) : (optionArg :: V -> V)<a> ) as .pat30: ((optionArg :: V -> V)<a>))
-                     -> val left1.6891 : std/core/types/string
+                     -> val left1.6907 : std/core/types/string
                               = std/core/(++.1)("[", h0);
-                    std/core/(++.1)(left1.6891, "]");
+                    std/core/(++.1)(left1.6907, "]");
                 });
             });
-          (std/core/(++.1)(left.6964, right.6965));
+          (std/core/(++.1)(left.6980, right.6981));
         }));
     val short : std/core/types/string
-      = (match (xs.6961) {
+      = (match (xs.6977) {
         ((std/core/Nil() : (std/core/list :: V -> V)<std/core/types/string> ) as .pat11: ((std/core/list :: V -> V)<std/core/types/string>))
            -> "";
         ((.skip std/core/Cons((x: std/core/types/string) : std/core/types/string, (xx: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string> ) as .pat21: ((std/core/list :: V -> V)<std/core/types/string>))
            -> std/core/.lift17188-joinsep(" ", xx, x);
       });
-    val xs0.6969 : (std/core/list :: V -> V)<std/core/types/string>
+    val xs0.6985 : (std/core/list :: V -> V)<std/core/types/string>
       = std/core/map.5<std/core/types/string,std/core/types/string,(std/core/types/(<>) :: E)>((match (flag) {
           ((.skip compat/flags/Option((.pat01: std/core/types/string) : std/core/types/string, (.x1: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.pat110: (optionArg :: V -> V)<a>) : (optionArg :: V -> V)<a>, (.pat210: std/core/types/string) : std/core/types/string, (.pat31: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>) : (option :: V -> V)<a> ) as .pat5: ((option :: V -> V)<a>))
              -> .x1;
         }), (fn(name0: std/core/types/string){
-          val left1.6972 : std/core/types/string
+          val left1.6988 : std/core/types/string
             = (std/core/(++.1)("--", name0));
-          val right1.6973 : std/core/types/string
+          val right1.6989 : std/core/types/string
             = (match (flag) {
               ((.skip compat/flags/Option((.pat03: std/core/types/string) : std/core/types/string, (.pat13: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>, (.x2: (optionArg :: V -> V)<a>) : (optionArg :: V -> V)<a>, (.pat23: std/core/types/string) : std/core/types/string, (.pat33: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>) : (option :: V -> V)<a> ) as .pat7: ((option :: V -> V)<a>))
                  -> (match (.x2) {
@@ -378,15 +378,15 @@ specialize "*" fun showFlag // inline size: 1
                   ((compat/flags/Req((.pat22: (a, std/core/types/string) -> a) : (a, std/core/types/string) -> a, (h1: std/core/types/string) : std/core/types/string) : (optionArg :: V -> V)<a> ) as .pat12: ((optionArg :: V -> V)<a>))
                      -> std/core/(++.1)("=", h1);
                   ((.skip compat/flags/Opt((.pat400: (a, (std/core/types/maybe :: V -> V)<std/core/types/string>) -> a) : (a, (std/core/types/maybe :: V -> V)<std/core/types/string>) -> a, (h00: std/core/types/string) : std/core/types/string) : (optionArg :: V -> V)<a> ) as .pat32: ((optionArg :: V -> V)<a>))
-                     -> val left4.6980 : std/core/types/string
+                     -> val left4.6996 : std/core/types/string
                               = std/core/(++.1)("[=", h00);
-                    std/core/(++.1)(left4.6980, "]");
+                    std/core/(++.1)(left4.6996, "]");
                 });
             });
-          (std/core/(++.1)(left1.6972, right1.6973));
+          (std/core/(++.1)(left1.6988, right1.6989));
         }));
     val long : std/core/types/string
-      = (match (xs0.6969) {
+      = (match (xs0.6985) {
         ((std/core/Nil() : (std/core/list :: V -> V)<std/core/types/string> ) as .pat14: ((std/core/list :: V -> V)<std/core/types/string>))
            -> "";
         ((.skip std/core/Cons((x0: std/core/types/string) : std/core/types/string, (xx0: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string> ) as .pat24: ((std/core/list :: V -> V)<std/core/types/string>))
@@ -399,11 +399,11 @@ specialize "*" fun showFlag // inline size: 1
         }), "\x0A");
     (match ((std/core/vlist<std/core/types/string>(v.17126, (std/core/types/None<(std/core/list :: V -> V)<std/core/types/string>>)))) {
       ((std/core/Cons((hd: std/core/types/string) : std/core/types/string, (tl: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string> ) as .pat9: ((std/core/list :: V -> V)<std/core/types/string>))
-         -> val right6.6987 : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string, std/core/types/string)>
+         -> val right6.7003 : (std/core/list :: V -> V)<(std/core/types/string, std/core/types/string, std/core/types/string)>
                   = std/core/map.5<std/core/types/string,(std/core/types/string, std/core/types/string, std/core/types/string),(std/core/types/(<>) :: E)>(tl, (fn(s0: std/core/types/string){
                       (std/core/types/(,,)<std/core/types/string,std/core/types/string,std/core/types/string>("", "", s0));
                     }));
-        std/core/append<(std/core/types/string, std/core/types/string, std/core/types/string)>((std/core/Cons<(std/core/types/string, std/core/types/string, std/core/types/string)>((std/core/types/(,,)<std/core/types/string,std/core/types/string,std/core/types/string>(short, long, hd)), (std/core/Nil<(std/core/types/string, std/core/types/string, std/core/types/string)>))), right6.6987);
+        std/core/append<(std/core/types/string, std/core/types/string, std/core/types/string)>((std/core/Cons<(std/core/types/string, std/core/types/string, std/core/types/string)>((std/core/types/(,,)<std/core/types/string,std/core/types/string,std/core/types/string>(short, long, hd)), (std/core/Nil<(std/core/types/string, std/core/types/string, std/core/types/string)>))), right6.7003);
       ((.skip std/core/Nil() : (std/core/list :: V -> V)<std/core/types/string> ) as .pat05: ((std/core/list :: V -> V)<std/core/types/string>))
          -> std/core/Cons<(std/core/types/string, std/core/types/string, std/core/types/string)>((std/core/types/(,,)<std/core/types/string,std/core/types/string,std/core/types/string>(short, long, "")), (std/core/Nil<(std/core/types/string, std/core/types/string, std/core/types/string)>));
     });
@@ -602,70 +602,70 @@ inline borrow "^" fun arguments // inline size: 0
   };
 fun unzip3 // inline size: 1
   = forall<a,b,c> fn(xs: (std/core/list :: V -> V)<(a, b, c)>){
-    compat/flags/.lift7151-unzip3<a,b,c>(xs, (std/core/Nil<a>), (std/core/Nil<b>), (std/core/Nil<c>));
+    compat/flags/.lift7167-unzip3<a,b,c>(xs, (std/core/Nil<a>), (std/core/Nil<b>), (std/core/Nil<c>));
   };
 fun errorNegate // inline size: 3
   = forall<a> fn(flagname: std/core/types/string){
-    val left.6898 : std/core/types/string
+    val left.6914 : std/core/types/string
           = std/core/(++.1)("option \x22--", flagname);
-    compat/flags/Error<a>((std/core/(++.1)(left.6898, "\x22 cannot be negated")));
+    compat/flags/Error<a>((std/core/(++.1)(left.6914, "\x22 cannot be negated")));
   };
 fun errorNoarg // inline size: 3
   = forall<a> fn(opt: std/core/types/string){
-    val left.6902 : std/core/types/string
+    val left.6918 : std/core/types/string
           = std/core/(++.1)("option \x22", opt);
-    compat/flags/Error<a>((std/core/(++.1)(left.6902, "\x22 does not take an argument")));
+    compat/flags/Error<a>((std/core/(++.1)(left.6918, "\x22 does not take an argument")));
   };
 fun errorRequired // inline size: 4
   = forall<a> fn(help0: std/core/types/string, opt: std/core/types/string){
-    val left0.6908 : std/core/types/string
+    val left0.6924 : std/core/types/string
       = std/core/(++.1)("option \x22", opt);
-    val left.6906 : std/core/types/string
-      = std/core/(++.1)(left0.6908, "\x22 requires an argument ");
-    compat/flags/Error<a>((std/core/(++.1)(left.6906, help0)));
+    val left.6922 : std/core/types/string
+      = std/core/(++.1)(left0.6924, "\x22 requires an argument ");
+    compat/flags/Error<a>((std/core/(++.1)(left.6922, help0)));
   };
 fun errorUnknownMessage // inline size: 2
   = fn(opt: std/core/types/string){
-    val left.6912 : std/core/types/string
+    val left.6928 : std/core/types/string
           = std/core/(++.1)("unrecognized option \x22", opt);
-    std/core/(++.1)(left.6912, "\x22");
+    std/core/(++.1)(left.6928, "\x22");
   };
 inline fun .create-Option // inline size: 3
   = forall<a> fn(shortNames0: std/core/types/string, longNames0: (std/core/list :: V -> V)<std/core/types/string>, arg0: (optionArg :: V -> V)<a>, help0: std/core/types/string, llongNames0: (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>>){
-    val .llongNames.2510 : (std/core/list :: V -> V)<std/core/types/string>
+    val .llongNames.2526 : (std/core/list :: V -> V)<std/core/types/string>
           = (match (llongNames0) {
-            ((std/core/types/Optional((.llongNames.2511: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>) : (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>> ) as .pat: ((std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>>))
-               -> .llongNames.2511;
+            ((std/core/types/Optional((.llongNames.2527: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>) : (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>> ) as .pat: ((std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>>))
+               -> .llongNames.2527;
             ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>> ) as .pat0: ((std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>>))
                -> std/core/map.5<std/core/types/string,std/core/types/string,(std/core/types/(<>) :: E)>(longNames0, compat/toLower);
           });
-    compat/flags/Option<a>(shortNames0, longNames0, arg0, help0, .llongNames.2510);
+    compat/flags/Option<a>(shortNames0, longNames0, arg0, help0, .llongNames.2526);
   };
 inline fun .create-TestOptions // inline size: 6
   = fn(verbose0: (std/core/types/optional :: V -> V)<std/core/types/bool>, version0: (std/core/types/optional :: V -> V)<std/core/types/bool>, name0: (std/core/types/optional :: V -> V)<std/core/types/string>, output0: (std/core/types/optional :: V -> V)<std/core/types/string>, arguments0: (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>>){
     compat/flags/TestOptions((match (verbose0) {
-        ((std/core/types/Optional((.verbose.2616: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
-           -> .verbose.2616;
+        ((std/core/types/Optional((.verbose.2632: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+           -> .verbose.2632;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat0: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
            -> std/core/types/False;
       }), (match (version0) {
-        ((std/core/types/Optional((.version.2620: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat1: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
-           -> .version.2620;
+        ((std/core/types/Optional((.version.2636: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat1: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+           -> .version.2636;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat2: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
            -> std/core/types/False;
       }), (match (name0) {
-        ((std/core/types/Optional((.name.2624: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat3: ((std/core/types/optional :: V -> V)<std/core/types/string>))
-           -> .name.2624;
+        ((std/core/types/Optional((.name.2640: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat3: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> .name.2640;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat4: ((std/core/types/optional :: V -> V)<std/core/types/string>))
            -> "";
       }), (match (output0) {
-        ((std/core/types/Optional((.output.2628: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat5: ((std/core/types/optional :: V -> V)<std/core/types/string>))
-           -> .output.2628;
+        ((std/core/types/Optional((.output.2644: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat5: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> .output.2644;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat6: ((std/core/types/optional :: V -> V)<std/core/types/string>))
            -> "";
       }), (match (arguments0) {
-        ((std/core/types/Optional((.arguments.2633: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>) : (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>> ) as .pat7: ((std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>>))
-           -> .arguments.2633;
+        ((std/core/types/Optional((.arguments.2649: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>) : (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>> ) as .pat7: ((std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>>))
+           -> .arguments.2649;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>> ) as .pat8: ((std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>>))
            -> std/core/Nil<std/core/types/string>;
       }));
@@ -676,15 +676,15 @@ fun zipWith3 // inline size: 1
   };
 fun errorAmbiguous // inline size: 4
   = forall<a,b> fn(applicable: (std/core/list :: V -> V)<(option :: V -> V)<a>>, opt: std/core/types/string){
-    val left.7018 : std/core/types/string
+    val left.7034 : std/core/types/string
       = std/core/(++.1)("option \x22", opt);
     val header : std/core/types/string
-      = std/core/(++.1)(left.7018, "\x22 is ambiguous. It could be one of:");
+      = std/core/(++.1)(left.7034, "\x22 is ambiguous. It could be one of:");
     compat/flags/Error<b>((compat/flags/usageInfo<a>(applicable, header)));
   };
 fun errorUnknown // inline size: 3
   = forall<a> fn(opt: std/core/types/string){
-    val left.7023 : std/core/types/string
+    val left.7039 : std/core/types/string
           = std/core/(++.1)("unrecognized option \x22", opt);
-    compat/flags/Error<a>((std/core/(++.1)(left.7023, "\x22")));
+    compat/flags/Error<a>((std/core/(++.1)(left.7039, "\x22")));
   };

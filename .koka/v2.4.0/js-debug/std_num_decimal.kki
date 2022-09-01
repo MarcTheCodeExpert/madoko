@@ -228,7 +228,7 @@ fun .mlift4240-pdecimal : (neg : std/core/types/bool, whole : std/core/types/str
 fun .mlift4241-pdecimal : (neg : std/core/types/bool) -> <(std/core/types/handled :: HX -> X)<(std/text/parse/parse :: HX)>> decimal;
 fun pdecimal : () -> <(std/core/types/handled :: HX -> X)<(std/text/parse/parse :: HX)>> decimal;
 // monadic lift
-fun .mlift4242-parse-decimal : (x : decimal, wild : ()) -> <(std/core/types/handled :: HX -> X)<(std/text/parse/parse :: HX)>> decimal;
+fun .mlift4242-parse-decimal : (x : decimal, wild_ : ()) -> <(std/core/types/handled :: HX -> X)<(std/text/parse/parse :: HX)>> decimal;
 // monadic lift
 fun .mlift4243-parse-decimal : (x : decimal) -> <(std/core/types/handled :: HX -> X)<(std/text/parse/parse :: HX)>> decimal;
 // Parse a `:decimal` number.

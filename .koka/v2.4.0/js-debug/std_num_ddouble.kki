@@ -307,7 +307,7 @@ fun .mlift13477-pddouble-sum : (hi0 : std/core/types/float64) -> <(std/core/type
 fun pddouble-sum : () -> <(std/core/types/handled :: HX -> X)<(std/text/parse/parse :: HX)>> ddouble;
 pub fun pddouble : () -> <(std/core/types/handled :: HX -> X)<(std/text/parse/parse :: HX)>> ddouble;
 // monadic lift
-fun .mlift13478-parse-ddouble : (x : ddouble, wild : ()) -> <(std/core/types/handled :: HX -> X)<(std/text/parse/parse :: HX)>> ddouble;
+fun .mlift13478-parse-ddouble : (x : ddouble, wild_ : ()) -> <(std/core/types/handled :: HX -> X)<(std/text/parse/parse :: HX)>> ddouble;
 // monadic lift
 fun .mlift13479-parse-ddouble : (x : ddouble) -> <(std/core/types/handled :: HX -> X)<(std/text/parse/parse :: HX)>> ddouble;
 pub fun parse-ddouble : (s : std/core/types/string) -> (std/core/types/maybe :: V -> V)<ddouble>;

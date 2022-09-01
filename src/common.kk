@@ -65,13 +65,13 @@ pub fun json(s : string) : string {
 pub struct rule<a,c>(
   name : string,
   regex : regex,
-  action : (cap : matched, ctx : c) -> a 
+  action : (cap : matched, ctx : c) -> <div> a 
 )  
 
 pub alias grammar<a,c> = list<rule<a,c>>
 
 // Replace a rule in a grammar by another one, if the rule name is a prefix of the name of the new rule.
-pub fun ruleReplace( grammar : grammar<a,c>, pred : bool, rule : rule<a,c> ) : grammar<a,c> {
+pub fun ruleReplace( grammar : grammar<a,c>, pred : bool, rule : rule<a,c> ) : <div|e> grammar<a,c> {
   if (!pred)
    then grammar
    else grammar.map fn(r) {
@@ -106,7 +106,7 @@ pub fun combineRules( rules : list<rule<a,c>> ) : rule<a,c> {
 // Generic rule matcher: takes a list of rules and applies the action that matches
 // on the given "src". Returns the result of the action and the string following the
 // match.
-pub fun matchRules( rules : grammar<a,c>, ctx: c, src : string, def : string -> a ) : (a,int,string)
+pub fun matchRules( rules : grammar<a,c>, ctx: c, src : string, def : string -> a ) : <div|e> (a,int,string)
 {
   match(rules) {
     Nil -> {
@@ -206,7 +206,7 @@ pub fun definitionId( s : string ) : string {
 }
 val rxspaces = regex(r"\s+")
 
-fun newLink( href : string, title : string = "", linkattrs : attrs = attrsNone, linkid : string = "", bench : bool ) : link {
+pub fun newLink( href : string, title : string = "", linkattrs : attrs = attrsNone, linkid : string = "", bench : bool ) : link {
   Link(href,title,
        if (!bench && href.startsWith("#"))
         then linkattrs.addClass("localref")
@@ -353,7 +353,7 @@ pub struct attrs  (
 
 
 pub struct row( cells : list<cell>, rowAttrs : attrs = attrsNone )
-pub struct cell( text : string, cellAttrs : attrs = attrsNone )
+pub struct cell( text_ : string, cellAttrs : attrs = attrsNone )
 
 pub fun addClasses( attrs : attrs, classes : list<string> ) : attrs {
   classes.foldl(attrs,fn(acc,c) { acc.addClass(c) })

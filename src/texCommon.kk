@@ -10,8 +10,9 @@
 
 module texCommon
 
-import std/data/dict
-import std/text/regex
+import compat/dict
+import compat/regex
+import compat
 import common
 
 pub val texAccents = [
@@ -36,22 +37,22 @@ pub val texAccents = [
   ("H","dacute"),
 ].dict
 
-fun texnest(s:string)  = @"(?:" + texval + @"|(?:\{" + s + @"\}))"
-val texcmd   = @"\\[@a-zA-Z]+\b\s*"
-val texval   = @"(?:[^\\{}]|" + texcmd + @"|\\.\s*)"
+fun texnest(s:string)  { r"(?:" + texval + r"|(?:\{" + s + r"\}))" }
+val texcmd   = r"\\[@a-zA-Z]+\b\s*"
+val texval   = r"(?:[^\\{}]|" + texcmd + r"|\\.\s*)"
 val texarg0  = texval + "*"
 val texarg1  = texnest(texarg0) + "*"
 val texarg2  = texnest(texarg1) + "*"
 val texarg3  = texnest(texarg2) + "*"
 
-pub val texarg   = @"(" + texnest(texarg3) + @")"
-pub val texargs  = @"(" + texnest(texarg3) + "*)"
+pub val texarg   = r"(" + texnest(texarg3) + r")"
+pub val texargs  = r"(" + texnest(texarg3) + "*)"
 
-pub val optarg   = @"(?:\[([^\]]*)\]\s*)"
-pub val optargs  = optarg + @"*"
+pub val optarg   = r"(?:\[([^\]]*)\]\s*)"
+pub val optargs  = optarg + r"*"
 
 // captures most tex commands
-pub val rxTexCmd = @"(?:\\(?:begin|end)\b\s*" + optargs + texarg + "|" + texcmd + optargs + ")"
+pub val rxTexCmd = r"(?:\\(?:begin|end)\b\s*" + optargs + texarg + "|" + texcmd + optargs + ")"
 
-pub val texlen  = @"\-?\d+(?:\.\d+)?(?:pt|mm|cm|in|ex|em|bp|pc|dd|cc|sp|fil{1,3})\b"
-pub val texdim  = @"(" + texlen + @")\s*(?:plus\b\s*(" + texlen + @")\s*)?(?:minus\b\s*(" + texlen + @")\s*)?"
+pub val texlen  = r"\-?\d+(?:\.\d+)?(?:pt|mm|cm|in|ex|em|bp|pc|dd|cc|sp|fil{1,3})\b"
+pub val texdim  = r"(" + texlen + r")\s*(?:plus\b\s*(" + texlen + r")\s*)?(?:minus\b\s*(" + texlen + r")\s*)?"

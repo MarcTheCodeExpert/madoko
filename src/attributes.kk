@@ -9,21 +9,22 @@
 // Attibute operations: parsing, transform text, expand keys, etc.
 module attributes
 
-import std/text/regex
-import std/data/dict
-import v1/std/text/string
 import common
 import entity
 import expression
 
+import compat
+import compat/regex
+import compat/dict
+import compat/string
 
-pub fun parseAttrs( attrStr : string, elemName : string = "", source : string = "" ) : attrs {
+pub fun parseAttrs( attrStr : string, elemName : string = "", source : string = "" ) : <div|e> attrs {
   if (attrStr == "" && elemName == "" && source=="") return attrsNone
   val attrs0 = Attrs() // source=source,classes=if (className=="") then [] else [className])
   attrs0.extendAttrs( (if (elemName!="") then "elem:'" + elemName + "'; " else "") + attrStr, source )
 }
 
-pub fun mergeDefault( attrs : attrs, def : attrs ) : attrs {
+pub fun mergeDefault( attrs : attrs, def : attrs ) : <div|e> attrs {
   def.extendAttrs(attrs.text, attrs.source)
 }
 
@@ -48,10 +49,10 @@ fun makePattern( elem : string = "", name : string = "",
                       classes : list<string> = [],
                       attrselectors : list<expr> = [],
                       weight : int = ~1) {
-  val clss = classes.filter( fn(s) { !s.isEmpty })
+  val clss = classes.filter( fn(s) { !s.is-empty })
   // calculate weight according to CSS rules: in order of importance: name, classes, elements
   val w = if (weight >= 0) then weight
-           else (100*(if (name.isEmpty) then 0 else 1) + 10*clss.length + (if (elem.isEmpty) then 0 else 1))
+           else (100*(if (name.is-empty) then 0 else 1) + 10*clss.length + (if (elem.is-empty) then 0 else 1))
   Pattern(elem.definitionId, name.definitionId, clss, attrselectors, w)
 }
 
@@ -68,7 +69,7 @@ pub fun rulesFromMeta( metadata : list<(string,string)> ) : rules {
         }
         Just(cap) -> {
           val attrsels = parseAttrSelectors(cap.groups[4])
-          val classes  = cap.groups[3].split(".").list
+          val classes  = cap.groups[3].split(".")
           val pat = makePattern( cap.groups[1], cap.groups[2], classes, attrsels )
           // trace("pattern: " + key + " -> " + pat.show )
           [(pat,value)]
@@ -79,9 +80,9 @@ pub fun rulesFromMeta( metadata : list<(string,string)> ) : rules {
   })
   Rules(rules)
 }
-val rxPattern = regex(@"^(?:~([\w\-:]+))?(?:#([\w\-:]+))?((?:\.(?:[\w\-:]+))*)(?:(\[[^\]]*\])*)$")
+val rxPattern = regex(r"^(?:~([\w\-:]+))?(?:#([\w\-:]+))?((?:\.(?:[\w\-:]+))*)(?:(\[[^\]]*\])*)$")
 
-pub fun matchRules( r : rules, elementName : string, attrs : attrs ) : attrs
+pub fun matchRules( r : rules, elementName : string, attrs : attrs ) : <div|e> attrs
 {
   if (!(attrs.common/defaults)) return attrs;
   val name = attrs.name.definitionId
@@ -89,7 +90,7 @@ pub fun matchRules( r : rules, elementName : string, attrs : attrs ) : attrs
   r.rules.apply( attrs, name, elemName, peano10 )
 }
 
-fun apply( rules : list<(pattern,string)>, attrs : attrs, name : string, elemName : string, p : peano ) : attrs {
+fun apply( rules : list<(pattern,string)>, attrs : attrs, name : string, elemName : string, p : peano ) : <div|e> attrs {
   match(p) {
     Zero -> attrs
     Succ(p1) -> {
@@ -112,8 +113,8 @@ fun getMatches( rules : list<(pattern,string)>, attrs : attrs, name : string, el
     }
     else True
   })
-  val final = def.map(snd).join(" ; ")
-  (final,newrules)
+  val final_ = def.map(snd).join(" ; ")
+  (final_,newrules)
 }
 
 // insert a pattern value sorted on weight, from low to high
@@ -129,24 +130,41 @@ fun insert( xs : list<(int,string)>, weight :int, value : string ) : list<(int,s
 }
 
 fun matches( pat : pattern, xelem : string, xname : string, attrs : attrs ) : bool {
-  (pat.elem.isEmpty || pat.elem == xelem) &&
-  (pat.name.isEmpty || pat.name == xname) &&
-  (pat.classes.isNil || pat.classes.all( fn(c) { attrs.hasClass(c) } )) &&
-  (pat.attrselectors.isNil || pat.attrselectors.all(fn(e) { matchSelector(e,attrs) }))
+  (pat.elem.is-empty || pat.elem == xelem) &&
+  (pat.name.is-empty || pat.name == xname) &&
+  (pat.classes.is-nil || pat.classes.all( fn(c) { attrs.hasClass(c) } )) &&
+  (pat.attrselectors.is-nil || pat.attrselectors.all(fn(e) { matchSelector(e,attrs) }))
 }
 
+// catch old from compat
 fun matchSelector( e : expr, attrs : attrs ) : bool {
   fun lookup(v,display) {
     String(expandKeyPattern(v,attrs))
   }
-  catch {
+  
+  unsafe-total { 
     evalExpr(e,lookup).bool
   }
-  fn(exn) {
-    warning(exn.show)
-    False
-  }
+  /*
+  fn(exn) { 
+      warning(exn.common/show)
+      False 
+    }
+  */    
 }
+// old function
+// function matchSelector( e : expr, attrs : attrs ) : bool {
+//   function lookup(v,display) {
+//     String(expandKeyPattern(v,attrs))
+//   }
+//   catch { 
+//     evalExpr(e,lookup).bool 
+//   } 
+//   fun(exn) { 
+//     warning(exn.show)
+//     False 
+//   }
+// }
 
 fun filterx( xs : list<a>, pred : a -> e bool ) : e list<a>
 {
@@ -156,7 +174,7 @@ fun filterx( xs : list<a>, pred : a -> e bool ) : e list<a>
   }
 }
 
-pub fun extendAttrs( attrs0 : attrs, attrsStr : string, source : string ) : attrs
+pub fun extendAttrs( attrs0 : attrs, attrsStr : string, source : string ) : <div|e> attrs
 {
   if (attrsStr=="" && source=="") then return attrs0
   val attrsx = attrs0(empty=False, sticky=False, source=source,
@@ -242,7 +260,7 @@ pub fun extendAttrs( attrs0 : attrs, attrsStr : string, source : string ) : attr
       acc(notag= !value.toBool)
     }
     elif (name=="line") {
-      match(value.parseInt()) {
+      match(value.parse-int()) {
         Nothing -> {
           warning("unrecognized line number: line=" + value )
           acc
@@ -254,10 +272,10 @@ pub fun extendAttrs( attrs0 : attrs, attrsStr : string, source : string ) : attr
       acc(replacers = acc.replacers + [value])
     }
     elif (name=="before") {
-      acc(replacers = acc.replacers + [value + @"\/&source;"])
+      acc(replacers = acc.replacers + [value + r"\/&source;"])
     }
     elif (name=="after") {
-      acc(replacers = acc.replacers + [@"\/&source;" + value])
+      acc(replacers = acc.replacers + [r"\/&source;" + value])
     }
     elif (name=="input") {
       val v = kwvalue
@@ -285,8 +303,8 @@ pub fun extendAttrs( attrs0 : attrs, attrsStr : string, source : string ) : attr
     }
     else {
       //trace("key " + name + "=" + value)
-      val cntrs = if (name=="start") then match (value.trim.parseInt) {
-                    Just(i) -> acc.counters + [(acc.elem + "-li",(i-1).show)]
+      val cntrs = if (name=="start") then match (value.trim.parse-int) {
+                    Just(i) -> acc.counters + [(acc.elem + "-li",(i - 1).show)]
                     Nothing -> acc.counters
                   }
                   elif (name=="list-style-type" && acc.elem.bool) then {
@@ -301,18 +319,19 @@ pub fun extendAttrs( attrs0 : attrs, attrsStr : string, source : string ) : attr
   attrs.addClasses(attrs0.classes) // last, so the classes are order for 'elementName'
 }
 
-val rxId      = @"(?:[\.#][\w\.#@\-:]*|[@\-\w][\w\.#@\-]*)"
-val rxQuoted  = @"(?:'(?:[^\n\\']|\\[\s\S])*'|""(?:[^\n\\""]|\\[\s\S])*"")"
-val rxHtmlValue = @"(?:" + rxQuoted + "|" + @"(?:[^\\""'\s]|\\.)*)"
-val rxCssValue  = @"(?:" + rxQuoted + "|" + @"(?:&(?:#[xX]?)?[\w\-]+;|[^\\""'\s;,]|\\.)*)"
-val rxHtmlVal = @"(?:\s*=\s*(" + rxHtmlValue + @"))"
-val rxCssVal  = @"(?:\s*:\s*(" + rxCssValue + @"(?:(?:\s+|\s*(,\s*)+)" + rxCssValue + @")*))"
-val rxAttr    = regex(@"^(" + rxId + @")(?:" + rxHtmlVal + "|" + rxCssVal + ")?")
-val rxSep     = regex(@"^(\s+(?:;*(?:$|\s+))?|;(?:$|\s+))")
-val rxNoSep   = regex(@"^([^\s;]|;(?!\s))+")
+// added # in 308, 309, 310
+val rxId      = r"(?:[\.#][\w\.#@\-:]*|[@\-\w][\w\.#@\-]*)"
+val rxQuoted  = r#"(?:'(?:[^\n\\']|\\[\s\S])*'|""(?:[^\n\\""]|\\[\s\S])*"")"#
+val rxHtmlValue = r"(?:" + rxQuoted + "|" + r#"(?:[^\\""'\s]|\\.)*)"#
+val rxCssValue  = r"(?:" + rxQuoted + "|" + r#"(?:&(?:#[xX]?)?[\w\-]+;|[^\\""'\s;,]|\\.)*)"#
+val rxHtmlVal = r"(?:\s*=\s*(" + rxHtmlValue + r"))"
+val rxCssVal  = r"(?:\s*:\s*(" + rxCssValue + r"(?:(?:\s+|\s*(,\s*)+)" + rxCssValue + r")*))"
+val rxAttr    = regex(r"^(" + rxId + r")(?:" + rxHtmlVal + "|" + rxCssVal + ")?")
+val rxSep     = regex(r"^(\s+(?:;*(?:$|\s+))?|;(?:$|\s+))")
+val rxNoSep   = regex(r"^([^\s;]|;(?!\s))+")
 
-val rxSpaces  = regex(@"\s+")
-val rxNoSpaces= regex(@"\\.|" + rxQuoted)
+val rxSpaces  = regex(r"\s+")
+val rxNoSpaces= regex(r"\\.|" + rxQuoted)
 
 fun parsePageAlign( name :string, value: string ) : list<(string,string)> {
   if (name!="page-align") return []
@@ -329,48 +348,51 @@ fun parsePageAlign( name :string, value: string ) : list<(string,string)> {
 
 
 // Parse an attribute string
-val parseAttributes : (string) -> list<(string,string,string)> = smemo(parseAttributesX)
+val parseAttributes : (string) -> <div> list<(string,string,string)> = smemo(parseAttributesX)
 
-fun parseAttributesX( s : string ) : list<(string,string,string)>
+// added effect
+fun parseAttributesX( s : string ) : <div|e> list<(string,string,string)>
 {
   val res = parseAttributesAcc( s, s, [] )
   res
 }
-
-fun parseAttributesAcc( original : string, s : string, acc : list<(string,string,string)> ) : list<(string,string,string)>
+// added effect
+fun parseAttributesAcc( original : string, s : string, acc : list<(string,string,string)> ) : <div|e> list<(string,string,string)>
 {
-  if (s=="") return acc.reverse
-  match(s.find(rxAttr)) {
-    Nothing -> match(s.find(rxSep)) {
-      Nothing -> match(s.find(rxNoSep)) {
-        Nothing -> {
-          warning("invalid attribute: " + s + "\n  in: " + original )
-          acc.reverse
+  unsafe-total {
+    if (s=="") return acc.reverse
+    match(s.find(rxAttr)) {
+      Nothing -> match(s.find(rxSep)) {
+        Nothing -> match(s.find(rxNoSep)) {
+          Nothing -> {
+            warning("invalid attribute: " + s + "\n  in: " + original )
+            acc.reverse
+          }
+          Just(cap) -> {
+            warning("invalid attribute: " + cap.matched + "\n  in: " + original )
+            parseAttributesAcc( original, s.substr1(cap.next), acc )
+          }
         }
         Just(cap) -> {
-          warning("invalid attribute: " + cap.matched + "\n  in: " + original )
           parseAttributesAcc( original, s.substr1(cap.next), acc )
         }
       }
       Just(cap) -> {
-        parseAttributesAcc( original, s.substr1(cap.next), acc )
+        val values  = cap.groups.firstMatched(2).trim.splitExclude(rxSpaces,rxNoSpaces)
+        val value   = values.filter(legalValue).map(unquote).join(" ") // TODO: we should not unquote here but only as needed!
+        val kwvalue = if (values.length==1 && !(value.startsWith("\"") || value.startsWith("'")))
+                      then value else ""
+        val res     = (cap.groups[1].to-lower,kwvalue,value)
+        parseAttributesAcc( original, s.substr1(cap.next), Cons(res,acc))
       }
     }
-    Just(cap) -> {
-      val values  = cap.groups.firstMatched(2).trim.splitExclude(rxSpaces,rxNoSpaces)
-      val value   = values.filter(legalValue).map(unquote).join(" ") // TODO: we should not unquote here but only as needed!
-      val kwvalue = if (values.length==1 && !(value.startsWith("\"") || value.startsWith("'")))
-                     then value else ""
-      val res     = (cap.groups[1].toLower,kwvalue,value)
-      parseAttributesAcc( original, s.substr1(cap.next), Cons(res,acc))
-    }
-  }
+   }
 }
 
 fun legalValue( s : string ) : bool {
-  !s.isEmpty && !s.contains(rxCommentValue)
+  !s.is-empty && !s.contains(rxCommentValue)
 }
-val rxCommentValue = regex(@"^/\*(?:[^\\\*]|\\.|\*(?!/))*\*/")
+val rxCommentValue = regex(r"^/\*(?:[^\\\*]|\\.|\*(?!/))*\*/")
 
 fun unescape( s : string ) : string {
   s
@@ -380,7 +402,7 @@ fun toBool( s : string ) : bool {
   (s=="" || s=="true")
 }
 
-pub fun transformText( attrs : attrs, txt : string, labels : dict<label>, metadata : dict<string> ) : string
+pub fun transformText( attrs : attrs, txt : string, labels : dict<label>, metadata : dict<string> ) : <div|e> string
 {
   if (attrs.empty) then return txt
   attrs.replacers.foldl(txt,fn(cur,repl) {
@@ -390,13 +412,13 @@ pub fun transformText( attrs : attrs, txt : string, labels : dict<label>, metada
   })
 }
 
-fun applyReplacer( repl : string, txt : string, attrs : attrs, labels : dict<label>, metadata : dict<string> ) : string
+fun applyReplacer( repl : string, txt : string, attrs : attrs, labels : dict<label>, metadata : dict<string> ) : <div|e> string
 {
   fun expand( s : string ) {
     expandKeys(peanoN,s,txt,attrs,labels,metadata,fn(_,_) {""})
   }
 
-  fun checkReplace( rrepl : string ) : string {
+  fun checkReplace( rrepl : string ) : <div|e> string {
     match(rrepl.find(rxregex)) {
       Nothing -> match(rrepl.find(rxmapping)) {
         Nothing -> rrepl.expand
@@ -410,7 +432,7 @@ fun applyReplacer( repl : string, txt : string, attrs : attrs, labels : dict<lab
     }
   }
 
-  fun checkCond( crepl : string ) : string {
+  fun checkCond( crepl : string ) : <div|e> string {
     if (!crepl.startsWith("@if"))
       then checkReplace(crepl)
       else match (evalCondition(crepl,txt,attrs,labels,metadata)) {
@@ -422,11 +444,11 @@ fun applyReplacer( repl : string, txt : string, attrs : attrs, labels : dict<lab
   checkCond(repl)
 }
 
-val rxmapping = regex(@"^//((?:[^\\]|\\.)*)//([gimc]*)$")
+val rxmapping = regex(r"^//((?:[^\\]|\\.)*)//([gimc]*)$")
 
 
-val rxregex = regex(@"^/(" + rxescaped + @"*)/(" + rxescaped + @"*)/([gimc]*)$")
-val rxescaped = @"(?:[^\\/]|\\.)"
+val rxregex = regex(r"^/(" + rxescaped + r"*)/(" + rxescaped + r"*)/([gimc]*)$")
+val rxescaped = r"(?:[^\\/]|\\.)"
 
 fun evalCondition( cond : string, source : string, attrs : attrs, labels : dict<label>, metadata : dict<string> ) : constant {
   fun lookup(v,display) {
@@ -443,14 +465,14 @@ fun ungroup( r : string ) : string {
     if (cap.groups[1]!="") then "(?:" else cap.matched
     })
 }
-val rxOpenParen = regex(@"\\.|(\((?!\?))")
+val rxOpenParen = regex(r"\\.|(\((?!\?))")
 
-val rxEntry      = regex(@"^((?:[^\\/]|\\.)*)/(.*)$")
-val rxBar        = regex(@"//")
-val rxExcludeBar = regex(@"[^\\/]|\\.|/(?!/)")
+val rxEntry      = regex(r"^((?:[^\\/]|\\.)*)/(.*)$")
+val rxBar        = regex(r"//")
+val rxExcludeBar = regex(r"[^\\/]|\\.|/(?!/)")
 
 // perform a mapping.
-fun regexMapping( mapping : string, flags : string, txt : string ) : string
+fun regexMapping( mapping : string, flags : string, txt : string ) : <div|e> string
 {
   val entries
     = mapping.splitExclude(rxBar,rxExcludeBar).map( fn(entry) {
@@ -471,7 +493,7 @@ fun regexMapping( mapping : string, flags : string, txt : string ) : string
   fun replaceGroups( cap : matched ) {
     val i = cap.groups.firstMatchedOn(1,entries.length)
     if (i<=0) return ""
-    val subst = match(entries.drop(i-1)) {
+    val subst = match(entries.drop(i - 1)) {
       Nil -> cap.matched // should never happen
       Cons(entry) -> {
         val (rx,repl) = entry
@@ -482,9 +504,9 @@ fun regexMapping( mapping : string, flags : string, txt : string ) : string
             // assert: cap.matched == rcap.matched
             repl.replaceAll(rxCaptureGroup, fn(gcap) {
               if (gcap.groups[1] != "\\") {
-                val j = gcap.groups[1].parseInt.maybe(0,id)
+                val j = gcap.groups[1].parse-int.maybe(0,id)
                 if (convCase)
-                 then rcap.groups[j].replaceAll(rxCaseEsc,@"\\$2$1") // escape replacement
+                 then rcap.groups[j].replaceAll(rxCaseEsc,r"\\$2$1") // escape replacement
                  else rcap.groups[j]
               }
               else {
@@ -517,9 +539,9 @@ fun regexReplacer( rxText : string, rtxt : string, flags : string, txt : string 
   fun replaceGroups( cap : matched ) {
     val repl = rtxt.replaceAll( rxCaptureGroup, fn(gcap) {
       if (gcap.groups[1] != "\\") {
-        val i = gcap.groups[1].parseInt.maybe(0,id)
+        val i = gcap.groups[1].parse-int.maybe(0,id)
         if (convCase)
-         then cap.groups[i].replaceAll( rxCaseEsc, @"\\$2$1" ) // escape replacement
+         then cap.groups[i].replaceAll( rxCaseEsc, r"\\$2$1" ) // escape replacement
          else cap.groups[i]
       }
       else {
@@ -537,20 +559,20 @@ fun regexReplacer( rxText : string, rtxt : string, flags : string, txt : string 
   gtxt
 }
 
-val rxCaptureGroup = regex(@"\\([\d\\])")
-val rxCaseEsc = regex(@"\\((\\)|[/ulULE])")
-//val rxRegEsc  = regex(@"\\((\\)|[/])")
+val rxCaptureGroup = regex(r"\\([\d\\])")
+val rxCaseEsc = regex(r"\\((\\)|[/ulULE])")
+//val rxRegEsc  = regex(r"\\((\\)|[/])")
 
 fun caseConvert( txt : string ) : string {
-  txt.replaceAll(regex(@"\\([\\/E])|\\([ul])(.)|\\([UL])([\s\S]*?)(\\E|$)"), fn(cap) {
+  txt.replaceAll(regex(r"\\([\\/E])|\\([ul])(.)|\\([UL])([\s\S]*?)(\\E|$)"), fn(cap) {
     if (cap.groups.matchedOn(1)) {
       cap.groups[1] // unescape
     }
     elif (cap.groups.matchedOn(2)) {
-      if (cap.groups[2]=="u") then cap.groups[3].toUpper else cap.groups[3].toLower
+      if (cap.groups[2]=="u") then cap.groups[3].to-upper else cap.groups[3].to-lower
     }
     elif (cap.groups.matchedOn(4)) {
-      if (cap.groups[4]=="U") then cap.groups[5].toUpper else cap.groups[5].toLower
+      if (cap.groups[4]=="U") then cap.groups[5].to-upper else cap.groups[5].to-lower
     }
     else cap.matched
   })
@@ -628,7 +650,7 @@ private fun expandKeys( p0 : peano, txt : string, source : string,
     }
   }
 }
-val rxkey = regex(@"\\&|(?:\\/)?&([\w\-:]*|&);(\\/)?")
+val rxkey = regex(r"\\&|(?:\\/)?&([\w\-:]*|&);(\\/)?")
 
 fun keyNotFound( key: string, matched : string ) : string {
   warning( "undefined key: " + key)
@@ -640,6 +662,6 @@ fun ignoreNotFound( key: string, matched : string ) : string {
 }
 
 
-external smemo( f : (string) -> e a ) : (string -> e a) {
+extern smemo( f : (string) -> e a ) : (string -> e a) {
   js inline "((fun(){ var dict={}; return (fun(s) { if (dict[s]===undefined) dict[s] = (#1)(s); return dict[s]; }); })())"
 }

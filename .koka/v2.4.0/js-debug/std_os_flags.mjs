@@ -7,14 +7,14 @@ import * as $std_core_hnd from './std_core_hnd.mjs';
 import * as $std_core from './std_core.mjs';
 import * as $std_text_parse from './std_text_parse.mjs';
 import * as $std_os_path from './std_os_path.mjs';
+import * as $std_num_int32 from './std_num_int32.mjs';
 import * as $std_text_regex from './std_text_regex.mjs';
-import * as $v1_std_data_dict from './v1_std_data_dict.mjs';
+import * as $compat_dict from './compat_dict.mjs';
 import * as $compat from './compat.mjs';
+import * as $compat_log from './compat_log.mjs';
 import * as $compat_regex from './compat_regex.mjs';
 import * as $common from './common.mjs';
-import * as $v1_std_log from './v1_std_log.mjs';
 import * as $std_os_env from './std_os_env.mjs';
-import * as $std_data_dict from './std_data_dict.mjs';
  
 // externals
  

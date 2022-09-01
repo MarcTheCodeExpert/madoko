@@ -267,7 +267,7 @@ fun .mlift4109-pdouble : (neg : std/core/types/bool, d : std/core/types/float64)
 fun .mlift4110-pdouble : (neg : std/core/types/bool) -> <(std/core/types/handled :: HX -> X)<(std/text/parse/parse :: HX)>> std/core/types/float64;
 pub fun pdouble : () -> <(std/core/types/handled :: HX -> X)<(std/text/parse/parse :: HX)>> std/core/types/float64;
 // monadic lift
-fun .mlift4111-parse-float64 : (x : std/core/types/float64, wild : ()) -> <(std/core/types/handled :: HX -> X)<(std/text/parse/parse :: HX)>> std/core/types/float64;
+fun .mlift4111-parse-float64 : (x : std/core/types/float64, wild_ : ()) -> <(std/core/types/handled :: HX -> X)<(std/text/parse/parse :: HX)>> std/core/types/float64;
 // monadic lift
 fun .mlift4112-parse-float64 : (x : std/core/types/float64) -> <(std/core/types/handled :: HX -> X)<(std/text/parse/parse :: HX)>> std/core/types/float64;
 // Parse a float64 number. Can be "NaN", "Inf(inity)" (case-insensitive),

@@ -98,7 +98,7 @@ fun jaro-match( v : vector<char>, w : vector<char>, lim : int ) : (int,int) {
 ---------------------------------------- */
 
 // A `:builder` is used to append strings in linear time.
-pub type builder<h ::H>
+pub type builder<h :: H>
 
 // Create a string builder
 pub extern builder() : alloc<h> builder<h> {

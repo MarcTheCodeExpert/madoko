@@ -9,8 +9,8 @@ import * as $std_text_parse from './std_text_parse.mjs';
 import * as $std_os_path from './std_os_path.mjs';
 import * as $std_text_regex from './std_text_regex.mjs';
 import * as $compat_dict from './compat_dict.mjs';
-import * as $compat from './compat.mjs';
 import * as $compat_log from './compat_log.mjs';
+import * as $compat from './compat.mjs';
  
 // externals
 /*---------------------------------------------------------------------------
@@ -358,8 +358,8 @@ export function contains(s, r, start) /* (s : string, r : regex, start : optiona
   else {
     var _x12 = 0;
   }
-  var m_1916 = regexExec(_x11, s, _x12);
-  return (m_1916 === null) ? false : true;
+  var m_1918 = regexExec(_x11, s, _x12);
+  return (m_1918 === null) ? false : true;
 }
  
  
@@ -390,8 +390,8 @@ export function findAll(s, regex0, start) /* (s : string, regex : regex, start :
 export function matchedOn(groups0, index0) /* (groups : groups, index : int) -> bool */  {
    
   var _x17 = groups0;
-  var i_1927 = groupsMatchedOn(_x17, index0);
-  return $std_core._int_ne(i_1927,0);
+  var i_1929 = groupsMatchedOn(_x17, index0);
+  return $std_core._int_ne(i_1929,0);
 }
  
  
@@ -402,8 +402,8 @@ export function firstMatchedOn(groups0, start, end) /* (groups : groups, start :
   var _x17 = $std_core.find($std_core.list(_x18, _x19), function(i /* int */ ) {
        
       var _x20 = groups0;
-      var i0_1931 = groupsMatchedOn(_x20, i);
-      return $std_core._int_ne(i0_1931,0);
+      var i0_1933 = groupsMatchedOn(_x20, i);
+      return $std_core._int_ne(i0_1933,0);
     });
   return (_x17 === null) ? $std_core._int_negate(1) : _x17.value;
 }
@@ -418,8 +418,8 @@ export function firstMatched(groups0, start, end) /* (groups : groups, start : o
   var _x20 = $std_core.find($std_core.list(_x21, _x22), function(i /* int */ ) {
        
       var _x23 = groups0;
-      var i0_1931 = groupsMatchedOn(_x23, i);
-      return $std_core._int_ne(i0_1931,0);
+      var i0_1933 = groupsMatchedOn(_x23, i);
+      return $std_core._int_ne(i0_1933,0);
     });
   var i0 = (_x20 === null) ? $std_core._int_negate(1) : _x20.value;
   if ($std_core._int_ge(i0,0)) {
@@ -546,12 +546,12 @@ export function source(r) /* (r : regex) -> string */  {
 export function groupsCount(r) /* (r : regex) -> int */  {
    
   var _x44 = r;
-  var s0_1945 = regexSource(_x44);
+  var s0_1947 = regexSource(_x44);
    
   var _x46 = undefined;
   var _x45 = (_x46 !== undefined) ? _x46 : 0;
-  var s_1944 = replaceEx_1(s0_1945, rxNonGroup, "", true, _x45);
-  return $std_core.count_1(s_1944);
+  var s_1946 = replaceEx_1(s0_1947, rxNonGroup, "", true, _x45);
+  return $std_core.count_1(s_1946);
 }
  
  
@@ -655,15 +655,15 @@ export function _ctail_splitExcludeX(s, splitr, acc, _acc) /* (s : string, split
     if (_x59 === null) {
        
       if ($std_core._int_le(1,0)) {
-        var right_1965 = "";
+        var right_1967 = "";
       }
       else {
-        var right_1965 = $compat.substr2(s, 0, 1);
+        var right_1967 = $compat.substr2(s, 0, 1);
       }
       {
         // tail call
         var _x66 = $compat.substr1(s, 1);
-        var _x67 = $std_core._lp__plus__plus__1_rp_(acc, right_1965);
+        var _x67 = $std_core._lp__plus__plus__1_rp_(acc, right_1967);
         s = _x66;
         acc = _x67;
         continue tailcall;
@@ -672,23 +672,23 @@ export function _ctail_splitExcludeX(s, splitr, acc, _acc) /* (s : string, split
     else {
        
       var _x68 = _x59.value.groups;
-      var i0_1972 = groupsMatchedOn(_x68, 1);
-      if ($std_core._int_ne(i0_1972,0)) {
+      var i0_1974 = groupsMatchedOn(_x68, 1);
+      if ($std_core._int_ne(i0_1974,0)) {
          
         var _x69 = _x59.value.next;
         var _x68 = $std_core._int_le(_x69,0);
         if (_x68) {
-          var right0_1976 = "";
+          var right0_1978 = "";
         }
         else {
           var _x70 = _x59.value.next;
-          var right0_1976 = $compat.substr2(s, 0, _x70);
+          var right0_1978 = $compat.substr2(s, 0, _x70);
         }
         {
           // tail call
           var _x69 = _x59.value.next;
           var _x68 = $compat.substr1(s, _x69);
-          var _x70 = $std_core._lp__plus__plus__1_rp_(acc, right0_1976);
+          var _x70 = $std_core._lp__plus__plus__1_rp_(acc, right0_1978);
           s = _x68;
           acc = _x70;
           continue tailcall;
@@ -696,15 +696,15 @@ export function _ctail_splitExcludeX(s, splitr, acc, _acc) /* (s : string, split
       }
       else {
          
-        var _ctail_2000 = undefined;
+        var _ctail_2002 = undefined;
          
-        var _ctail_2001 = $std_core.Cons(acc, _ctail_2000);
+        var _ctail_2003 = $std_core.Cons(acc, _ctail_2002);
         {
           // tail call
           var _x72 = _x59.value.next;
           var _x71 = $compat.substr1(s, _x72);
           var _x73 = "";
-          var _x74 = $std_core_types._ctail_link(_acc,_ctail_2001,({value: _ctail_2001, field: "tail"}));
+          var _x74 = $std_core_types._ctail_link(_acc,_ctail_2003,({value: _ctail_2003, field: "tail"}));
           s = _x71;
           acc = _x73;
           _acc = _x74;
@@ -730,18 +730,18 @@ export function splitExclude(s, sep, exclude) /* (s : string, sep : regex, exclu
   else {
      
     var _x75 = exclude;
-    var right2_1992 = regexSource(_x75);
+    var right2_1994 = regexSource(_x75);
      
-    var left1_1989 = $std_core._lp__plus__plus__1_rp_("^(?:((?:", right2_1992);
+    var left1_1991 = $std_core._lp__plus__plus__1_rp_("^(?:((?:", right2_1994);
      
-    var left0_1987 = $std_core._lp__plus__plus__1_rp_(left1_1989, ")+)|(");
+    var left0_1989 = $std_core._lp__plus__plus__1_rp_(left1_1991, ")+)|(");
      
     var _x76 = sep;
-    var right0_1988 = regexSource(_x76);
+    var right0_1990 = regexSource(_x76);
      
-    var left_1985 = $std_core._lp__plus__plus__1_rp_(left0_1987, right0_1988);
+    var left_1987 = $std_core._lp__plus__plus__1_rp_(left0_1989, right0_1990);
      
-    var regex0_1982 = $std_core._lp__plus__plus__1_rp_(left_1985, "))");
+    var regex0_1984 = $std_core._lp__plus__plus__1_rp_(left_1987, "))");
      
     var _x78 = undefined;
     if (_x78 !== undefined) {
@@ -757,7 +757,7 @@ export function splitExclude(s, sep, exclude) /* (s : string, sep : regex, exclu
     else {
       var _x79 = 0;
     }
-    var splitr = regexCreate(regex0_1982, _x77, _x79);
+    var splitr = regexCreate(regex0_1984, _x77, _x79);
     return splitExcludeX(s, splitr, "");
   }
 }

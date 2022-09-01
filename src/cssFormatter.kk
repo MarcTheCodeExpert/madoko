@@ -9,9 +9,10 @@
 // Formatting of CSS values in LaTex
 module cssFormatter
 
-import std/data/dict
+import compat
+import compat/dict
 import compat/string
-import std/text/regex
+import compat/regex
 import common
 
 
@@ -62,7 +63,7 @@ fun cssExpandTRBL( kvs : dict<string>, key : string  ) : list<(string,string)> {
                  res -> res
       }
       val ks = ["top","right","bottom","left"].map(fn(side) { pre + "-" + side + post })
-      val zs = zip(ks,vs)
+      val zs = compat/zip(ks,vs)
       if (zs.length == 4) then zs else {
         warning("Unable to parse CSS values: " + value)
         []
@@ -101,9 +102,9 @@ fun cssExpandBorder( kvs : dict<string>, post = "" ) : list<(string,string)> {
 pub fun cssIsLength( term : string ) : bool {
   term.contains(rxLen)
 }
-val regNum = @"([\-\+]?(?:\d+|\d*\.\d+)(?:[eE]\d+)?)"
+val regNum = r"([\-\+]?(?:\d+|\d*\.\d+)(?:[eE]\d+)?)"
 val rxNum = regex(regNum)
-val rxLen = regex(regNum + @"(em|ex|ch|rem|vh|vw|vmin|vmax|px|mm|cm|in|pt|pc)\b")
+val rxLen = regex(regNum + r"(em|ex|ch|rem|vh|vw|vmin|vmax|px|mm|cm|in|pt|pc)\b")
 
 
 fun cssIsColor( term : string ) : bool {
@@ -116,14 +117,14 @@ pub fun cssSplitValues( s : string ) : list<string> {
   s.findAll(rxCssTerm).list.map(fn(cap) { cap.matched.cssNormalize })
 }
 
-val rxEsc   = @"\\(?:[0-9a-fA-F]{1,6}\s*|.)"
-val rxCssTerm = regex(@"(?:'(?:[^\n\\']|" + rxEsc + @")*'|""(?:[^\n\\""]|" + rxEsc + @")*""|-?[a-zA-Z_]\w*\([^\)]*\)|(?:[^'""\\\s]|" + rxEsc + ")+)")
+val rxEsc   = r"\\(?:[0-9a-fA-F]{1,6}\s*|.)"
+val rxCssTerm = regex(r"(?:'(?:[^\n\\']|" + rxEsc + r#")*'|""(?:[^\n\\""]|"# + rxEsc + r#")*""|-?[a-zA-Z_]\w*\([^\)]*\)|(?:[^'""\\\s]|"# + rxEsc + ")+)")
 
 // Split comma seperated CSS values (like `font-family`)
 pub fun cssSplitList( s : string ) : list<string> {
   s.findAll(rxCssListTerm).list.map(fn(cap) { cap.matched.unquote })
 }
-val rxCssListTerm = regex(@"(?:'(?:[^\n\\']|" + rxEsc + @")*'|""(?:[^\n\\""]|" + rxEsc + @")*""|[\-a-zA-Z_/](?:[\w\-\t \.\@/]|" + rxEsc + @")*)")
+val rxCssListTerm = regex(r"(?:'(?:[^\n\\']|" + rxEsc + r#")*'|""(?:[^\n\\""]|"# + rxEsc + r#")*""|[\-a-zA-Z_/](?:[\w\-\t \.\@/]|"# + rxEsc + r")*)")
 
 
 
@@ -134,10 +135,10 @@ pub fun braced( s : string ) : string {
     "{" + s + nl + "}"
   }
 }
-val rxEndComment = regex(@"(^|[^\\])%.*$")
+val rxEndComment = regex(r"(^|[^\\])%.*$")
 
 pub fun isBraced( s : string ) : bool {
-  s.startsWith("{") && (s.indexOf("}") == s.length-1)
+  s.startsWith("{") && (s.indexOf("}") == s.length - 1)
 }
 
 pub fun cssColorCmd( v : string ) : string {
@@ -152,14 +153,14 @@ pub fun cssColor( v0 : string ) : string {
   val v = v0.cssNormalize.toLower
   match(v.find(rxRgbX)) {
     Just(cap) -> {
-      val rgbx = (1,2,3).map( fn(i) { if (cap.groups[4]=="") then cap.groups[i] + cap.groups[i] else cap.matched.substr(1 + 2*(i-1), 2) } )
+      val rgbx = (1,2,3).map( fn(i) { if (cap.groups[4]=="") then cap.groups[i] + cap.groups[i] else cap.matched.substr(1 + 2*(i - 1), 2) } )
       val rgb  = rgbx.map( fn(s) { s.parseIntDefault(0,hex=True) } )
       cssRgb(rgb)
     }
     Nothing -> match(v.find(rxRgb)) {
       Just(cap) -> {
         val rgb0 = (cap.groups[1],cap.groups[3],cap.groups[4]).map( fn(c) { c.parseIntDefault(0) } )
-        val rgb = if (cap.groups[2]=="%") then rgb0.map( fn(p) { (p.double * 2.55).int } ) else rgb0
+        val rgb = if (cap.groups[2]=="%") then rgb0.map( fn(p) { (p.float64 * 2.55).int } ) else rgb0
         cssRgb(rgb)
       }
       Nothing -> match(v.find(rxHsl)) {
@@ -183,7 +184,7 @@ pub fun cssColor( v0 : string ) : string {
 }
 
 fun cssRgb(rgb : (int,int,int) ) : string {
-    fun hex(i) {
+  fun hex(i) {
     i.min(255).max(0).showHex(2)
   }
   val (r,g,b) = rgb
@@ -219,12 +220,12 @@ pub fun cssFontLength( v : string ) : string {
 pub fun cssPercentage( v0 : string ) : string {
   val v = v0.cssValue
   if (v.endsWith("%")) then {
-    match(v.substr(0,v.length-1).parseInt) {
+    match(v.substr(0,v.length - 1).parseInt) {
       Nothing -> {
         warning("illegal percentage: " + v)
         v
       }
-      Just(i) -> {
+      Just(i) -> { 
         (i/100).show + "." + (i%100).show.fill(2,'0')
       }
     }
@@ -240,8 +241,8 @@ pub fun cssWidth( v0 : string, auto : string = "", percOf : string = "width", de
   val v = v0.cssNormalize.toLower
   match(v.find(rxPerc)) {
     Just(cap) -> {
-      val perc = cap.groups[1].parseInt().maybe(100,id).double / 100.0
-      "\\dim" + percOf + perc.showFixed(2).braced
+      val perc = cap.groups[1].parseInt().maybe(100,id).float64 / 100.0
+      "\\dim" + percOf + perc.show-fixed(2).braced
     }
     Nothing -> match(v.find(rxLen)) {
       Just(cap) -> {
@@ -283,20 +284,20 @@ fun cssNormalize( v : string ) : string {
     }
   }).replaceAll(rxCssIgnore,"")
 }
-val rxCssEscape = regex(@"\\(?:([a-fA-F0-9]{1,6})\s?|([^\r\n\fa-fA-F0-9]))")
-val rxCssIgnore = regex(@"\s*!important$")
+val rxCssEscape = regex(r"\\(?:([a-fA-F0-9]{1,6})\s?|([^\r\n\fa-fA-F0-9]))")
+val rxCssIgnore = regex(r"\s*!important$")
 
-val rxPerc = regex(@"^\s*(\d{1,3})%\s*$")
-val rxPixels = regex(@"^\s*(\d+(?:\.\d+)?)px\s*$")
+val rxPerc = regex(r"^\s*(\d{1,3})%\s*$")
+val rxPixels = regex(r"^\s*(\d+(?:\.\d+)?)px\s*$")
 
-val rxRgbX = regex(@"^\s*#([a-fA-F0-9])([a-fA-F0-9])([a-fA-F0-9])([a-fA-F0-9]{3})?")
-val rxRgb = regex(@"^\s*rgba?\((\d+)(%)?,(\d+)%?,(\d+)%?(?:,\d+%?)?\)\s*$")
-val rxHsl = regex(@"^\s*hsla?\((\d+),(\d+)%?,(\d+)%?(?:,\d+%?)?\)\s*$")
+val rxRgbX = regex(r"^\s*#([a-fA-F0-9])([a-fA-F0-9])([a-fA-F0-9])([a-fA-F0-9]{3})?")
+val rxRgb = regex(r"^\s*rgba?\((\d+)(%)?,(\d+)%?,(\d+)%?(?:,\d+%?)?\)\s*$")
+val rxHsl = regex(r"^\s*hsla?\((\d+),(\d+)%?,(\d+)%?(?:,\d+%?)?\)\s*$")
 
 fun hslToRgb(hi, si, li){
-  val h = (hi%360).double / 360.0;
-  val s = si.double * 0.01;
-  val l = li.double * 0.01;
+  val h = (hi%360).float64/ 360.0;
+  val s = si.float64 * 0.01;
+  val l = li.float64 * 0.01;
 
   if (s==0.0) {
     val x = (l*255.0).int
@@ -307,7 +308,7 @@ fun hslToRgb(hi, si, li){
   val p = (2.0 * l) - q;
 
   fun hue2rgb(t0) {
-    val t = if (t0 < 0.0) then t0+1.0 elif (t0 > 1.0) then t0-1.0 else t0;
+    val t = if (t0 < 0.0) then t0 + 1.0 elif (t0 > 1.0) then t0 - 1.0 else t0;
     val c = if (t < 1.0/6.0) then p + (q - p) * 6.0 * t
             elif (t < 0.5) then q
             elif (t < 2.0/3.0) then p + (q - p) * (2.0/3.0 - t) * 6.0

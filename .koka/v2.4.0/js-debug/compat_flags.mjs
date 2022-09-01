@@ -9,8 +9,8 @@ import * as $std_text_parse from './std_text_parse.mjs';
 import * as $std_os_path from './std_os_path.mjs';
 import * as $std_text_regex from './std_text_regex.mjs';
 import * as $compat_dict from './compat_dict.mjs';
-import * as $compat from './compat.mjs';
 import * as $compat_log from './compat_log.mjs';
+import * as $compat from './compat.mjs';
 import * as $compat_regex from './compat_regex.mjs';
 import * as $common from './common.mjs';
 import * as $std_os_flags from './std_os_flags.mjs';
@@ -421,9 +421,9 @@ export function setVersion(t, v) /* (t : testOptions, v : bool) -> testOptions *
  
 export function $break(s, c) /* (s : string, c : char) -> (string, string) */  {
    
-  var sep_6879 = $std_core.string(c);
+  var sep_6895 = $std_core.string(c);
    
-  var v_17123 = (s).split(sep_6879, 2);
+  var v_17123 = (s).split(sep_6895, 2);
    
   var parts = $std_core.vlist(v_17123);
   if (parts !== null && parts.tail !== null) {
@@ -443,8 +443,8 @@ export function showLongArg(arg0) /* forall<a> (arg : optionArg<a>) -> string */
   }
   else {
      
-    var left0_6883 = $std_core._lp__plus__plus__1_rp_("[=", arg0.help);
-    return $std_core._lp__plus__plus__1_rp_(left0_6883, "]");
+    var left0_6899 = $std_core._lp__plus__plus__1_rp_("[=", arg0.help);
+    return $std_core._lp__plus__plus__1_rp_(left0_6899, "]");
   }
 }
  
@@ -454,19 +454,19 @@ export function showShortArg(arg0) /* forall<a> (arg : optionArg<a>) -> string *
   }
   else if (arg0._tag === 2) {
      
-    var left_6887 = $std_core._lp__plus__plus__1_rp_("<", arg0.help);
-    return $std_core._lp__plus__plus__1_rp_(left_6887, ">");
+    var left_6903 = $std_core._lp__plus__plus__1_rp_("<", arg0.help);
+    return $std_core._lp__plus__plus__1_rp_(left_6903, ">");
   }
   else {
      
-    var left1_6891 = $std_core._lp__plus__plus__1_rp_("[", arg0.help);
-    return $std_core._lp__plus__plus__1_rp_(left1_6891, "]");
+    var left1_6907 = $std_core._lp__plus__plus__1_rp_("[", arg0.help);
+    return $std_core._lp__plus__plus__1_rp_(left1_6907, "]");
   }
 }
  
  
 // lifted local: unzip3, iter
-export function _lift7151_unzip3(ys, acc1, acc2, acc3) /* forall<a,b,c> (ys : list<(a, b, c)>, acc1 : list<a>, acc2 : list<b>, acc3 : list<c>) -> (list<a>, list<b>, list<c>) */  { tailcall: while(1)
+export function _lift7167_unzip3(ys, acc1, acc2, acc3) /* forall<a,b,c> (ys : list<(a, b, c)>, acc1 : list<a>, acc2 : list<b>, acc3 : list<c>) -> (list<a>, list<b>, list<c>) */  { tailcall: while(1)
 {
   if (ys !== null) {
     {
@@ -489,63 +489,63 @@ export function _lift7151_unzip3(ys, acc1, acc2, acc3) /* forall<a,b,c> (ys : li
  
 // Unzip a list of triples into three lists
 export function unzip3(xs) /* forall<a,b,c> (xs : list<(a, b, c)>) -> (list<a>, list<b>, list<c>) */  {
-  return _lift7151_unzip3(xs, $std_core.Nil, $std_core.Nil, $std_core.Nil);
+  return _lift7167_unzip3(xs, $std_core.Nil, $std_core.Nil, $std_core.Nil);
 }
  
 export function errorNegate(flagname) /* forall<a> (flagname : string) -> flagKind<a> */  {
    
-  var left_6898 = $std_core._lp__plus__plus__1_rp_("option \"--", flagname);
-  return $Error($std_core._lp__plus__plus__1_rp_(left_6898, "\" cannot be negated"));
+  var left_6914 = $std_core._lp__plus__plus__1_rp_("option \"--", flagname);
+  return $Error($std_core._lp__plus__plus__1_rp_(left_6914, "\" cannot be negated"));
 }
  
 export function errorNoarg(opt) /* forall<a> (opt : string) -> flagKind<a> */  {
    
-  var left_6902 = $std_core._lp__plus__plus__1_rp_("option \"", opt);
-  return $Error($std_core._lp__plus__plus__1_rp_(left_6902, "\" does not take an argument"));
+  var left_6918 = $std_core._lp__plus__plus__1_rp_("option \"", opt);
+  return $Error($std_core._lp__plus__plus__1_rp_(left_6918, "\" does not take an argument"));
 }
  
 export function errorRequired(help0, opt) /* forall<a> (help : string, opt : string) -> flagKind<a> */  {
    
-  var left0_6908 = $std_core._lp__plus__plus__1_rp_("option \"", opt);
+  var left0_6924 = $std_core._lp__plus__plus__1_rp_("option \"", opt);
    
-  var left_6906 = $std_core._lp__plus__plus__1_rp_(left0_6908, "\" requires an argument ");
-  return $Error($std_core._lp__plus__plus__1_rp_(left_6906, help0));
+  var left_6922 = $std_core._lp__plus__plus__1_rp_(left0_6924, "\" requires an argument ");
+  return $Error($std_core._lp__plus__plus__1_rp_(left_6922, help0));
 }
  
 export function errorUnknownMessage(opt) /* (opt : string) -> string */  {
    
-  var left_6912 = $std_core._lp__plus__plus__1_rp_("unrecognized option \"", opt);
-  return $std_core._lp__plus__plus__1_rp_(left_6912, "\"");
+  var left_6928 = $std_core._lp__plus__plus__1_rp_("unrecognized option \"", opt);
+  return $std_core._lp__plus__plus__1_rp_(left_6928, "\"");
 }
  
 export function showOptions(o) /* (o : testOptions) -> string */  {
    
   var _x53 = o.name;
-  var right3_6931 = $std_core.show_3(_x53);
+  var right3_6947 = $std_core.show_3(_x53);
    
   var _x54 = o.output;
-  var right4_6934 = $std_core.show_3(_x54);
+  var right4_6950 = $std_core.show_3(_x54);
    
   if (o.$arguments === null) {
-    var right5_6937 = "";
+    var right5_6953 = "";
   }
   else {
-    var right5_6937 = $std_core._lift17188_joinsep(",", o.$arguments.tail, o.$arguments.head);
+    var right5_6953 = $std_core._lift17188_joinsep(",", o.$arguments.tail, o.$arguments.head);
   }
    
   var _x55 = (o.verbose) ? "True" : "False";
   var _x56 = (o.version) ? "True" : "False";
-  var xs_6920 = $std_core.Cons($std_core._lp__plus__plus__1_rp_("verbose=", _x55), $std_core.Cons($std_core._lp__plus__plus__1_rp_("version=", _x56), $std_core.Cons($std_core._lp__plus__plus__1_rp_("name=", right3_6931), $std_core.Cons($std_core._lp__plus__plus__1_rp_("output=", right4_6934), $std_core.Cons($std_core._lp__plus__plus__1_rp_("arguments=", right5_6937), $std_core.Nil)))));
+  var xs_6936 = $std_core.Cons($std_core._lp__plus__plus__1_rp_("verbose=", _x55), $std_core.Cons($std_core._lp__plus__plus__1_rp_("version=", _x56), $std_core.Cons($std_core._lp__plus__plus__1_rp_("name=", right3_6947), $std_core.Cons($std_core._lp__plus__plus__1_rp_("output=", right4_6950), $std_core.Cons($std_core._lp__plus__plus__1_rp_("arguments=", right5_6953), $std_core.Nil)))));
    
-  if (xs_6920 === null) {
-    var right0_6919 = "";
+  if (xs_6936 === null) {
+    var right0_6935 = "";
   }
   else {
-    var right0_6919 = $std_core._lift17188_joinsep(";", xs_6920.tail, xs_6920.head);
+    var right0_6935 = $std_core._lift17188_joinsep(";", xs_6936.tail, xs_6936.head);
   }
    
-  var left_6916 = $std_core._lp__plus__plus__1_rp_("{", right0_6919);
-  return $std_core._lp__plus__plus__1_rp_(left_6916, "}");
+  var left_6932 = $std_core._lp__plus__plus__1_rp_("{", right0_6935);
+  return $std_core._lp__plus__plus__1_rp_(left_6932, "}");
 }
  
  
@@ -554,56 +554,56 @@ export function showOptions(o) /* (o : testOptions) -> string */  {
 export function _create_Option(shortNames0, longNames0, arg0, help0, llongNames0) /* forall<a> (shortNames : string, longNames : list<string>, arg : optionArg<a>, help : string, llongNames : optional<list<string>>) -> option<a> */  {
    
   if (llongNames0 !== undefined) {
-    var _llongNames_2510 = llongNames0;
+    var _llongNames_2526 = llongNames0;
   }
   else {
-    var _llongNames_2510 = $std_core.map_5(longNames0, $compat.toLower);
+    var _llongNames_2526 = $std_core.map_5(longNames0, $compat.toLower);
   }
-  return Option(shortNames0, longNames0, arg0, help0, _llongNames_2510);
+  return Option(shortNames0, longNames0, arg0, help0, _llongNames_2526);
 }
  
 export var testOptions;
  
-var longNames0_6942 = $std_core.Cons("version", $std_core.Nil);
+var longNames0_6958 = $std_core.Cons("version", $std_core.Nil);
  
 var _x53 = undefined;
 if (_x53 !== undefined) {
-  var _llongNames_2510 = _x53;
+  var _llongNames_2526 = _x53;
 }
 else {
-  var _llongNames_2510 = $std_core.map_5(longNames0_6942, $compat.toLower);
+  var _llongNames_2526 = $std_core.map_5(longNames0_6958, $compat.toLower);
 }
  
-var longNames1_6947 = $std_core.Cons("verbose", $std_core.Nil);
+var longNames1_6963 = $std_core.Cons("verbose", $std_core.Nil);
  
 var _x54 = undefined;
 if (_x54 !== undefined) {
-  var _llongNames_25100 = _x54;
+  var _llongNames_25260 = _x54;
 }
 else {
-  var _llongNames_25100 = $std_core.map_5(longNames1_6947, $compat.toLower);
+  var _llongNames_25260 = $std_core.map_5(longNames1_6963, $compat.toLower);
 }
  
-var longNames2_6952 = $std_core.Cons("output", $std_core.Nil);
+var longNames2_6968 = $std_core.Cons("output", $std_core.Nil);
  
 var _x55 = undefined;
 if (_x55 !== undefined) {
-  var _llongNames_25101 = _x55;
+  var _llongNames_25261 = _x55;
 }
 else {
-  var _llongNames_25101 = $std_core.map_5(longNames2_6952, $compat.toLower);
+  var _llongNames_25261 = $std_core.map_5(longNames2_6968, $compat.toLower);
 }
  
-var longNames3_6957 = $std_core.Cons("name", $std_core.Nil);
+var longNames3_6973 = $std_core.Cons("name", $std_core.Nil);
  
 var _x56 = undefined;
 if (_x56 !== undefined) {
-  var _llongNames_25102 = _x56;
+  var _llongNames_25262 = _x56;
 }
 else {
-  var _llongNames_25102 = $std_core.map_5(longNames3_6957, $compat.toLower);
+  var _llongNames_25262 = $std_core.map_5(longNames3_6973, $compat.toLower);
 }
-var testOptions = $std_core.Cons(Option("V?", longNames0_6942, Flag(setVersion), "display version information", _llongNames_2510), $std_core.Cons(Option("v", longNames1_6947, Flag(setVerbose), "verbosely list files", _llongNames_25100), $std_core.Cons(Option("o", longNames2_6952, Opt(setOutput, "FILE"), "use FILE for dump", _llongNames_25101), $std_core.Cons(Option("n", longNames3_6957, Req(setName, "USER"), "only show USER files", _llongNames_25102), $std_core.Nil))));
+var testOptions = $std_core.Cons(Option("V?", longNames0_6958, Flag(setVersion), "display version information", _llongNames_2526), $std_core.Cons(Option("v", longNames1_6963, Flag(setVerbose), "verbosely list files", _llongNames_25260), $std_core.Cons(Option("o", longNames2_6968, Opt(setOutput, "FILE"), "use FILE for dump", _llongNames_25261), $std_core.Cons(Option("n", longNames3_6973, Req(setName, "USER"), "only show USER files", _llongNames_25262), $std_core.Nil))));
  
 export function _create_TestOptions(verbose0, version0, name0, output0, arguments0) /* (verbose : optional<bool>, version : optional<bool>, name : optional<string>, output : optional<string>, arguments : optional<list<string>>) -> testOptions */  {
   var _x53 = (verbose0 !== undefined) ? verbose0 : false;
@@ -617,59 +617,59 @@ export function _create_TestOptions(verbose0, version0, name0, output0, argument
 export function showFlag(flag) /* forall<a> (flag : option<a>) -> list<(string, string, string)> */  {
    
   var _x58 = flag.shortNames;
-  var xs_6961 = $std_core.map_5($std_core.list_6(_x58), function(c /* char */ ) {
+  var xs_6977 = $std_core.map_5($std_core.list_6(_x58), function(c /* char */ ) {
        
-      var right0_6967 = $std_core.string(c);
+      var right0_6983 = $std_core.string(c);
        
-      var left_6964 = $std_core._lp__plus__plus__1_rp_("-", right0_6967);
+      var left_6980 = $std_core._lp__plus__plus__1_rp_("-", right0_6983);
        
       if (flag.arg._tag === 1) {
-        var right_6965 = "";
+        var right_6981 = "";
       }
       else if (flag.arg._tag === 2) {
          
-        var left_6887 = $std_core._lp__plus__plus__1_rp_("<", flag.arg.help);
-        var right_6965 = $std_core._lp__plus__plus__1_rp_(left_6887, ">");
+        var left_6903 = $std_core._lp__plus__plus__1_rp_("<", flag.arg.help);
+        var right_6981 = $std_core._lp__plus__plus__1_rp_(left_6903, ">");
       }
       else {
          
-        var left1_6891 = $std_core._lp__plus__plus__1_rp_("[", flag.arg.help);
-        var right_6965 = $std_core._lp__plus__plus__1_rp_(left1_6891, "]");
+        var left1_6907 = $std_core._lp__plus__plus__1_rp_("[", flag.arg.help);
+        var right_6981 = $std_core._lp__plus__plus__1_rp_(left1_6907, "]");
       }
-      return $std_core._lp__plus__plus__1_rp_(left_6964, right_6965);
+      return $std_core._lp__plus__plus__1_rp_(left_6980, right_6981);
     });
    
-  if (xs_6961 === null) {
+  if (xs_6977 === null) {
     var short = "";
   }
   else {
-    var short = $std_core._lift17188_joinsep(" ", xs_6961.tail, xs_6961.head);
+    var short = $std_core._lift17188_joinsep(" ", xs_6977.tail, xs_6977.head);
   }
    
   var _x59 = flag.longNames;
-  var xs0_6969 = $std_core.map_5(_x59, function(name0 /* string */ ) {
+  var xs0_6985 = $std_core.map_5(_x59, function(name0 /* string */ ) {
        
-      var left1_6972 = $std_core._lp__plus__plus__1_rp_("--", name0);
+      var left1_6988 = $std_core._lp__plus__plus__1_rp_("--", name0);
        
       if (flag.arg._tag === 1) {
-        var right1_6973 = "";
+        var right1_6989 = "";
       }
       else if (flag.arg._tag === 2) {
-        var right1_6973 = $std_core._lp__plus__plus__1_rp_("=", flag.arg.help);
+        var right1_6989 = $std_core._lp__plus__plus__1_rp_("=", flag.arg.help);
       }
       else {
          
-        var left4_6980 = $std_core._lp__plus__plus__1_rp_("[=", flag.arg.help);
-        var right1_6973 = $std_core._lp__plus__plus__1_rp_(left4_6980, "]");
+        var left4_6996 = $std_core._lp__plus__plus__1_rp_("[=", flag.arg.help);
+        var right1_6989 = $std_core._lp__plus__plus__1_rp_(left4_6996, "]");
       }
-      return $std_core._lp__plus__plus__1_rp_(left1_6972, right1_6973);
+      return $std_core._lp__plus__plus__1_rp_(left1_6988, right1_6989);
     });
    
-  if (xs0_6969 === null) {
+  if (xs0_6985 === null) {
     var long = "";
   }
   else {
-    var long = $std_core._lift17188_joinsep(" ", xs0_6969.tail, xs0_6969.head);
+    var long = $std_core._lift17188_joinsep(" ", xs0_6985.tail, xs0_6985.head);
   }
    
   var _x60 = flag.help;
@@ -677,10 +677,10 @@ export function showFlag(flag) /* forall<a> (flag : option<a>) -> list<(string, 
   var _x58 = $std_core.vlist(v_17126);
   if (_x58 !== null) {
      
-    var right6_6987 = $std_core.map_5(_x58.tail, function(s0 /* string */ ) {
+    var right6_7003 = $std_core.map_5(_x58.tail, function(s0 /* string */ ) {
         return $std_core_types._Tuple3_("", "", s0);
       });
-    return $std_core.append($std_core.Cons($std_core_types._Tuple3_(short, long, _x58.head), $std_core.Nil), right6_6987);
+    return $std_core.append($std_core.Cons($std_core_types._Tuple3_(short, long, _x58.head), $std_core.Nil), right6_7003);
   }
   else {
     return $std_core.Cons($std_core_types._Tuple3_(short, long, ""), $std_core.Nil);
@@ -689,8 +689,8 @@ export function showFlag(flag) /* forall<a> (flag : option<a>) -> list<(string, 
  
  
 // monadic lift
-export function _mlift7158_zipWith3Acc(acc, f, xx, yy, zz, _y_7152) /* forall<e,a,b,c,d> (acc : list<b>, f : (a, c, d) -> e b, xx : list<a>, yy : list<c>, zz : list<d>, b) -> e list<b> */  {
-  return zipWith3Acc(f, $std_core.Cons(_y_7152, acc), xx, yy, zz);
+export function _mlift7174_zipWith3Acc(acc, f, xx, yy, zz, _y_7168) /* forall<e,a,b,c,d> (acc : list<b>, f : (a, c, d) -> e b, xx : list<a>, yy : list<c>, zz : list<d>, b) -> e list<b> */  {
+  return zipWith3Acc(f, $std_core.Cons(_y_7168, acc), xx, yy, zz);
 }
  
 export function zipWith3Acc(f0, acc0, xs, ys, zs) /* forall<a,b,c,d,e> ((a, b, c) -> e d, list<d>, list<a>, list<b>, list<c>) -> e list<d> */  { tailcall: while(1)
@@ -705,16 +705,16 @@ export function zipWith3Acc(f0, acc0, xs, ys, zs) /* forall<a,b,c,d,e> ((a, b, c
     else {
       if (zs !== null) {
          
-        var x0_7159 = f0(xs.head, ys.head, zs.head);
+        var x0_7175 = f0(xs.head, ys.head, zs.head);
         if ($std_core_hnd._yielding()) {
-          return $std_core_hnd.yield_extend(function(_y_71520 /* 3681 */ ) {
-            return _mlift7158_zipWith3Acc(acc0, f0, xs.tail, ys.tail, zs.tail, _y_71520);
+          return $std_core_hnd.yield_extend(function(_y_71680 /* 3697 */ ) {
+            return _mlift7174_zipWith3Acc(acc0, f0, xs.tail, ys.tail, zs.tail, _y_71680);
           });
         }
         else {
           {
             // tail call
-            var _x59 = $std_core.Cons(x0_7159, acc0);
+            var _x59 = $std_core.Cons(x0_7175, acc0);
             acc0 = _x59;
             xs = xs.tail;
             ys = ys.tail;
@@ -741,14 +741,14 @@ export function usageInfo(flags, header) /* forall<a> (flags : list<option<a>>, 
    
   function alignLeft(xs) /* (xs : list<string>) -> list<string> */  {
      
-    var xs0_6988 = $std_core.map_5(xs, $compat.length);
+    var xs0_7004 = $std_core.map_5(xs, $compat.length);
      
-    if (xs0_6988 === null) {
+    if (xs0_7004 === null) {
       var _x60 = undefined;
       var n = (_x60 !== undefined) ? _x60 : 0;
     }
     else {
-      var n = $std_core.foldl(xs0_6988.tail, xs0_6988.head, $std_core.max);
+      var n = $std_core.foldl(xs0_7004.tail, xs0_7004.head, $std_core.max);
     }
     return $std_core.map_5(xs, function(s1 /* string */ ) {
         var _x60 = $std_core._int_ge(($std_core.count_1(s1)),n);
@@ -757,72 +757,72 @@ export function usageInfo(flags, header) /* forall<a> (flags : list<option<a>>, 
         }
         else {
            
-          var y_6996 = $std_core.count_1(s1);
+          var y_7012 = $std_core.count_1(s1);
            
-          var n0_6993 = $std_core._int_sub(n,y_6996);
+          var n0_7009 = $std_core._int_sub(n,y_7012);
            
-          if ($std_core._int_le(n0_6993,0)) {
-            var right_6992 = "";
+          if ($std_core._int_le(n0_7009,0)) {
+            var right_7008 = "";
           }
           else {
-            var right_6992 = $compat.makeString(n0_6993, 0x0020);
+            var right_7008 = $compat.makeString(n0_7009, 0x0020);
           }
-          return $std_core._lp__plus__plus__1_rp_(s1, right_6992);
+          return $std_core._lp__plus__plus__1_rp_(s1, right_7008);
         }
       });
   }
    
-  var xss_6998 = $std_core.map_5(flags, showFlag);
+  var xss_7014 = $std_core.map_5(flags, showFlag);
    
-  var xs0_7162 = $std_core._lift17183_concat($std_core.Nil, xss_6998);
-  var _x60 = _lift7151_unzip3(xs0_7162, $std_core.Nil, $std_core.Nil, $std_core.Nil);
+  var xs0_7178 = $std_core._lift17183_concat($std_core.Nil, xss_7014);
+  var _x60 = _lift7167_unzip3(xs0_7178, $std_core.Nil, $std_core.Nil, $std_core.Nil);
    
-  var xs1_7000 = alignLeft(_x60.fst);
+  var xs1_7016 = alignLeft(_x60.fst);
    
-  var ys_7001 = alignLeft(_x60.snd);
+  var ys_7017 = alignLeft(_x60.snd);
    
   var table = zipWith3Acc(function(x1 /* string */ , y0 /* string */ , z /* string */ ) {
        
-      var left3_7009 = $std_core._lp__plus__plus__1_rp_(" ", x1);
+      var left3_7025 = $std_core._lp__plus__plus__1_rp_(" ", x1);
        
-      var left2_7007 = $std_core._lp__plus__plus__1_rp_(left3_7009, "  ");
+      var left2_7023 = $std_core._lp__plus__plus__1_rp_(left3_7025, "  ");
        
-      var left1_7005 = $std_core._lp__plus__plus__1_rp_(left2_7007, y0);
+      var left1_7021 = $std_core._lp__plus__plus__1_rp_(left2_7023, y0);
        
-      var left0_7003 = $std_core._lp__plus__plus__1_rp_(left1_7005, "  ");
-      return $std_core._lp__plus__plus__1_rp_(left0_7003, z);
-    }, $std_core.Nil, xs1_7000, ys_7001, _x60.thd);
+      var left0_7019 = $std_core._lp__plus__plus__1_rp_(left1_7021, "  ");
+      return $std_core._lp__plus__plus__1_rp_(left0_7019, z);
+    }, $std_core.Nil, xs1_7016, ys_7017, _x60.thd);
    
-  var left5_7013 = $std_core._lp__plus__plus__1_rp_(header, "\n");
+  var left5_7029 = $std_core._lp__plus__plus__1_rp_(header, "\n");
    
   if (table === null) {
-    var right5_7014 = "";
+    var right5_7030 = "";
   }
   else {
-    var right5_7014 = $std_core._lift17203_unlines(table.tail, table.head);
+    var right5_7030 = $std_core._lift17203_unlines(table.tail, table.head);
   }
-  return $std_core._lp__plus__plus__1_rp_(left5_7013, right5_7014);
+  return $std_core._lp__plus__plus__1_rp_(left5_7029, right5_7030);
 }
  
 export function errorAmbiguous(applicable, opt) /* forall<a,b> (applicable : list<option<a>>, opt : string) -> flagKind<b> */  {
    
-  var left_7018 = $std_core._lp__plus__plus__1_rp_("option \"", opt);
+  var left_7034 = $std_core._lp__plus__plus__1_rp_("option \"", opt);
    
-  var header = $std_core._lp__plus__plus__1_rp_(left_7018, "\" is ambiguous. It could be one of:");
+  var header = $std_core._lp__plus__plus__1_rp_(left_7034, "\" is ambiguous. It could be one of:");
   return $Error(usageInfo(applicable, header));
 }
  
 export function errorUnknown(opt) /* forall<a> (opt : string) -> flagKind<a> */  {
    
-  var left_7023 = $std_core._lp__plus__plus__1_rp_("unrecognized option \"", opt);
-  return $Error($std_core._lp__plus__plus__1_rp_(left_7023, "\""));
+  var left_7039 = $std_core._lp__plus__plus__1_rp_("unrecognized option \"", opt);
+  return $Error($std_core._lp__plus__plus__1_rp_(left_7039, "\""));
 }
  
 export function parseLong(s, flags) /* forall<a> (s : string, flags : list<option<a>>) -> total flagKind<a> */  {
    
-  var sep_7030 = $std_core.string(0x003D);
+  var sep_7046 = $std_core.string(0x003D);
    
-  var v_17123 = (s).split(sep_7030, 2);
+  var v_17123 = (s).split(sep_7046, 2);
    
   var parts = $std_core.vlist(v_17123);
   if (parts !== null && parts.tail !== null) {
@@ -845,18 +845,18 @@ export function parseLong(s, flags) /* forall<a> (s : string, flags : list<optio
       var baseflagname = "";
     }
      
-    var lnames = $compat.concat(flags, function(flag /* option<5496> */ ) {
+    var lnames = $compat.concat(flags, function(flag /* option<5512> */ ) {
         return flag.llongNames;
       });
      
-    var exacts = $std_core.filter(flags, function(flag0 /* option<5496> */ ) {
+    var exacts = $std_core.filter(flags, function(flag0 /* option<5512> */ ) {
         var _x63 = flag0.llongNames;
         return $std_core.any(_x63, function(name0 /* string */ ) {
             return ((name0 === flagname)) ? true : (name0 === baseflagname);
           });
       });
      
-    var prefixes = $std_core.filter(flags, function(flag1 /* option<5496> */ ) {
+    var prefixes = $std_core.filter(flags, function(flag1 /* option<5512> */ ) {
         var _x64 = flag1.llongNames;
         return $std_core.any(_x64, function(name00 /* string */ ) {
             var _x65 = $compat.startsWith(name00, flagname);
@@ -876,42 +876,42 @@ export function parseLong(s, flags) /* forall<a> (s : string, flags : list<optio
     var _x61 = (exacts === null) ? prefixes : exacts;
     if (_x61 === null) {
        
-      var left_7023 = $std_core._lp__plus__plus__1_rp_("unrecognized option \"", opt);
-      return $Error($std_core._lp__plus__plus__1_rp_(left_7023, "\""));
+      var left_7039 = $std_core._lp__plus__plus__1_rp_("unrecognized option \"", opt);
+      return $Error($std_core._lp__plus__plus__1_rp_(left_7039, "\""));
     }
     else if (_x61 !== null && _x61.tail !== null) {
        
-      var left_7018 = $std_core._lp__plus__plus__1_rp_("option \"", opt);
+      var left_7034 = $std_core._lp__plus__plus__1_rp_("option \"", opt);
        
-      var header = $std_core._lp__plus__plus__1_rp_(left_7018, "\" is ambiguous. It could be one of:");
+      var header = $std_core._lp__plus__plus__1_rp_(left_7034, "\" is ambiguous. It could be one of:");
       var _x62 = (exacts === null) ? prefixes : exacts;
       return $Error(usageInfo(_x62, header));
     }
     else {
       if (_x61.head.arg._tag === 1) {
         if (((parts.tail.head) === (""))) {
-          return Flg(function(o /* 5496 */ ) {
+          return Flg(function(o /* 5512 */ ) {
             return _x61.head.arg.$default(o, (baseflagname === ("")));
           });
         }
         else {
           var _x63 = (($compat.toLower(parts.tail.head)) === ("true"));
           if (_x63) {
-            return Flg(function(o0 /* 5496 */ ) {
+            return Flg(function(o0 /* 5512 */ ) {
               return _x61.head.arg.$default(o0, true);
             });
           }
           else {
             var _x64 = (($compat.toLower(parts.tail.head)) === ("false"));
             if (_x64) {
-              return Flg(function(o1 /* 5496 */ ) {
+              return Flg(function(o1 /* 5512 */ ) {
                 return _x61.head.arg.$default(o1, false);
               });
             }
             else {
                
-              var left_6902 = $std_core._lp__plus__plus__1_rp_("option \"", opt);
-              return $Error($std_core._lp__plus__plus__1_rp_(left_6902, "\" does not take an argument"));
+              var left_6918 = $std_core._lp__plus__plus__1_rp_("option \"", opt);
+              return $Error($std_core._lp__plus__plus__1_rp_(left_6918, "\" does not take an argument"));
             }
           }
         }
@@ -919,40 +919,40 @@ export function parseLong(s, flags) /* forall<a> (s : string, flags : list<optio
       else if (_x61.head.arg._tag === 2) {
         if ((baseflagname !== (""))) {
            
-          var left_6898 = $std_core._lp__plus__plus__1_rp_("option \"--", baseflagname);
-          return $Error($std_core._lp__plus__plus__1_rp_(left_6898, "\" cannot be negated"));
+          var left_6914 = $std_core._lp__plus__plus__1_rp_("option \"--", baseflagname);
+          return $Error($std_core._lp__plus__plus__1_rp_(left_6914, "\" cannot be negated"));
         }
         else {
           var _x65 = $std_core._int_gt(($std_core.count_1(parts.tail.head)),0);
           if (_x65) {
-            return Flg(function(o2 /* 5496 */ ) {
+            return Flg(function(o2 /* 5512 */ ) {
               return _x61.head.arg.parse(o2, parts.tail.head);
             });
           }
           else {
              
-            var left0_6908 = $std_core._lp__plus__plus__1_rp_("option \"", opt);
+            var left0_6924 = $std_core._lp__plus__plus__1_rp_("option \"", opt);
              
-            var left_6906 = $std_core._lp__plus__plus__1_rp_(left0_6908, "\" requires an argument ");
-            return $Error($std_core._lp__plus__plus__1_rp_(left_6906, _x61.head.arg.help));
+            var left_6922 = $std_core._lp__plus__plus__1_rp_(left0_6924, "\" requires an argument ");
+            return $Error($std_core._lp__plus__plus__1_rp_(left_6922, _x61.head.arg.help));
           }
         }
       }
       else {
         if ((baseflagname !== (""))) {
            
-          var left_68980 = $std_core._lp__plus__plus__1_rp_("option \"--", baseflagname);
-          return $Error($std_core._lp__plus__plus__1_rp_(left_68980, "\" cannot be negated"));
+          var left_69140 = $std_core._lp__plus__plus__1_rp_("option \"--", baseflagname);
+          return $Error($std_core._lp__plus__plus__1_rp_(left_69140, "\" cannot be negated"));
         }
         else {
           var _x66 = $std_core._int_gt(($std_core.count_1(parts.tail.head)),0);
           if (_x66) {
-            return Flg(function(o3 /* 5496 */ ) {
+            return Flg(function(o3 /* 5512 */ ) {
               return _x61.head.arg.parse(o3, $std_core_types.Just(parts.tail.head));
             });
           }
           else {
-            return Flg(function(o4 /* 5496 */ ) {
+            return Flg(function(o4 /* 5512 */ ) {
               return _x61.head.arg.parse(o4, $std_core_types.Nothing);
             });
           }
@@ -980,18 +980,18 @@ export function parseLong(s, flags) /* forall<a> (s : string, flags : list<optio
       var baseflagname0 = "";
     }
      
-    var lnames0 = $compat.concat(flags, function(flag2 /* option<5496> */ ) {
+    var lnames0 = $compat.concat(flags, function(flag2 /* option<5512> */ ) {
         return flag2.llongNames;
       });
      
-    var exacts0 = $std_core.filter(flags, function(flag00 /* option<5496> */ ) {
+    var exacts0 = $std_core.filter(flags, function(flag00 /* option<5512> */ ) {
         var _x69 = flag00.llongNames;
         return $std_core.any(_x69, function(name01 /* string */ ) {
             return ((name01 === flagname2)) ? true : (name01 === baseflagname0);
           });
       });
      
-    var prefixes0 = $std_core.filter(flags, function(flag10 /* option<5496> */ ) {
+    var prefixes0 = $std_core.filter(flags, function(flag10 /* option<5512> */ ) {
         var _x70 = flag10.llongNames;
         return $std_core.any(_x70, function(name000 /* string */ ) {
             var _x71 = $compat.startsWith(name000, flagname2);
@@ -1011,42 +1011,42 @@ export function parseLong(s, flags) /* forall<a> (s : string, flags : list<optio
     var _x67 = (exacts0 === null) ? prefixes0 : exacts0;
     if (_x67 === null) {
        
-      var left_70230 = $std_core._lp__plus__plus__1_rp_("unrecognized option \"", opt4);
-      return $Error($std_core._lp__plus__plus__1_rp_(left_70230, "\""));
+      var left_70390 = $std_core._lp__plus__plus__1_rp_("unrecognized option \"", opt4);
+      return $Error($std_core._lp__plus__plus__1_rp_(left_70390, "\""));
     }
     else if (_x67 !== null && _x67.tail !== null) {
        
-      var left_70180 = $std_core._lp__plus__plus__1_rp_("option \"", opt4);
+      var left_70340 = $std_core._lp__plus__plus__1_rp_("option \"", opt4);
        
-      var header0 = $std_core._lp__plus__plus__1_rp_(left_70180, "\" is ambiguous. It could be one of:");
+      var header0 = $std_core._lp__plus__plus__1_rp_(left_70340, "\" is ambiguous. It could be one of:");
       var _x68 = (exacts0 === null) ? prefixes0 : exacts0;
       return $Error(usageInfo(_x68, header0));
     }
     else {
       if (_x67.head.arg._tag === 1) {
         if ((("") === (""))) {
-          return Flg(function(o5 /* 5496 */ ) {
+          return Flg(function(o5 /* 5512 */ ) {
             return _x67.head.arg.$default(o5, (baseflagname0 === ("")));
           });
         }
         else {
           var _x69 = (($compat.toLower("")) === ("true"));
           if (_x69) {
-            return Flg(function(o00 /* 5496 */ ) {
+            return Flg(function(o00 /* 5512 */ ) {
               return _x67.head.arg.$default(o00, true);
             });
           }
           else {
             var _x70 = (($compat.toLower("")) === ("false"));
             if (_x70) {
-              return Flg(function(o10 /* 5496 */ ) {
+              return Flg(function(o10 /* 5512 */ ) {
                 return _x67.head.arg.$default(o10, false);
               });
             }
             else {
                
-              var left_69020 = $std_core._lp__plus__plus__1_rp_("option \"", opt4);
-              return $Error($std_core._lp__plus__plus__1_rp_(left_69020, "\" does not take an argument"));
+              var left_69180 = $std_core._lp__plus__plus__1_rp_("option \"", opt4);
+              return $Error($std_core._lp__plus__plus__1_rp_(left_69180, "\" does not take an argument"));
             }
           }
         }
@@ -1054,40 +1054,40 @@ export function parseLong(s, flags) /* forall<a> (s : string, flags : list<optio
       else if (_x67.head.arg._tag === 2) {
         if ((baseflagname0 !== (""))) {
            
-          var left_68981 = $std_core._lp__plus__plus__1_rp_("option \"--", baseflagname0);
-          return $Error($std_core._lp__plus__plus__1_rp_(left_68981, "\" cannot be negated"));
+          var left_69141 = $std_core._lp__plus__plus__1_rp_("option \"--", baseflagname0);
+          return $Error($std_core._lp__plus__plus__1_rp_(left_69141, "\" cannot be negated"));
         }
         else {
           var _x71 = $std_core._int_gt(($std_core.count_1("")),0);
           if (_x71) {
-            return Flg(function(o20 /* 5496 */ ) {
+            return Flg(function(o20 /* 5512 */ ) {
               return _x67.head.arg.parse(o20, "");
             });
           }
           else {
              
-            var left0_69080 = $std_core._lp__plus__plus__1_rp_("option \"", opt4);
+            var left0_69240 = $std_core._lp__plus__plus__1_rp_("option \"", opt4);
              
-            var left_69060 = $std_core._lp__plus__plus__1_rp_(left0_69080, "\" requires an argument ");
-            return $Error($std_core._lp__plus__plus__1_rp_(left_69060, _x67.head.arg.help));
+            var left_69220 = $std_core._lp__plus__plus__1_rp_(left0_69240, "\" requires an argument ");
+            return $Error($std_core._lp__plus__plus__1_rp_(left_69220, _x67.head.arg.help));
           }
         }
       }
       else {
         if ((baseflagname0 !== (""))) {
            
-          var left_68982 = $std_core._lp__plus__plus__1_rp_("option \"--", baseflagname0);
-          return $Error($std_core._lp__plus__plus__1_rp_(left_68982, "\" cannot be negated"));
+          var left_69142 = $std_core._lp__plus__plus__1_rp_("option \"--", baseflagname0);
+          return $Error($std_core._lp__plus__plus__1_rp_(left_69142, "\" cannot be negated"));
         }
         else {
           var _x72 = $std_core._int_gt(($std_core.count_1("")),0);
           if (_x72) {
-            return Flg(function(o30 /* 5496 */ ) {
+            return Flg(function(o30 /* 5512 */ ) {
               return _x67.head.arg.parse(o30, $std_core_types.Just(""));
             });
           }
           else {
-            return Flg(function(o40 /* 5496 */ ) {
+            return Flg(function(o40 /* 5512 */ ) {
               return _x67.head.arg.parse(o40, $std_core_types.Nothing);
             });
           }
@@ -1109,29 +1109,29 @@ export function parseShorts(s, flags) /* forall<a> (s : string, flags : list<opt
         }
         else {
            
-          var right_7044 = $std_core.string(c);
+          var right_7060 = $std_core.string(c);
            
-          var opt = $std_core._lp__plus__plus__1_rp_("-", right_7044);
+          var opt = $std_core._lp__plus__plus__1_rp_("-", right_7060);
            
-          var applicable = $std_core.filter(flags, function(flag /* option<6033> */ ) {
+          var applicable = $std_core.filter(flags, function(flag /* option<6049> */ ) {
               var _x74 = flag.shortNames;
               return $compat.contains(_x74, c);
             });
           if (applicable === null) {
              
-            var left_7023 = $std_core._lp__plus__plus__1_rp_("unrecognized option \"", opt);
-            return $std_core_types.Just($Error($std_core._lp__plus__plus__1_rp_(left_7023, "\"")));
+            var left_7039 = $std_core._lp__plus__plus__1_rp_("unrecognized option \"", opt);
+            return $std_core_types.Just($Error($std_core._lp__plus__plus__1_rp_(left_7039, "\"")));
           }
           else if (applicable !== null && applicable.tail !== null) {
              
-            var left_7018 = $std_core._lp__plus__plus__1_rp_("option \"", opt);
+            var left_7034 = $std_core._lp__plus__plus__1_rp_("option \"", opt);
              
-            var header = $std_core._lp__plus__plus__1_rp_(left_7018, "\" is ambiguous. It could be one of:");
+            var header = $std_core._lp__plus__plus__1_rp_(left_7034, "\" is ambiguous. It could be one of:");
             return $std_core_types.Just($Error(usageInfo(applicable, header)));
           }
           else {
             if (applicable.head.arg._tag === 1) {
-              return $std_core_types.Just(Flg(function(o /* 6033 */ ) {
+              return $std_core_types.Just(Flg(function(o /* 6049 */ ) {
                 return applicable.head.arg.$default(o, true);
               }));
             }
@@ -1142,16 +1142,16 @@ export function parseShorts(s, flags) /* forall<a> (s : string, flags : list<opt
               if (_x74) {
                  
                 ((loc).value = true);
-                return $std_core_types.Just(Flg(function(o0 /* 6033 */ ) {
+                return $std_core_types.Just(Flg(function(o0 /* 6049 */ ) {
                   return applicable.head.arg.parse(o0, arg0);
                 }));
               }
               else {
                  
-                var left0_6908 = $std_core._lp__plus__plus__1_rp_("option \"", opt);
+                var left0_6924 = $std_core._lp__plus__plus__1_rp_("option \"", opt);
                  
-                var left_6906 = $std_core._lp__plus__plus__1_rp_(left0_6908, "\" requires an argument ");
-                return $std_core_types.Just($Error($std_core._lp__plus__plus__1_rp_(left_6906, applicable.head.arg.help)));
+                var left_6922 = $std_core._lp__plus__plus__1_rp_(left0_6924, "\" requires an argument ");
+                return $std_core_types.Just($Error($std_core._lp__plus__plus__1_rp_(left_6922, applicable.head.arg.help)));
               }
             }
             else {
@@ -1161,12 +1161,12 @@ export function parseShorts(s, flags) /* forall<a> (s : string, flags : list<opt
               if (_x75) {
                  
                 ((loc).value = true);
-                return $std_core_types.Just(Flg(function(o1 /* 6033 */ ) {
+                return $std_core_types.Just(Flg(function(o1 /* 6049 */ ) {
                   return applicable.head.arg.parse(o1, $std_core_types.Just(arg00));
                 }));
               }
               else {
-                return $std_core_types.Just(Flg(function(o2 /* 6033 */ ) {
+                return $std_core_types.Just(Flg(function(o2 /* 6049 */ ) {
                   return applicable.head.arg.parse(o2, $std_core_types.Nothing);
                 }));
               }
@@ -1175,9 +1175,9 @@ export function parseShorts(s, flags) /* forall<a> (s : string, flags : list<opt
         }
       });
      
-    var xss_7053 = $std_core.map_5(fs, $std_core.list_5);
+    var xss_7069 = $std_core.map_5(fs, $std_core.list_5);
      
-    var res = $std_core._lift17183_concat($std_core.Nil, xss_7053);
+    var res = $std_core._lift17183_concat($std_core.Nil, xss_7069);
     return $std_core_hnd.prompt_local_var(loc, res);
   }();
 }
@@ -1230,7 +1230,7 @@ export function parse(initial, flags, args, ordering) /* forall<a> (initial : a,
           var opts = processNext(arg0, flags);
         }
          
-        $std_core.foreach(opts, function(opt /* flagKind<6492> */ ) {
+        $std_core.foreach(opts, function(opt /* flagKind<6508> */ ) {
             if (opt._tag === 3) {
               return ((loc).value = true);
             }
@@ -1246,14 +1246,14 @@ export function parse(initial, flags, args, ordering) /* forall<a> (initial : a,
         return opts;
       });
      
-    var res = $std_core.foldl($std_core._lift17183_concat($std_core.Nil, opts0), $std_core_types._Tuple3_(initial, $std_core.Nil, $std_core.Nil), function(acc /* (6492, list<string>, list<string>) */ , opt0 /* flagKind<6492> */ ) {
+    var res = $std_core.foldl($std_core._lift17183_concat($std_core.Nil, opts0), $std_core_types._Tuple3_(initial, $std_core.Nil, $std_core.Nil), function(acc /* (6508, list<string>, list<string>) */ , opt0 /* flagKind<6508> */ ) {
         if (opt0._tag === 1) {
           return $std_core_types._Tuple3_(opt0.set(acc.fst), acc.snd, acc.thd);
         }
         else if (opt0._tag === 4) {
            
-          var left_7059 = $std_core._lp__plus__plus__1_rp_("unrecognized option \"", opt0.arg);
-          return $std_core_types._Tuple3_(acc.fst, acc.snd, $std_core.Cons($std_core._lp__plus__plus__1_rp_(left_7059, "\""), acc.thd));
+          var left_7075 = $std_core._lp__plus__plus__1_rp_("unrecognized option \"", opt0.arg);
+          return $std_core_types._Tuple3_(acc.fst, acc.snd, $std_core.Cons($std_core._lp__plus__plus__1_rp_(left_7075, "\""), acc.thd));
         }
         else if (opt0._tag === 5) {
           return $std_core_types._Tuple3_(acc.fst, acc.snd, $std_core.Cons(opt0.msg, acc.thd));
@@ -1285,26 +1285,26 @@ export function test(cmdargs) /* (cmdargs : list<string>) -> console () */  {
      
     $std_core.printsln("\nsuccess!");
      
-    var right_7072 = showOptions(_x76.fst);
+    var right_7088 = showOptions(_x76.fst);
      
-    var s0_7070 = $std_core._lp__plus__plus__1_rp_("options: ", right_7072);
+    var s0_7086 = $std_core._lp__plus__plus__1_rp_("options: ", right_7088);
      
-    $std_core.printsln(s0_7070);
+    $std_core.printsln(s0_7086);
      
     if (_x76.snd === null) {
-      var right0_7075 = "";
+      var right0_7091 = "";
     }
     else {
-      var right0_7075 = $std_core._lift17188_joinsep(" ", _x76.snd.tail, _x76.snd.head);
+      var right0_7091 = $std_core._lift17188_joinsep(" ", _x76.snd.tail, _x76.snd.head);
     }
      
-    var s1_7073 = $std_core._lp__plus__plus__1_rp_("arguments: ", right0_7075);
+    var s1_7089 = $std_core._lp__plus__plus__1_rp_("arguments: ", right0_7091);
      
-    $std_core.printsln(s1_7073);
+    $std_core.printsln(s1_7089);
     if (_x76.fst.version) {
        
-      var s2_7079 = usageInfo(testOptions, "usage:\n program [options] files\n\noptions:");
-      return $std_core.printsln(s2_7079);
+      var s2_7095 = usageInfo(testOptions, "usage:\n program [options] files\n\noptions:");
+      return $std_core.printsln(s2_7095);
     }
     else {
       return $std_core_types._Unit_;
@@ -1313,17 +1313,17 @@ export function test(cmdargs) /* (cmdargs : list<string>) -> console () */  {
   else {
      
     if (_x76.thd === null) {
-      var left2_7083 = "";
+      var left2_7099 = "";
     }
     else {
-      var left2_7083 = $std_core._lift17188_joinsep("\n", _x76.thd.tail, _x76.thd.head);
+      var left2_7099 = $std_core._lift17188_joinsep("\n", _x76.thd.tail, _x76.thd.head);
     }
      
-    var left1_7081 = $std_core._lp__plus__plus__1_rp_(left2_7083, "\n");
+    var left1_7097 = $std_core._lp__plus__plus__1_rp_(left2_7099, "\n");
      
-    var right1_7082 = usageInfo(testOptions, "usage:\n program [options] files\n\noptions:");
+    var right1_7098 = usageInfo(testOptions, "usage:\n program [options] files\n\noptions:");
      
-    var s3_7080 = $std_core._lp__plus__plus__1_rp_(left1_7081, right1_7082);
-    return $std_core.printsln(s3_7080);
+    var s3_7096 = $std_core._lp__plus__plus__1_rp_(left1_7097, right1_7098);
+    return $std_core.printsln(s3_7096);
   }
 }

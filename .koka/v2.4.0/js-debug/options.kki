@@ -9,8 +9,8 @@ import std/core/hnd = std/core/hnd = "";
 import std/core = std/core = "";
 import std/os/path = std/os/path = "";
 import compat/dict = compat/dict = "";
-import compat = compat = "";
 import compat/log = compat/log = "";
+import compat = compat = "";
 import common = common = "";
 import std/os/flags = std/os/flags = "";
 import compat/env = compat/env = "";
@@ -375,8 +375,8 @@ specialize "_*" fun setMeta // inline size: 1
                   = std/core/(++.1)("illegal --meta option: ", value);
                 val _ : ()
                   = compat/log/log((match ((std/core/types/None<std/core/types/string>)) {
-                      ((std/core/types/Optional((.logname.3094: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat42: ((std/core/types/optional :: V -> V)<std/core/types/string>))
-                         -> .logname.3094;
+                      ((std/core/types/Optional((.logname.3098: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat42: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+                         -> .logname.3098;
                       ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat03: ((std/core/types/optional :: V -> V)<std/core/types/string>))
                          -> "warning";
                     }), (std/core/(++.1)("  warning: ", message.6432)));

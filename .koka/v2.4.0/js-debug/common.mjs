@@ -9,8 +9,8 @@ import * as $std_text_parse from './std_text_parse.mjs';
 import * as $std_os_path from './std_os_path.mjs';
 import * as $std_text_regex from './std_text_regex.mjs';
 import * as $compat_dict from './compat_dict.mjs';
-import * as $compat from './compat.mjs';
 import * as $compat_log from './compat_log.mjs';
+import * as $compat from './compat.mjs';
 import * as $compat_regex from './compat_regex.mjs';
  
 // externals
@@ -37,15 +37,15 @@ export function Attrs(empty, sticky, defaults, text, replacers, notag, tight, in
   return { empty: empty, sticky: sticky, defaults: defaults, text: text, replacers: replacers, notag: notag, tight: tight, input: input, elem: elem, texelem: texelem, htmlelem: htmlelem, name: name, label: label, source: source, lineNo: lineNo, classes: classes, counters: counters, keyvals: keyvals };
 }
 // type cell
-export function Cell(text, cellAttrs) /* (text : string, cellAttrs : attrs) -> cell */  {
-  return { text: text, cellAttrs: cellAttrs };
+export function Cell(text__, cellAttrs) /* (text_ : string, cellAttrs : attrs) -> cell */  {
+  return { text__: text__, cellAttrs: cellAttrs };
 }
 // type embedinfo
 export function Embedinfo(embedName, embedData) /* (embedName : string, embedData : string) -> embedinfo */  {
   return { embedName: embedName, embedData: embedData };
 }
 // type rule
-export function Rule(name, regex, action) /* forall<a,b> (name : string, regex : compat/regex/regex, action : (cap : compat/regex/matched, ctx : b) -> a) -> rule<a,b> */  {
+export function Rule(name, regex, action) /* forall<a,b> (name : string, regex : compat/regex/regex, action : (cap : compat/regex/matched, ctx : b) -> div a) -> rule<a,b> */  {
   return { name: name, regex: regex, action: action };
 }
 // type label
@@ -354,9 +354,9 @@ export function _copy(_this, empty0, sticky0, defaults0, text0, replacers0, nota
 }
  
  
-// Automatically generated. Retrieves the `text` constructor field of the `:cell` type.
-export function text_1(cell) /* (cell : cell) -> string */  {
-  return cell.text;
+// Automatically generated. Retrieves the `text_` constructor field of the `:cell` type.
+export function text__(cell) /* (cell : cell) -> string */  {
+  return cell.text__;
 }
  
  
@@ -365,12 +365,12 @@ export function cellAttrs(cell) /* (cell : cell) -> attrs */  {
   return cell.cellAttrs;
 }
  
-export function _copy_1(_this, text0, cellAttrs0) /* (cell, text : optional<string>, cellAttrs : optional<attrs>) -> cell */  {
-  if (text0 !== undefined) {
-    var _x18 = text0;
+export function _copy_1(_this, text__0, cellAttrs0) /* (cell, text_ : optional<string>, cellAttrs : optional<attrs>) -> cell */  {
+  if (text__0 !== undefined) {
+    var _x18 = text__0;
   }
   else {
-    var _x18 = _this.text;
+    var _x18 = _this.text__;
   }
   if (cellAttrs0 !== undefined) {
     var _x19 = cellAttrs0;
@@ -423,11 +423,11 @@ export function regex(rule) /* forall<a,b> (rule : rule<a,b>) -> compat/regex/re
  
  
 // Automatically generated. Retrieves the `action` constructor field of the `:rule` type.
-export function action(rule) /* forall<a,b> (rule : rule<a,b>) -> ((cap : compat/regex/matched, ctx : b) -> a) */  {
+export function action(rule) /* forall<a,b> (rule : rule<a,b>) -> ((cap : compat/regex/matched, ctx : b) -> div a) */  {
   return rule.action;
 }
  
-export function _copy_3(_this, name0, regex0, action0) /* forall<a,b> (rule<a,b>, name : optional<string>, regex : optional<compat/regex/regex>, action : optional<(cap : compat/regex/matched, ctx : b) -> a>) -> rule<a,b> */  {
+export function _copy_3(_this, name0, regex0, action0) /* forall<a,b> (rule<a,b>, name : optional<string>, regex : optional<compat/regex/regex>, action : optional<(cap : compat/regex/matched, ctx : b) -> div a>) -> rule<a,b> */  {
   if (name0 !== undefined) {
     var _x22 = name0;
   }
@@ -623,8 +623,8 @@ export function showFormatter(f) /* (f : formatter) -> string */  {
  
  
 // monadic lift
-export function _mlift10858_combineRules(cap, ctx, _y_10846) /* forall<_e,a,b> (cap : compat/regex/matched, ctx : b, (cap : compat/regex/matched, ctx : b) -> <exn|_e> a) -> <exn|_e> a */  {
-  return _y_10846(cap, ctx);
+export function _mlift10817_combineRules(cap, ctx, _y_10793) /* forall<_e,a,b> (cap : compat/regex/matched, ctx : b, (cap : compat/regex/matched, ctx : b) -> <div,exn|_e> a) -> <exn,div|_e> a */  {
+  return _y_10793(cap, ctx);
 }
  
  
@@ -632,35 +632,35 @@ export function _mlift10858_combineRules(cap, ctx, _y_10846) /* forall<_e,a,b> (
 // For inline expressions, this does not improve the performance much.
 export function combineRules(rules) /* forall<a,b> (rules : list<rule<a,b>>) -> rule<a,b> */  {
    
-  var xs_10578 = $std_core.map_5(rules, function(rule /* rule<1400,1401> */ ) {
+  var xs_10535 = $std_core.map_5(rules, function(rule /* rule<1405,1406> */ ) {
       var _x35 = rule.regex;
-      return $std_core_types._Tuple2_($compat_regex.regexSource(_x35), function(_x1 /* compat/regex/matched */ , _x2 /* 1401 */ ) {
+      return $std_core_types._Tuple2_($compat_regex.regexSource(_x35), function(_x1 /* compat/regex/matched */ , _x2 /* 1406 */ ) {
           var _x36 = rule.action;
           return $std_core_hnd._open_none2(_x36, _x1, _x2);
         });
     });
-  var _x35 = $std_core._lift17204_unzip(xs_10578, $std_core.Nil, $std_core.Nil);
+  var _x35 = $std_core._lift17204_unzip(xs_10535, $std_core.Nil, $std_core.Nil);
    
   var actions = $std_core.unvlist(_x35.snd);
    
   var rx = $compat_regex.regexAlt(_x35.fst);
-  return Rule("<combined>", rx, function(cap /* compat/regex/matched */ , ctx /* 1401 */ ) {
+  return Rule("<combined>", rx, function(cap /* compat/regex/matched */ , ctx /* 1406 */ ) {
        
       var _x36 = cap.groups;
-      var j_10584 = $compat_regex.alternative(_x36);
+      var j_10541 = $compat_regex.alternative(_x36);
        
-      var i0 = ($std_core._int_ge(0,j_10584)) ? 0 : j_10584;
+      var i0 = ($std_core._int_ge(0,j_10541)) ? 0 : j_10541;
        
-      var x_10859 = $std_core_hnd._open_at2($std_core_hnd._evv_index($std_core._tag_exn), (function(_x37, _x38) {
+      var x_10819 = $std_core_hnd._open_at2($std_core_hnd._evv_index($std_core._tag_exn), (function(_x37, _x38) {
           return $std_core._vector_at(_x37,_x38);
         }), actions, i0);
       if ($std_core_hnd._yielding()) {
-        return $std_core_hnd.yield_extend(function(_y_10846 /* (cap : compat/regex/matched, ctx : 1401) -> <exn|_1378> 1400 */ ) {
-          return _y_10846(cap, ctx);
+        return $std_core_hnd.yield_extend(function(_y_10793 /* (cap : compat/regex/matched, ctx : 1406) -> <div,exn|_1388> 1405 */ ) {
+          return _y_10793(cap, ctx);
         });
       }
       else {
-        return x_10859(cap, ctx);
+        return x_10819(cap, ctx);
       }
     });
 }
@@ -676,16 +676,16 @@ var rxChoicePattern = $compat_regex.regex("\\[(\\w+(?:,\\w+)*)\\]");
 // replace whitespace, colons, and stars by a dash, and convert to lower case.
 export function normalizeId(txt) /* (txt : string) -> string */  {
    
-  var regex00_10592 = $compat_regex.regex("[^\\w\\-_:\\*\\s]+");
+  var regex00_10549 = $compat_regex.regex("[^\\w\\-_:\\*\\s]+");
    
   var _x37 = undefined;
   var _x36 = (_x37 !== undefined) ? _x37 : 0;
-  var s_10587 = $compat_regex.replaceEx_1(txt, regex00_10592, "", true, _x36);
+  var s_10544 = $compat_regex.replaceEx_1(txt, regex00_10549, "", true, _x36);
    
-  var regex0_10588 = $compat_regex.regex("\\s+|[:\\*]");
+  var regex0_10545 = $compat_regex.regex("\\s+|[:\\*]");
   var _x37 = undefined;
   var _x36 = (_x37 !== undefined) ? _x37 : 0;
-  return $compat.toLower($compat_regex.replaceEx_1(s_10587, regex0_10588, "-", true, _x36));
+  return $compat.toLower($compat_regex.replaceEx_1(s_10544, regex0_10545, "-", true, _x36));
 }
  
 export var rxamp;
@@ -748,13 +748,13 @@ var rxProtocol = $compat_regex.regex("^(\\\\w+:|//)");
 export function removeKeys(attrs, keys) /* (attrs : attrs, keys : list<string>) -> attrs */  {
    
   var _x39 = attrs.keyvals;
-  var _arg_2538 = $std_core.filter(_x39, function(kv /* (string, string) */ ) {
+  var _arg_2546 = $std_core.filter(_x39, function(kv /* (string, string) */ ) {
       return $std_core.all(keys, function(key /* string */ ) {
           var _x40 = kv.fst;
           return (_x40 !== key);
         });
     });
-  return _copy(attrs, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, _arg_2538);
+  return _copy(attrs, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, _arg_2546);
 }
  
  
@@ -764,12 +764,12 @@ var ruleHist = $compat_dict.mdict();
  
 export function ruleRemove(grammar, pred, names) /* forall<a,b> (grammar : grammar<a,b>, pred : bool, names : list<string>) -> grammar<a,b> */  {
   if (pred) {
-    return $std_core.filter(grammar, function(rule /* rule<2658,2659> */ ) {
+    return $std_core.filter(grammar, function(rule /* rule<2666,2667> */ ) {
         return $std_core.all(names, function(nm /* string */ ) {
              
             var _x39 = rule.name;
-            var b0_10603 = $compat.startsWith(_x39, nm);
-            return (b0_10603) ? false : true;
+            var b0_10560 = $compat.startsWith(_x39, nm);
+            return (b0_10560) ? false : true;
           });
       });
   }
@@ -780,9 +780,9 @@ export function ruleRemove(grammar, pred, names) /* forall<a,b> (grammar : gramm
  
  
 // Replace a rule in a grammar by another one, if the rule name is a prefix of the name of the new rule.
-export function ruleReplace(grammar, pred, rule) /* forall<a,b> (grammar : grammar<a,b>, pred : bool, rule : rule<a,b>) -> grammar<a,b> */  {
+export function ruleReplace(grammar, pred, rule) /* forall<a,b,e> (grammar : grammar<a,b>, pred : bool, rule : rule<a,b>) -> <div|e> grammar<a,b> */  {
   if (pred) {
-    return $std_core.map_5(grammar, function(r /* rule<2856,2857> */ ) {
+    return $std_core.map_5(grammar, function(r /* rule<2867,2868> */ ) {
         var _x40 = rule.name;
         var _x41 = r.name;
         var _x39 = $compat.startsWith(_x40, _x41);
@@ -800,8 +800,8 @@ var rxTrimLines = $compat_regex.regex("^([ \\t\\r]*\\n)+|([ \\t\\r]*\\n)+$");
 export function show(attrs) /* (attrs : attrs) -> string */  {
    
   var _x42 = attrs.text;
-  var left_10608 = $std_core._lp__plus__plus__1_rp_("{", _x42);
-  return $std_core._lp__plus__plus__1_rp_(left_10608, "}");
+  var left_10562 = $std_core._lp__plus__plus__1_rp_("{", _x42);
+  return $std_core._lp__plus__plus__1_rp_(left_10562, "}");
 }
  
  
@@ -820,14 +820,14 @@ export function unquote(s) /* (s : string) -> string */  {
     var _x43 = $compat.endsWith(s, "\'");
     if (_x43) {
        
-      var x_10618 = $std_core.count_1(s);
+      var x_10572 = $std_core.count_1(s);
        
-      var len_10617 = $std_core._int_sub(x_10618,2);
-      if ($std_core._int_le(len_10617,0)) {
+      var len_10571 = $std_core._int_sub(x_10572,2);
+      if ($std_core._int_le(len_10571,0)) {
         return "";
       }
       else {
-        return $compat.substr2(s, 1, len_10617);
+        return $compat.substr2(s, 1, len_10571);
       }
     }
     else {
@@ -836,14 +836,14 @@ export function unquote(s) /* (s : string) -> string */  {
         var _x45 = $compat.endsWith(s, "\"");
         if (_x45) {
            
-          var x0_10624 = $std_core.count_1(s);
+          var x0_10578 = $std_core.count_1(s);
            
-          var len0_10623 = $std_core._int_sub(x0_10624,2);
-          if ($std_core._int_le(len0_10623,0)) {
+          var len0_10577 = $std_core._int_sub(x0_10578,2);
+          if ($std_core._int_le(len0_10577,0)) {
             return "";
           }
           else {
-            return $compat.substr2(s, 1, len0_10623);
+            return $compat.substr2(s, 1, len0_10577);
           }
         }
         else {
@@ -861,14 +861,14 @@ export function unquote(s) /* (s : string) -> string */  {
       var _x47 = $compat.endsWith(s, "\"");
       if (_x47) {
          
-        var x1_10630 = $std_core.count_1(s);
+        var x1_10584 = $std_core.count_1(s);
          
-        var len1_10629 = $std_core._int_sub(x1_10630,2);
-        if ($std_core._int_le(len1_10629,0)) {
+        var len1_10583 = $std_core._int_sub(x1_10584,2);
+        if ($std_core._int_le(len1_10583,0)) {
           return "";
         }
         else {
-          return $compat.substr2(s, 1, len1_10629);
+          return $compat.substr2(s, 1, len1_10583);
         }
       }
       else {
@@ -968,9 +968,9 @@ var _x105 = undefined;
 var _x104 = (_x105 !== undefined) ? _x105 : $std_core.Nil;
 var attrsNone = Attrs(true, _x70, _x72, _x74, _x76, _x78, _x80, _x82, _x86, _x88, _x90, _x92, _x94, _x96, _x98, _x100, _x102, _x104);
  
-export function _create_Cell(text0, cellAttrs0) /* (text : string, cellAttrs : optional<attrs>) -> cell */  {
+export function _create_Cell(text__0, cellAttrs0) /* (text_ : string, cellAttrs : optional<attrs>) -> cell */  {
   var _x106 = (cellAttrs0 !== undefined) ? cellAttrs0 : attrsNone;
-  return Cell(text0, _x106);
+  return Cell(text__0, _x106);
 }
  
  
@@ -1010,22 +1010,22 @@ export function _lp__eq__eq__rp_(x, y) /* (x : formatter, y : formatter) -> bool
  
 export function contains(xs, s) /* (xs : list<string>, s : string) -> bool */  {
    
-  var m_10657 = $std_core.find(xs, function(x /* string */ ) {
+  var m_10611 = $std_core.find(xs, function(x /* string */ ) {
       return (x === s);
     });
-  return (m_10657 === null) ? false : true;
+  return (m_10611 === null) ? false : true;
 }
  
 export function quote(s) /* (s : string) -> string */  {
   if (((s).indexOf(("\"")) >= 0)) {
      
-    var left_10658 = $std_core._lp__plus__plus__1_rp_("\'", s);
-    return $std_core._lp__plus__plus__1_rp_(left_10658, "\'");
+    var left_10612 = $std_core._lp__plus__plus__1_rp_("\'", s);
+    return $std_core._lp__plus__plus__1_rp_(left_10612, "\'");
   }
   else {
      
-    var left1_10662 = $std_core._lp__plus__plus__1_rp_("\"", s);
-    return $std_core._lp__plus__plus__1_rp_(left1_10662, "\"");
+    var left1_10616 = $std_core._lp__plus__plus__1_rp_("\"", s);
+    return $std_core._lp__plus__plus__1_rp_(left1_10616, "\"");
   }
 }
  
@@ -1044,15 +1044,15 @@ export function addClass(attrs, cname) /* (attrs : attrs, cname : string) -> att
     else {
        
       var _x115 = attrs.classes;
-      var _arg_3817 = $std_core.append(_x115, $std_core.Cons(cname, $std_core.Nil));
+      var _arg_3805 = $std_core.append(_x115, $std_core.Cons(cname, $std_core.Nil));
        
       var _x116 = attrs.text;
-      var left0_10670 = $std_core._lp__plus__plus__1_rp_(_x116, " ; class: ");
+      var left0_10624 = $std_core._lp__plus__plus__1_rp_(_x116, " ; class: ");
        
-      var right0_10671 = quote(cname);
+      var right0_10625 = quote(cname);
        
-      var _arg_3805 = $std_core._lp__plus__plus__1_rp_(left0_10670, right0_10671);
-      return _copy(attrs, false, undefined, undefined, _arg_3805, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, _arg_3817);
+      var _arg_3793 = $std_core._lp__plus__plus__1_rp_(left0_10624, right0_10625);
+      return _copy(attrs, false, undefined, undefined, _arg_3793, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, _arg_3805);
     }
   }
 }
@@ -1088,8 +1088,8 @@ export function showInput(r) /* (r : input) -> string */  {
     else {
       var _x115 = (r.only.value === 2) ? "tex" : "html";
     }
-    var left_10675 = $std_core._lp__plus__plus__1_rp_("raw(", _x115);
-    return $std_core._lp__plus__plus__1_rp_(left_10675, ")");
+    var left_10629 = $std_core._lp__plus__plus__1_rp_("raw(", _x115);
+    return $std_core._lp__plus__plus__1_rp_(left_10629, ")");
   }
   else {
     return "markdown";
@@ -1103,32 +1103,32 @@ export function addInputClass(attrs) /* (attrs : attrs) -> attrs */  {
   else {
      
     var _x115 = attrs.input;
-    var right_10685 = showInput(_x115);
-    return addClass(attrs, $std_core._lp__plus__plus__1_rp_("input-", right_10685));
+    var right_10639 = showInput(_x115);
+    return addClass(attrs, $std_core._lp__plus__plus__1_rp_("input-", right_10639));
   }
 }
  
 export function addKeyval(attrs, key, value) /* (attrs : attrs, key : string, value : string) -> attrs */  {
    
   var _x115 = attrs.keyvals;
-  var left_10687 = $std_core.filter(_x115, function(kv /* (string, string) */ ) {
+  var left_10641 = $std_core.filter(_x115, function(kv /* (string, string) */ ) {
       var _x116 = kv.fst;
       return (_x116 !== key);
     });
    
-  var _arg_4871 = $std_core.append(left_10687, $std_core.Cons($std_core_types._Tuple2_(key, value), $std_core.Nil));
+  var _arg_4795 = $std_core.append(left_10641, $std_core.Cons($std_core_types._Tuple2_(key, value), $std_core.Nil));
    
   var _x117 = attrs.text;
-  var left2_10695 = $std_core._lp__plus__plus__1_rp_(_x117, " ; ");
+  var left2_10649 = $std_core._lp__plus__plus__1_rp_(_x117, " ; ");
    
-  var left1_10693 = $std_core._lp__plus__plus__1_rp_(left2_10695, key);
+  var left1_10647 = $std_core._lp__plus__plus__1_rp_(left2_10649, key);
    
-  var left0_10691 = $std_core._lp__plus__plus__1_rp_(left1_10693, ": ");
+  var left0_10645 = $std_core._lp__plus__plus__1_rp_(left1_10647, ": ");
    
-  var right0_10692 = quote(value);
+  var right0_10646 = quote(value);
    
-  var _arg_4857 = $std_core._lp__plus__plus__1_rp_(left0_10691, right0_10692);
-  return _copy(attrs, false, undefined, undefined, _arg_4857, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, _arg_4871);
+  var _arg_4781 = $std_core._lp__plus__plus__1_rp_(left0_10645, right0_10646);
+  return _copy(attrs, false, undefined, undefined, _arg_4781, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, _arg_4795);
 }
  
 export function addKeyvalIfNotEmpty(attrs, key, value) /* (attrs : attrs, key : string, value : string) -> attrs */  {
@@ -1148,15 +1148,15 @@ export function addKeyvalIfNotEmpty(attrs, key, value) /* (attrs : attrs, key : 
 export function hasKey(attrs, key) /* (attrs : attrs, key : string) -> maybe<string> */  {
    
   var _x115 = attrs.keyvals;
-  var m_10700 = $std_core.find(_x115, function(kv /* (string, string) */ ) {
+  var m_10654 = $std_core.find(_x115, function(kv /* (string, string) */ ) {
       var _x116 = kv.fst;
       return (_x116 === key);
     });
-  if (m_10700 === null) {
+  if (m_10654 === null) {
     return $std_core_types.Nothing;
   }
   else {
-    var _x115 = m_10700.value.snd;
+    var _x115 = m_10654.value.snd;
     return $std_core_types.Just(_x115);
   }
 }
@@ -1164,11 +1164,11 @@ export function hasKey(attrs, key) /* (attrs : attrs, key : string) -> maybe<str
 export function addKeyvalIfNotExist(attrs, key, value) /* (attrs : attrs, key : string, value : string) -> attrs */  {
    
   var _x116 = attrs.keyvals;
-  var m_10700 = $std_core.find(_x116, function(kv /* (string, string) */ ) {
+  var m_10654 = $std_core.find(_x116, function(kv /* (string, string) */ ) {
       var _x117 = kv.fst;
       return (_x117 === key);
     });
-  if (m_10700 === null) {
+  if (m_10654 === null) {
     var _x116 = $std_core_types.Nothing;
     if (_x116 === null) {
       return addKeyval(attrs, key, value);
@@ -1232,13 +1232,13 @@ export function expandChoices(s) /* (s : string) -> list<string> */  {
     var post = $compat.substr(s, _x127);
      
     var _x128 = _x123.value.groups;
-    var s1_10720 = $compat_regex.groupsIndex(_x128, 1);
+    var s1_10674 = $compat_regex.groupsIndex(_x128, 1);
      
-    var v_17122 = ((s1_10720).split((",")));
+    var v_17122 = ((s1_10674).split((",")));
     return $std_core.map_5($std_core.vlist(v_17122), function(part /* string */ ) {
          
-        var left_10725 = $std_core._lp__plus__plus__1_rp_(pre, part);
-        return $std_core._lp__plus__plus__1_rp_(left_10725, post);
+        var left_10679 = $std_core._lp__plus__plus__1_rp_(pre, part);
+        return $std_core._lp__plus__plus__1_rp_(left_10679, post);
       });
   }
   else {
@@ -1267,46 +1267,46 @@ export function generateHeaderId(attrs, heading, pre) /* (attrs : attrs, heading
     }
      
     var _x127 = attrs.text;
-    var left0_10732 = $std_core._lp__plus__plus__1_rp_(_x127, " ; id:");
+    var left0_10686 = $std_core._lp__plus__plus__1_rp_(_x127, " ; id:");
      
-    var right0_10733 = quote(newname);
+    var right0_10687 = quote(newname);
      
-    var _arg_6054 = $std_core._lp__plus__plus__1_rp_(left0_10732, right0_10733);
-    return _copy(attrs, false, undefined, undefined, _arg_6054, undefined, undefined, undefined, undefined, undefined, undefined, undefined, newname);
+    var _arg_5963 = $std_core._lp__plus__plus__1_rp_(left0_10686, right0_10687);
+    return _copy(attrs, false, undefined, undefined, _arg_5963, undefined, undefined, undefined, undefined, undefined, undefined, undefined, newname);
   }
 }
  
 export function hasClass(attrs, className) /* (attrs : attrs, className : string) -> bool */  {
    
   var _x126 = attrs.classes;
-  var m_10737 = $std_core.find(_x126, function(cname /* string */ ) {
+  var m_10691 = $std_core.find(_x126, function(cname /* string */ ) {
       return (cname === className);
     });
-  return (m_10737 === null) ? false : true;
+  return (m_10691 === null) ? false : true;
 }
  
 export function hasBoolKey(attrs, key) /* (attrs : attrs, key : string) -> bool */  {
    
   var _x126 = attrs.keyvals;
-  var m_10700 = $std_core.find(_x126, function(kv /* (string, string) */ ) {
+  var m_10654 = $std_core.find(_x126, function(kv /* (string, string) */ ) {
       var _x127 = kv.fst;
       return (_x127 === key);
     });
    
-  if (m_10700 === null) {
+  if (m_10654 === null) {
     var _x129 = $std_core_types.Nothing;
     var _x128 = (_x129 === null) ? "" : _x129.value;
   }
   else {
-    var _x128 = m_10700.value.snd;
+    var _x128 = m_10654.value.snd;
   }
   var value = $compat.toLower(_x128);
    
   var _x130 = attrs.classes;
-  var m_10737 = $std_core.find(_x130, function(cname /* string */ ) {
+  var m_10691 = $std_core.find(_x130, function(cname /* string */ ) {
       return (cname === key);
     });
-  if (m_10737 === null) {
+  if (m_10691 === null) {
     return ((value === ("true"))) ? true : (value === ("1"));
   }
   else {
@@ -1326,22 +1326,22 @@ export function htmlEscape(s, allowEntity) /* (s : string, allowEntity : optiona
     }
     var _x129 = undefined;
     var _x128 = (_x129 !== undefined) ? _x129 : 0;
-    var s3_10754 = $compat_regex.replaceEx_1(s, _x127, "&amp;", true, _x128);
+    var s3_10708 = $compat_regex.replaceEx_1(s, _x127, "&amp;", true, _x128);
      
     var _x131 = undefined;
     var _x130 = (_x131 !== undefined) ? _x131 : 0;
-    var s2_10750 = $compat_regex.replaceEx_1(s3_10754, rxlt, "&lt;", true, _x130);
+    var s2_10704 = $compat_regex.replaceEx_1(s3_10708, rxlt, "&lt;", true, _x130);
      
     var _x133 = undefined;
     var _x132 = (_x133 !== undefined) ? _x133 : 0;
-    var s1_10746 = $compat_regex.replaceEx_1(s2_10750, rxgt, "&gt;", true, _x132);
+    var s1_10700 = $compat_regex.replaceEx_1(s2_10704, rxgt, "&gt;", true, _x132);
      
     var _x135 = undefined;
     var _x134 = (_x135 !== undefined) ? _x135 : 0;
-    var s0_10742 = $compat_regex.replaceEx_1(s1_10746, rxquot, "&quot;", true, _x134);
+    var s0_10696 = $compat_regex.replaceEx_1(s1_10700, rxquot, "&quot;", true, _x134);
     var _x128 = undefined;
     var _x127 = (_x128 !== undefined) ? _x128 : 0;
-    return $compat_regex.replaceEx_1(s0_10742, rxapos, "&#39;", true, _x127);
+    return $compat_regex.replaceEx_1(s0_10696, rxapos, "&#39;", true, _x127);
   }
   else {
     return s;
@@ -1385,14 +1385,14 @@ export function json(s) /* (s : string) -> string */  {
                   }
                   else {
                      
-                    var right_10767 = $compat.showHex(c, 4);
-                    return $std_core._lp__plus__plus__1_rp_("\\u", right_10767);
+                    var right_10721 = $compat.showHex(c, 4);
+                    return $std_core._lp__plus__plus__1_rp_("\\u", right_10721);
                   }
                 }
                 else {
                    
-                  var right0_10769 = $compat.showHex(c, 4);
-                  return $std_core._lp__plus__plus__1_rp_("\\u", right0_10769);
+                  var right0_10723 = $compat.showHex(c, 4);
+                  return $std_core._lp__plus__plus__1_rp_("\\u", right0_10723);
                 }
               }
             }
@@ -1402,37 +1402,45 @@ export function json(s) /* (s : string) -> string */  {
     });
    
   if (cs === null) {
-    var right2_10773 = "";
+    var right2_10727 = "";
   }
   else {
-    var right2_10773 = $std_core._lift17189_join_2(cs.tail, cs.head);
+    var right2_10727 = $std_core._lift17189_join_2(cs.tail, cs.head);
   }
    
-  var left1_10770 = $std_core._lp__plus__plus__1_rp_("\"", right2_10773);
-  return $std_core._lp__plus__plus__1_rp_(left1_10770, "\"");
+  var left1_10724 = $std_core._lp__plus__plus__1_rp_("\"", right2_10727);
+  return $std_core._lp__plus__plus__1_rp_(left1_10724, "\"");
 }
  
 export function lookupKey(attrs, key, def) /* (attrs : attrs, key : string, def : string) -> string */  {
    
   var _x131 = attrs.keyvals;
-  var m_10700 = $std_core.find(_x131, function(kv /* (string, string) */ ) {
+  var m_10654 = $std_core.find(_x131, function(kv /* (string, string) */ ) {
       var _x132 = kv.fst;
       return (_x132 === key);
     });
-  if (m_10700 === null) {
+  if (m_10654 === null) {
     var _x131 = $std_core_types.Nothing;
     return (_x131 === null) ? def : _x131.value;
   }
   else {
-    return m_10700.value.snd;
+    return m_10654.value.snd;
   }
+}
+ 
+ 
+// monadic lift
+export function _mlift10818_matchRules(cap, _y_10798) /* forall<a,e> (cap : compat/regex/matched, a) -> <div|e> (a, int, string) */  {
+  var _x132 = cap.next;
+  var _x133 = cap.matched;
+  return $std_core_types._Tuple3_(_y_10798, _x132, _x133);
 }
  
  
 // Generic rule matcher: takes a list of rules and applies the action that matches
 // on the given "src". Returns the result of the action and the string following the
 // match.
-export function matchRules(rules, ctx, src, def) /* forall<a,b> (rules : grammar<a,b>, ctx : b, src : string, def : (string) -> a) -> (a, int, string) */  { tailcall: while(1)
+export function matchRules(rules, ctx, src, def) /* forall<a,b,e> (rules : grammar<a,b>, ctx : b, src : string, def : (string) -> a) -> <div|e> (a, int, string) */  { tailcall: while(1)
 {
   if (rules === null) {
      
@@ -1445,13 +1453,21 @@ export function matchRules(rules, ctx, src, def) /* forall<a,b> (rules : grammar
     return $std_core_types._Tuple3_(def(matched), 1, matched);
   }
   else {
-    var _x133 = rules.head.regex;
-    var _x132 = $compat_regex.find(src, _x133);
-    if (_x132 !== null) {
-      var _x134 = rules.head.action(_x132.value, ctx);
-      var _x135 = _x132.value.next;
-      var _x136 = _x132.value.matched;
-      return $std_core_types._Tuple3_(_x134, _x135, _x136);
+    var _x135 = rules.head.regex;
+    var _x134 = $compat_regex.find(src, _x135);
+    if (_x134 !== null) {
+       
+      var x_10829 = rules.head.action(_x134.value, ctx);
+      if ($std_core_hnd._yielding()) {
+        return $std_core_hnd.yield_extend(function(_y_107980 /* 7662 */ ) {
+          return _mlift10818_matchRules(_x134.value, _y_107980);
+        });
+      }
+      else {
+        var _x136 = _x134.value.next;
+        var _x137 = _x134.value.matched;
+        return $std_core_types._Tuple3_(x_10829, _x136, _x137);
+      }
     }
     else {
       {
@@ -1468,36 +1484,36 @@ export function matchRules(rules, ctx, src, def) /* forall<a,b> (rules : grammar
 export function mimeFromExt(fname) /* (fname : string) -> string */  {
    
   var ext = $compat.toLower($compat.substr($compat.extname(fname), 1));
-  var _x137 = $compat_dict.containsKey_1(mimes, ext);
-  if (_x137) {
+  var _x138 = $compat_dict.containsKey_1(mimes, ext);
+  if (_x138) {
     return $compat_dict.unsafeDictGet(mimes, ext);
   }
   else {
-    var _x138 = $std_core_types.Nothing;
-    return (_x138 !== null) ? _x138.value : "";
+    var _x139 = $std_core_types.Nothing;
+    return (_x139 !== null) ? _x139.value : "";
   }
 }
  
 export function newLink(href0, title0, linkattrs0, linkid0, bench) /* (href : string, title : optional<string>, linkattrs : optional<attrs>, linkid : optional<string>, bench : bool) -> link */  {
    
   if (bench) {
-    var _x139 = (linkattrs0 !== undefined) ? linkattrs0 : attrsNone;
+    var _x140 = (linkattrs0 !== undefined) ? linkattrs0 : attrsNone;
   }
   else {
-    var _x140 = $compat.startsWith(href0, "#");
-    if (_x140) {
-      var _x141 = (linkattrs0 !== undefined) ? linkattrs0 : attrsNone;
-      var _x139 = addClass(_x141, "localref");
+    var _x141 = $compat.startsWith(href0, "#");
+    if (_x141) {
+      var _x142 = (linkattrs0 !== undefined) ? linkattrs0 : attrsNone;
+      var _x140 = addClass(_x142, "localref");
     }
     else {
-      var _x139 = (linkattrs0 !== undefined) ? linkattrs0 : attrsNone;
+      var _x140 = (linkattrs0 !== undefined) ? linkattrs0 : attrsNone;
     }
   }
-  var linkattrs1_10789 = _x139;
-  var _x139 = (title0 !== undefined) ? title0 : "";
-  var _x140 = (linkattrs1_10789 !== undefined) ? linkattrs1_10789 : attrsNone;
-  var _x141 = (linkid0 !== undefined) ? linkid0 : "";
-  return Link(href0, _x139, _x140, _x141);
+  var linkattrs1_10736 = _x140;
+  var _x140 = (title0 !== undefined) ? title0 : "";
+  var _x141 = (linkattrs1_10736 !== undefined) ? linkattrs1_10736 : attrsNone;
+  var _x142 = (linkid0 !== undefined) ? linkid0 : "";
+  return Link(href0, _x140, _x141, _x142);
 }
  
 export var peano10;
@@ -1539,10 +1555,10 @@ export function pickExtension(exts, paths) /* (exts : list<string>, paths : list
   else {
      
     var pathext = $compat.toLower($compat.extname(paths.head));
-    var _x142 = $std_core.find(exts, function(ext /* string */ ) {
+    var _x143 = $std_core.find(exts, function(ext /* string */ ) {
         return (pathext === ext);
       });
-    if (_x142 !== null) {
+    if (_x143 !== null) {
       return paths.head;
     }
     else {
@@ -1557,8 +1573,8 @@ export function pickExtension(exts, paths) /* (exts : list<string>, paths : list
  
 export function relative(path) /* (path : string) -> bool */  {
    
-  var b_10792 = $compat_regex.contains(path, rxProtocol);
-  return (b_10792) ? false : true;
+  var b_10739 = $compat_regex.contains(path, rxProtocol);
+  return (b_10739) ? false : true;
 }
  
 export function reverseAcc(lineMap, acc) /* (lineMap : lineMap, acc : lineMap) -> lineMap */  { tailcall: while(1)
@@ -1569,9 +1585,9 @@ export function reverseAcc(lineMap, acc) /* (lineMap : lineMap, acc : lineMap) -
   else {
     {
       // tail call
-      var _x143 = Include(lineMap.line, lineMap.start, lineMap.count, lineMap.fileName, lineMap.lineMap, acc);
+      var _x144 = Include(lineMap.line, lineMap.start, lineMap.count, lineMap.fileName, lineMap.lineMap, acc);
       lineMap = lineMap.rest;
-      acc = _x143;
+      acc = _x144;
       continue tailcall;
     }
   }
@@ -1582,30 +1598,30 @@ export function reverse(lineMap) /* (lineMap : lineMap) -> lineMap */  {
 }
  
 export function ruleInc(rule) /* (rule : string) -> () */  {
-  var _x144 = $compat_dict._lp__lb__rb__rp_(ruleHist, rule);
-  if (_x144 === null) {
+  var _x145 = $compat_dict._lp__lb__rb__rp_(ruleHist, rule);
+  if (_x145 === null) {
     return $compat_dict._lp__lb__rb__1_rp_(ruleHist, rule, 0);
   }
   else {
-    return $compat_dict._lp__lb__rb__1_rp_(ruleHist, rule, $std_core._int_add((_x144.value),1));
+    return $compat_dict._lp__lb__rb__1_rp_(ruleHist, rule, $std_core._int_add((_x145.value),1));
   }
 }
  
 export function setLineNo(attrs, line, dataline) /* (attrs : attrs, line : int, dataline : string) -> attrs */  {
    
-  var _x145 = attrs.text;
-  var left_10794 = $std_core._lp__plus__plus__1_rp_(_x145, " ; line:");
+  var _x146 = attrs.text;
+  var left_10741 = $std_core._lp__plus__plus__1_rp_(_x146, " ; line:");
    
-  var right_10795 = $std_core.show(line);
+  var right_10742 = $std_core.show(line);
    
-  var _arg_8410 = $std_core._lp__plus__plus__1_rp_(left_10794, right_10795);
-  return addKeyval(_copy(attrs, false, undefined, undefined, _arg_8410, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, line), "data-line", dataline);
+  var _arg_8347 = $std_core._lp__plus__plus__1_rp_(left_10741, right_10742);
+  return addKeyval(_copy(attrs, false, undefined, undefined, _arg_8347, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, line), "data-line", dataline);
 }
  
 export function traceRuleHist() /* () -> () */  {
   return $std_core.foreach($compat_dict.list_1($compat_dict.freeze(ruleHist)), function(kv /* (string, int) */ ) {
-      var _x145 = $std_core._lp__plus__plus__1_rp_($std_core._lp__plus__plus__1_rp_($compat.align(kv.fst, 20), ": "), $std_core.show(kv.snd));
-      return $std_core.trace(_x145);
+      var _x146 = $std_core._lp__plus__plus__1_rp_($std_core._lp__plus__plus__1_rp_($compat.align(kv.fst, 20), ": "), $std_core.show(kv.snd));
+      return $std_core.trace(_x146);
     });
 }
  
@@ -1619,41 +1635,41 @@ export function translateLine(lineInfos, lineNo0) /* (lineInfos : lineMap, lineN
       return $std_core.show(lineNo0);
     }
     else {
-      var _x146 = $std_core._int_ge(lineNo0,($std_core._int_add((lineInfos.line),(lineInfos.count))));
-      if (_x146) {
+      var _x147 = $std_core._int_ge(lineNo0,($std_core._int_add((lineInfos.line),(lineInfos.count))));
+      if (_x147) {
          
-        var y0_10803 = $std_core._int_sub((lineInfos.count),1);
+        var y0_10750 = $std_core._int_sub((lineInfos.count),1);
         {
           // tail call
-          var _x147 = $std_core._int_sub(lineNo0,y0_10803);
+          var _x148 = $std_core._int_sub(lineNo0,y0_10750);
           lineInfos = lineInfos.rest;
-          lineNo0 = _x147;
+          lineNo0 = _x148;
           continue tailcall;
         }
       }
       else {
          
-        var left2_10812 = $std_core.show(lineInfos.line);
+        var left2_10759 = $std_core.show(lineInfos.line);
          
-        var left1_10810 = $std_core._lp__plus__plus__1_rp_(left2_10812, ";");
+        var left1_10757 = $std_core._lp__plus__plus__1_rp_(left2_10759, ";");
          
-        var left0_10808 = $std_core._lp__plus__plus__1_rp_(left1_10810, lineInfos.fileName);
+        var left0_10755 = $std_core._lp__plus__plus__1_rp_(left1_10757, lineInfos.fileName);
          
-        var left_10806 = $std_core._lp__plus__plus__1_rp_(left0_10808, ":");
+        var left_10753 = $std_core._lp__plus__plus__1_rp_(left0_10755, ":");
          
-        var x2_10814 = $std_core._int_sub(lineNo0,(lineInfos.line));
+        var x2_10761 = $std_core._int_sub(lineNo0,(lineInfos.line));
          
-        var right_10807 = translateLine(lineInfos.lineMap, $std_core._int_add(x2_10814,(lineInfos.start)));
-        return $std_core._lp__plus__plus__1_rp_(left_10806, right_10807);
+        var right_10754 = translateLine(lineInfos.lineMap, $std_core._int_add(x2_10761,(lineInfos.start)));
+        return $std_core._lp__plus__plus__1_rp_(left_10753, right_10754);
       }
     }
   }
 }}
  
 export function trimLines(s) /* (s : string) -> string */  {
-  var _x149 = undefined;
-  var _x148 = (_x149 !== undefined) ? _x149 : 0;
-  return $compat_regex.replaceEx_1(s, rxTrimLines, "", true, _x148);
+  var _x150 = undefined;
+  var _x149 = (_x150 !== undefined) ? _x150 : 0;
+  return $compat_regex.replaceEx_1(s, rxTrimLines, "", true, _x149);
 }
  
 export function unindent(txt) /* (txt : string) -> string */  {
@@ -1662,41 +1678,41 @@ export function unindent(txt) /* (txt : string) -> string */  {
    
   var lines = $std_core.vlist(v_17126);
    
-  var xs_10823 = $std_core.map_5($std_core.filter(lines, function(s0 /* string */ ) {
+  var xs_10770 = $std_core.map_5($std_core.filter(lines, function(s0 /* string */ ) {
          
-        var b_10825 = $compat_regex.contains(s0, $compat_regex.regex("^\\\\s*$"));
-        return (b_10825) ? false : true;
+        var b_10772 = $compat_regex.contains(s0, $compat_regex.regex("^\\\\s*$"));
+        return (b_10772) ? false : true;
       }), function(s00 /* string */ ) {
-      var _x150 = $compat_regex.find(s00, $compat_regex.regex("^\\\\s*"));
-      if (_x150 === null) {
+      var _x151 = $compat_regex.find(s00, $compat_regex.regex("^\\\\s*"));
+      if (_x151 === null) {
         return 0;
       }
       else {
-        var _x151 = _x150.value.matched;
-        return $std_core.count_1(_x151);
+        var _x152 = _x151.value.matched;
+        return $std_core.count_1(_x152);
       }
     });
    
-  if (xs_10823 === null) {
-    var _x152 = undefined;
-    var cindent = (_x152 !== undefined) ? _x152 : 0;
+  if (xs_10770 === null) {
+    var _x153 = undefined;
+    var cindent = (_x153 !== undefined) ? _x153 : 0;
   }
   else {
-    var cindent = $std_core.foldl(xs_10823.tail, xs_10823.head, $std_core.min);
+    var cindent = $std_core.foldl(xs_10770.tail, xs_10770.head, $std_core.min);
   }
   if ($std_core._int_le(cindent,0)) {
     return txt;
   }
   else {
      
-    var xs0_10828 = $std_core.map_5(lines, function(s10 /* string */ ) {
+    var xs0_10775 = $std_core.map_5(lines, function(s10 /* string */ ) {
         return $compat.substr(s10, cindent);
       });
-    if (xs0_10828 === null) {
+    if (xs0_10775 === null) {
       return "";
     }
     else {
-      return $std_core._lift17188_joinsep("\n", xs0_10828.tail, xs0_10828.head);
+      return $std_core._lift17188_joinsep("\n", xs0_10775.tail, xs0_10775.head);
     }
   }
 }

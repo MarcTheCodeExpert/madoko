@@ -7,15 +7,17 @@ import * as $std_core_hnd from './std_core_hnd.mjs';
 import * as $std_core from './std_core.mjs';
 import * as $std_text_parse from './std_text_parse.mjs';
 import * as $std_os_path from './std_os_path.mjs';
+import * as $std_num_int32 from './std_num_int32.mjs';
 import * as $std_text_regex from './std_text_regex.mjs';
-import * as $v1_std_data_dict from './v1_std_data_dict.mjs';
+import * as $compat_dict from './compat_dict.mjs';
 import * as $compat from './compat.mjs';
+import * as $compat_log from './compat_log.mjs';
 import * as $compat_regex from './compat_regex.mjs';
 import * as $common from './common.mjs';
-import * as $v1_std_log from './v1_std_log.mjs';
 import * as $std_os_env from './std_os_env.mjs';
-import * as $std_data_dict from './std_data_dict.mjs';
 import * as $std_os_flags from './std_os_flags.mjs';
+import * as $compat_path from './compat_path.mjs';
+import * as $compat_env from './compat_env.mjs';
 import * as $std_num_int64 from './std_num_int64.mjs';
  
 // externals
@@ -1389,7 +1391,7 @@ export function pdouble() /* () -> std/text/parse/parse float64 */  {
  
  
 // monadic lift
-export function _mlift4111_parse_float64(x, wild) /* (x : float64, wild : ()) -> std/text/parse/parse float64 */  {
+export function _mlift4111_parse_float64(x, wild__) /* (x : float64, wild_ : ()) -> std/text/parse/parse float64 */  {
   return x;
 }
  
@@ -1399,7 +1401,7 @@ export function _mlift4112_parse_float64(x) /* (x : float64) -> std/text/parse/p
    
   var x0_4210 = $std_text_parse.eof();
   if ($std_core_hnd._yielding()) {
-    return $std_core_hnd.yield_extend(function(wild /* () */ ) {
+    return $std_core_hnd.yield_extend(function(wild__ /* () */ ) {
       return x;
     });
   }

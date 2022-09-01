@@ -9,11 +9,12 @@
 // Syntax highlighting
 module hilite
 
-import std/text/regex
-import std/os/path
+import compat/regex
+import compat/path
 import common
+import compat
 
-external import {
+extern import {
   js monarch "./monarch"
 }
 
@@ -24,11 +25,11 @@ pub type hilitemode;
 struct hilite( highlighted : string, finalMode : hilitemode )
 
 // Highlight using highlight.js. Use 'auto' for automatic language detection
-external xhilite( src : string, lang : string, mode : hilitemode ) : hilite {
+extern xhilite( src : string, lang : string, mode : hilitemode ) : hilite {
   js inline "(fun(){ var res = monarch.highlightTextFragment(#3,#1); return Hilite(res.html,res.next); })()"
 } 
 
-external xinitialMode( lang : string) : hilitemode {
+extern xinitialMode( lang : string) : hilitemode {
   js inline "(fun(){ var res = monarch.getInitialMode(#1); if (!res) throw new Error('unknown language: ' + #1); return res; })()"
 }
 
@@ -39,7 +40,7 @@ pub fun hilite( src : string, lang : string ) : maybe<string>
 {
   if (lang=="") return Nothing
   catch( { Just(xhilite(src,lang.toLower,xinitialMode(lang.toLower)).highlighted)  }, fn(exn) { 
-           warning("could not highlight: " + exn.show)
+           warning("could not highlight: " + exn.compat/show)
            Nothing
          })
 }
@@ -60,22 +61,22 @@ pub fun hilitePartial( src : string, lang : string, mbMode : maybe<hilitemode> =
     Just( (res.highlighted,res.finalMode) )
    }, 
    fn(exn) { 
-     warning("could not highlight: " + exn.show)
+     warning("could not highlight: " + exn.compat/show)
      Nothing
    })
 }
 
-external xxregisterLanguage( name : string, definition : string ) : io () {
+extern xxregisterLanguage( name : string, definition : string ) : io () {
   js inline "monarch.register(#2,#1)"
 }
 
 pub fun registerLanguage( name : string, definition: string ) : io () {
   catch( { //trace("register: " + name + ": " + fname); 
            xxregisterLanguage(name.toLower,definition) }, 
-         fn(exn) { println("error: could not register language: " + name  + "\n" + exn.show /* + "\n" + fulldef */ ) } )
+         fn(exn) { println("error: could not register language: " + name  + "\n" + exn.compat/show /* + "\n" + fulldef */ ) } )
 }
 
-external xcanHilite( name : string ) : bool {
+extern xcanHilite( name : string ) : bool {
   js inline "(monarch.getLanguage(#1) != null)"
 }
 

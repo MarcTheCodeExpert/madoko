@@ -35,4 +35,4 @@ test/scripts/
 test/math/svg/
 test/latex/
 test/.madoko*/
-
+.koka/*

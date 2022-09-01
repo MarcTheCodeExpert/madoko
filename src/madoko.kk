@@ -11,11 +11,15 @@ module madoko
 
 import std/data/dict
 import std/text/regex
-import v1/std/log
 import std/os/path
 
-import backports
-import version
+import compat
+import compat/dict
+import compat/regex
+import compat/path
+
+//import backports
+//import version
 
 import common           // for label, lineMap, and attrs
 import options
@@ -52,7 +56,7 @@ pub struct documentInfo (
   labels: vector<referenceInfo>,
   blocks: vector<blockInfo>,
   // just for debugging purposes we also include the original formatContext
-  context : formatContext,
+  ctx : formatContext,
   log: string
 )
 
@@ -135,11 +139,11 @@ fun markdownXmp( src : string, options : options = initialOptions0, fmt : format
   val commented = "~begin htmlraw\n" + src.replaceAll(rxxmp,"\n~end htmlraw\n$2\n~begin htmlraw\n") + "\n~end htmlraw"
   markdownNormal(commented, options, fmt)
 }
-val rxxmp = regex(@"(<xmp\b" + tagContent + @">)([\s\S]*?)</xmp>")
+val rxxmp = regex(r"(<xmp\b" + tagContent + r">)([\s\S]*?)</xmp>")
 
 pub fun normalizeSource( src : string ) : string {
-  val srcnl = if (src.contains('\r')) then src.replaceAll(regex(@"\r\n?"),"\n") else src
-  srcnl.replaceAll(regex(@"\t"), "    ")
+  val srcnl = if (src.contains('\r')) then src.replaceAll(regex(r"\r\n?"),"\n") else src
+  srcnl.replaceAll(regex(r"\t"), "    ")
 }
 
 // Takes source markdown input and returns formatted html
@@ -160,7 +164,7 @@ fun markdownNormal( src0 : string, options0 : options = initialOptions0, fmt : f
   }
   //val blocks = parseBlocks(src,options.citestyle,options.bench,options.pedantic )
 
-  if (options.citeAll) then log("aux",@"\citation{*}")
+  if (options.citeAll) then log("aux",r"\citation{*}")
 
   // parse definitions
   val icontext  = inlineContext(fmt,options.metadata.dict,
@@ -331,4 +335,4 @@ pub fun lastPathSegment( lineInfo : string ) : string {
     Just(cap) -> cap.groups[1]
   }
 }
-val rxLastPath = regex( @";([^:;]+):$")
+val rxLastPath = regex( r";([^:;]+):$")

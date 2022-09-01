@@ -9,12 +9,12 @@
 // Align code blocks
 module codeAlign
 
-import v1/std/log
-import std/text/regex
-import std/data/dict
+import compat/regex
+import compat/dict
 import common
 import attributes
 
+import compat
 
 pub struct codeTable(
   columns: int,
@@ -54,7 +54,7 @@ pub fun foldCodeTable( ct : codeTable, st : a, f : (string,a) -> (string,a) ) : 
 }
 
 pub fun map( ct : codeTable,  f : (string,int) -> string ) : codeTable {
-  ct( rows = ct.rows.map( fn(row) { row.mapIndexed( fn(idx,ccell) { ccell(content = f(ccell.content,idx)) }) }) )
+  ct( rows = ct.rows.map( fn(row) { row.map-indexed( fn(idx,ccell) { ccell(content = f(ccell.content,idx)) }) }) )
 }
 
 pub fun show( ct : codeTable ) : string {
@@ -71,13 +71,13 @@ fun show( ccell : ccell ) : string {
 
 pub fun codeAlign( txt : string, sep : int = 2 ) : codeTable
 {
-  val rxSep = regex( @" {" + sep.show + ",}" )
-  val ls    = txt.replaceAll("<br>","\n").lines.list
+  val rxSep = regex( r" {" + sep.show + ",}" )
+  val ls    = txt.replaceAll("<br>","\n").lines
   //trace(ls.join("\n"))
   val colss = ls.map fn(line){ findAlignColumns(line,rxSep) }
   val acols = colss.merge 
   //trace("\nalign cols: " + acols.map(show).join(","))
-  val rows  = zipWith(ls,colss) fn(line,cols){ makeRow(acols,line,cols,sep) }
+  val rows  = compat/zipWith(ls,colss) fn(line,cols){ makeRow(acols,line,cols,sep) }
   // trace("\nrows:\n" + rows.map(fn(row) { row.map(show).join(",") }).join("\n"))
 
   CodeTable( acols.length + 1, rows )
@@ -91,13 +91,13 @@ pub fun findAlignColumns( line : string, rxSep : regex) : list<int>
     if (cap.index + cap.matched.length >= n)
      then Nothing
      else Just(rawColumn( line, cap.index + cap.matched.length ))
-  }).concatMaybe
+  }).concat-maybe
 }
 
 fun rawColumn( line : string, col : int ) : int {
   // get column number disregarding html elements from colorization
-  val raw = line.substr(0,col).replaceAll(rxTags,tagsSpaces)
-  raw.length
+  val raw_ = line.substr(0,col).replaceAll(rxTags,tagsSpaces)
+  raw_.length
 }
 
 fun htmlColumn( s: string, col : int ) : int {
@@ -117,7 +117,7 @@ fun htmlCol( caps : list<matched>, col : int, extra : int ) {
 }
 
 fun tagsSpaces( cap : matched ) : string {
-  if (cap.matched.startsWith("<ESCAPED")) then string( cap.groups[1].parseInt.maybe(1,id), '.' )
+  if (cap.matched.startsWith("<ESCAPED")) then string( cap.groups[1].parse-int.maybe(1,id), '.' )
   elif (cap.matched.startsWith("&")) then "."
   else ""
 }
@@ -126,8 +126,8 @@ fun tagsLength( cap : matched ) : int {
   cap.matched.length - cap.tagsSpaces.length
 }
 
-val rxHtmlTags = @"</?\w+\b[^>]*>";
-val rxTags = regex(@"<ESCAPED\s*(?:width=(\d*)\s*)?>[\s\S]*?</ESCAPED>|" + rxHtmlTags + @"|&(?:\w+|#[xX]?[\da-fA-F]+);")
+val rxHtmlTags = r"</?\w+\b[^>]*>";
+val rxTags = regex(r"<ESCAPED\s*(?:width=(\d*)\s*)?>[\s\S]*?</ESCAPED>|" + rxHtmlTags + r"|&(?:\w+|#[xX]?[\da-fA-F]+);")
 
 fun merge( alignss : list<list<int>> ) : list<int>
 {
@@ -160,7 +160,7 @@ fun makeRow( acols : list<int>, line : string, lineCols : list<int>, sep : int )
 pub fun isWhite( s : string ) : bool {
   s.replaceAll(rxWhite,"") == ""
 }
-val rxWhite = regex(rxHtmlTags + @"|\s+")
+val rxWhite = regex(rxHtmlTags + r"|\s+")
 
 fun alignParts( acols : list<int>, parts : list<(int,string)>, rxEndSpaces : regex ) : list<ccell> {
   match( parts ) {

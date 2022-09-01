@@ -7,20 +7,22 @@
 ---------------------------------------------------------------------------*/
 
 // The parsing of metadata
-module metadata
+pub module metadata
 
-import std/data/dict
-import std/text/regex
-import std/os/path
+
 import common
 import options
 import optionsMeta
 import expression
 
-import compat/path
-import compat/log
-import compat/regex
+import compat
 import compat/string
+import compat/path
+import compat/regex
+import compat/dict
+import compat/log
+
+
 
 
 
@@ -80,7 +82,7 @@ fun cmetadata( options : options ) : cmetadata {
 // Parse metadata keys
 // --------------------------------------------------------------
 
-fun makeKey(k,pre,value,rawvalue,lineMap,lines,isMatching) : ckey {
+fun makeKey(k: string, pre: string ,value: string,rawvalue: string,lineMap: lineMap,lines: int, isMatching: bool) : ckey {
   val kstart = k.substr(0,1)
   val isrule = (kstart=="#" || kstart=="." || kstart=="~")
   val key = if (isrule) then k.trim.toLower
@@ -93,7 +95,7 @@ fun makeKey(k,pre,value,rawvalue,lineMap,lines,isMatching) : ckey {
   val ckey = if (key=="tex-header" || key=="tex-footer" || key=="tex-header-" || key=="tex-doc-header" || key=="tex-doc-header-" )
                then Key(key,"%mdk-data-line={" + translateLine(lineMap,lines+1) + "}\n" + rawvalue )
                else Key(key,value)
-  if (pre.isEmpty)
+  if (pre.is-empty)
    then ckey
    else Support( pre, [ckey], translateLine(lineMap,lines))
 }
@@ -132,7 +134,7 @@ fun parsePlainMeta( txt : string, fmt : formatter, lineMap: lineMap, metadata : 
             val value    = rawvalue.joinLines.trim
             if (verbose) trace("meta data: " + cap.groups[2] + ": " + value.cutoff(80) )
             val rawkeys = //if (cap.groups.matchedOn(3)) then
-                          cap.groups[2].split(",").list.map(trim)
+                          cap.groups[2].split(",").map(trim)
                           //else [cap.groups[2]]
             val pre = if (cap.groups[1] != "") then "@" + cap.groups[1] + " " else ""
             val kvs = rawkeys.map( fn(k) { makeKey(k,pre,value,rawvalue,lineMap,lines,(cap.groups[5]=="}")) } );
@@ -149,10 +151,9 @@ val rxMetaKeyEnd  = r"(?:(?:\[[^\]\n\r]*\])+|\*)?"
 val rxMetaKey     = r"(?:@([\w\-@]+) +)?((?:\w|([\.#~])(?=\S))[\w\-\.#~, ]*?" + rxMetaKeyEnd + r") *(?=[\{:])"
 val rxMetaValue   = r"(?:[:] *(.*(?:\n .*)*)(?:\n+(?=\n|" + rxMetaKey + r"|@(?:if|supports)\b|<!--)|$))"
 // again string problem with 
-//val rxMetaAttrContent = r"(?:[^\\'""\{\}/]|\\[\s\S]|'(?:[^\\']|\\[\s\S])*'|""(?:[^\\""]|\\[\s\S])*""|/(?:[^\\/\n]|\\.)*/)"
+val rxMetaAttrContent = r#"(?:[^\\'""\{\}/]|\\[\s\S]|'(?:[^\\']|\\[\s\S])*'|""(?:[^\\""]|\\[\s\S])*""|/(?:[^\\/\n]|\\.)*/)"#
 val rxMetaAttrs   = r"(?:\{[:]?(" + rxMetaAttrContent + r"*)(\})\s*)"
 val rxMetaGroup   = r"(?:\{((?:" + rxMetaAttrContent + "|" + rxMetaAttrs + r")*)\} *(?:\n|$)\s*)"
-
 val rxMetaComment = regex(r"^(?:\s*<!--(?:(meta|madoko)\b *\n)?([\s\S]*?)-->((?: *\n)+))")
 val rxMeta        = regex(r"^"+ rxMetaKey + r"(?:" + rxMetaAttrs + "|" + rxMetaValue + r")")
 val rxSupports    = regex(r"^@(?:if|supports)\b([^\n\{]*)" + rxMetaGroup)
@@ -225,10 +226,10 @@ fun flatten( mdata:cmetadata, modes:mdict<h,constant>, verbose : int ) : <div,st
 // --------------------------------------------------------------
 
 fun evaluateBool( cond : string, modes : mdict<h,constant>, mdata : cmetadata, verbose : int  , current : list<string> = []) : <div,st<h>> bool {
-  var recursive := False
+  var recursive_ := False
   fun lookup(v,display) {
     if (current.contains(v)) {
-      recursive := True
+      recursive_ := True
       String("False")
     }
     else match(lookupMode(modes,v,mdata,Cons(v,current),verbose)) {
@@ -241,7 +242,7 @@ fun evaluateBool( cond : string, modes : mdict<h,constant>, mdata : cmetadata, v
   }
   val b = evaluate( cond, fn(e) { evalExpr(e,lookup).bool }, False)
   // trace("evaluate: " + cond + " -> " + b.show + " (recursive=" + recursive.show + ")" )
-  if (recursive)
+  if (recursive_)
    then False // a self-dependent support block evaluates to false
    else b
 }

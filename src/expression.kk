@@ -51,7 +51,7 @@ pub fun evaluate( expr : string, eval : expr -> <exn|e> a, default : a ) : e a {
   match(mbres) {
     Just(res) | res.snd.trim.is-empty -> {
       catch( fn() { eval(res.fst) }, fn(exn) { 
-        warning(exn.show)
+        warning(exn.compat/show)
         default
       })
     }
@@ -234,9 +234,11 @@ fun parseAttrSelector() : parser<expr> {
 // value definition is recursive.
 // recursive group: [expression/parseAtom,expression/parseIf,expression/parseExpr,expression/parseBinary,expression/parseUnary] 
 
-val parseExpr = unsafe-total{
-  parseIf()
+fun parseExpr(s: string) {
+  unsafe-total{
+    parseIf()(s)
   }
+} 
 
 fun parseIf() : div parser<expr> {
   ( string(r"@if\b") *> parseBinary() <* string("@then") <*> parseAtom() <*> 

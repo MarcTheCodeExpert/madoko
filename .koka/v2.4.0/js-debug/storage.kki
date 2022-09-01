@@ -15,8 +15,8 @@ module interface storage
 import std/core/types = std/core/types = "";
 import std/core/hnd = std/core/hnd = "";
 import std/core = std/core = "";
-import compat = compat = "";
 import compat/log = compat/log = "";
+import compat = compat = "";
 import compat/regex = compat/regex = "";
 import compat/path = compat/path = "";
  

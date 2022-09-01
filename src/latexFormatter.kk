@@ -217,308 +217,309 @@ pub fun fmtLatexTable( ctx : inlineContext, head : list<row>, body : list<row>, 
   attrs.cssAttrs(tbody, if (breakable) then [("display","block")] else [])
 }
 
-pub fun fmtLatexPolyTable( ctx : inlineContext, ct : codeTable, attrs : attrs ) : string {
-  val table = attrs.getTableEnv
-  val cols = list(1, ct.columns)
-  val colDefs = cols.map(fn(col) { "\\column{C" + col.show + "}{l}%mdk\n" })
-  val rowss = ct.rows.map(fn(row) { fmtLatexPolyRow(row, 1) })
-  val content =
-      "\\begin{mdmathpre}\\begin{pmboxed}%mdk\n" + colDefs.join("") + rowss.join("\\\\%mdk-2281\n") + "%mdk-2282\n\\end{pmboxed}\\end{mdmathpre}%mdk"
-  texEnv("",content,attrs.addClass("para-block"))
-}
+// pub fun fmtLatexPolyTable( ctx : inlineContext, ct : codeTable, attrs : attrs ) : string {
+//   val table = attrs.getTableEnv
+//   val cols = list(1, ct.columns)
+//   val colDefs = cols.map(fn(col) { "\\column{C" + col.show + "}{l}%mdk\n" })
+//   val rowss = ct.rows.map(fn(row) { fmtLatexPolyRow(row, 1) })
+//   val content =
+//       "\\begin{mdmathpre}\\begin{pmboxed}%mdk\n" + colDefs.join("") + rowss.join("\\\\%mdk-2281\n") + "%mdk-2282\n\\end{pmboxed}\\end{mdmathpre}%mdk"
+//   texEnv("",content,attrs.addClass("para-block"))
+// }
 
-fun fmtLatexPolyRow(cells: list<ccell>, col: int) : string {
-  match(cells) {
-    Nil -> ""
-    Cons(cell, rest) -> {
-      val rendered = "\\>[C" + col.show + "][l]" + cell.content
-      rendered + fmtLatexPolyRow(rest, col + cell.span)
-    }
-  }
-}
+// fun fmtLatexPolyRow(cells: list<ccell>, col: int) : string {
+//   match(cells) {
+//     Nil -> ""
+//     Cons(cell, rest) -> {
+//       val rendered = "\\>[C" + col.show + "][l]" + cell.content
+//       rendered + fmtLatexPolyRow(rest, col + cell.span)
+//     }
+//   }
+// }
 
-type line {
-  Single
-  Double
-  NoLine
-}
+// type line {
+//   Single
+//   Double
+//   NoLine
+// }
 
-pub fun isDouble(x: line): bool {
-  match(x) {
-    Double -> True
-    _ -> False
-  }
-}
+// pub fun isDouble(x: line): bool {
+//   match(x) {
+//     Double -> True
+//     _ -> False
+//   }
+// }
 
-pub fun isNoLine(x: line): bool {
-  match(x) {
-    NoLine -> True
-    _ -> False
-  }
-}
+// pub fun isNoLine(x: line): bool {
+//   match(x) {
+//     NoLine -> True
+//     _ -> False
+//   }
+// }
 
-val fmtRowLineBreak = "\\morecmidrules\n" // \\\\[-\\mdTablelineskip]\n"
-
-fun fmtColumn( attrs : attrs, colattr : attrs ) : string {
-  match(colattr.hasKey("text-align")) {
-    Just(alignment) -> alignment.substr(0,1)
-    Nothing -> "l"
-  }
-}
-
-fun fmtDefaultColumnWidth( colattrs : list<attrs> ) : string {
-  val fixed = colattrs.concat( fn(ca) {
-    if(ca.hasKey("width").bool) then {
-      val kvs = dict(ca.keyvals).cssExpandKeys
-      ["-" + dimBorderBoxWidth(kvs)]
-    }
-    else []
-  })
-  val flexible = colattrs.length - fixed.length
-  if (flexible == 0) then "0pt"
-    else "\\dimeval{(\\linewidth" + fixed.join + ")/" + flexible.show + "}"
-}
-
-fun fmtRows( rows : list<row>, td : string, colfmts : list<string>, defcolwidth : string ) : string {
-  var lastIsLine := False
-  val xrows = rows.map fn(row) {
-    val lineRow = row.cells.map(fn(cell) {
-                    if (cell.cellAttrs.hasClass("cell-line")) then Single
-                    elif (cell.cellAttrs.hasClass("cell-double-line")) then Double
-                    else NoLine
-                  } )
-    if (!(lineRow.all(isNoLine))) then {
-      val res = (if (lastIsLine) then fmtRowLineBreak else "") + fmtLine(lineRow,row)
-      lastIsLine := True
-      res
-    }
-    else {
-      val res = (if (lastIsLine) then "\n" else "") + fmtRow(td,row,colfmts,defcolwidth)
-      lastIsLine := False
-      res
-    }
-  }
-  xrows.join() + (if (lastIsLine) then "\n" else "")
-}
-
-
-fun fmtLine( lines : list<line>, row : row ) : string
-{
-  fun width( cattrs : attrs ) {
-    match(cattrs.hasKey("rule-width")) {
-      Just(wd) -> "[" + wd.cssWidth + "]"
-      Nothing  -> ""
-    }
-  }
-
-  val line2 = if (!(lines.any(isDouble))) then "" else {
-    fmtRowLineBreak +
-     zipWithIndexed(row.cells,lines,fn(i,cell,line) {
-      val attrs = cell.cellAttrs
-      if (!(line.isDouble)) then ""
-       else "\\cmidrule" + width(attrs) + "{" + (i+1).show + "-" + (i+ attrs.lookupKey("column-span","1").parseInt.maybe(1,id)).show + "}"
-     }).join
-  }
-
-  val line1 = if (!(lines.any(isNoLine)) && line2=="") then "\\midrule" + width(row.rowAttrs) else {
-    zipWithIndexed(row.cells,lines,fn(i,cell,line) {
-      val attrs = cell.cellAttrs
-      if (line.isNoLine) then ""
-       else "\\cmidrule" + width(attrs) + "{" + (i+1).show + "-" + (i+ attrs.lookupKey("column-span","1").parseInt.maybe(1,id)).show + "}"
-     }).join
-  }
-  line1 + line2
-
-}
+// val fmtRowLineBreak = "\\morecmidrules\n" // \\\\[-\\mdTablelineskip]\n"
+fun fmtColumn( attrs : attrs, colattr : attrs ) : string {""}
+// fun fmtColumn( attrs : attrs, colattr : attrs ) : string {
+//   match(colattr.hasKey("text-align")) {
+//     Just(alignment) -> alignment.substr(0,1)
+//     Nothing -> "l"
+//   }
+// }
+fun fmtDefaultColumnWidth( colattrs : list<attrs> ) : string {""}
+// fun fmtDefaultColumnWidth( colattrs : list<attrs> ) : string {
+//   val fixed = colattrs.concat( fn(ca) {
+//     if(ca.hasKey("width").bool) then {
+//       val kvs = dict(ca.keyvals).cssExpandKeys
+//       ["-" + dimBorderBoxWidth(kvs)]
+//     }
+//     else []
+//   })
+//   val flexible = colattrs.length - fixed.length
+//   if (flexible == 0) then "0pt"
+//     else "\\dimeval{(\\linewidth" + fixed.join + ")/" + flexible.show + "}"
+// }
+fun fmtRows( rows : list<row>, td : string, colfmts : list<string>, defcolwidth : string ) : string {""}
+// fun fmtRows( rows : list<row>, td : string, colfmts : list<string>, defcolwidth : string ) : string {
+//   var lastIsLine := False
+//   val xrows = rows.map fn(row) {
+//     val lineRow = row.cells.map(fn(cell) {
+//                     if (cell.cellAttrs.hasClass("cell-line")) then Single
+//                     elif (cell.cellAttrs.hasClass("cell-double-line")) then Double
+//                     else NoLine
+//                   } )
+//     if (!(lineRow.all(isNoLine))) then {
+//       val res = (if (lastIsLine) then fmtRowLineBreak else "") + fmtLine(lineRow,row)
+//       lastIsLine := True
+//       res
+//     }
+//     else {
+//       val res = (if (lastIsLine) then "\n" else "") + fmtRow(td,row,colfmts,defcolwidth)
+//       lastIsLine := False
+//       res
+//     }
+//   }
+//   xrows.join() + (if (lastIsLine) then "\n" else "")
+// }
 
 
+// fun fmtLine( lines : list<line>, row : row ) : string
+// {
+//   fun width( cattrs : attrs ) {
+//     match(cattrs.hasKey("rule-width")) {
+//       Just(wd) -> "[" + wd.cssWidth + "]"
+//       Nothing  -> ""
+//     }
+//   }
 
-fun fmtRow( td : string, row : row, colfmts : list<string>, defcolwidth : string ) : string {
-  /*
-  rcolor = match (row.rowAttrs.hasKey("background-color")) {
-             Nothing   -> ""
-             Just(clr) -> "\\rowcolor" + fmtColorArg(clr)
-           }
-  rcolor + */
-  compat/zipWith(row.cells,colfmts, fn(cell,colfmt) { fmtCell(td, cell.text_.trim,cell.cellAttrs,colfmt,defcolwidth) }).join("&")
-    + "\\\\\n"
-}
+//   val line2 = if (!(lines.any(isDouble))) then "" else {
+//     fmtRowLineBreak +
+//      zipWithIndexed(row.cells,lines,fn(i,cell,line) {
+//       val attrs = cell.cellAttrs
+//       if (!(line.isDouble)) then ""
+//        else "\\cmidrule" + width(attrs) + "{" + (i+1).show + "-" + (i+ attrs.lookupKey("column-span","1").parseInt.maybe(1,id)).show + "}"
+//      }).join
+//   }
+
+//   val line1 = if (!(lines.any(isNoLine)) && line2=="") then "\\midrule" + width(row.rowAttrs) else {
+//     zipWithIndexed(row.cells,lines,fn(i,cell,line) {
+//       val attrs = cell.cellAttrs
+//       if (line.isNoLine) then ""
+//        else "\\cmidrule" + width(attrs) + "{" + (i+1).show + "-" + (i+ attrs.lookupKey("column-span","1").parseInt.maybe(1,id)).show + "}"
+//      }).join
+//   }
+//   line1 + line2
+
+// }
 
 
 
-fun fmtCell( elem : string, body : string, attrs : attrs, colfmt : string, defcolwidth : string ) : string {
-  if (elem=="column" || attrs.lookupKey("display","") == "block")
-   then fmtCellBlock(elem,body,attrs,colfmt,defcolwidth)
-   else fmtCellInline(elem,body,attrs,colfmt)
-}
-
-fun fmtCellBlock( elem : string, body : string, attrs : attrs, colfmt : string, defcolwidth : string ) : string {
-  if (attrs.hasKey("width").bool)
-    then texEnv(elem,body,attrs)
-    else texEnv(elem,body,attrs.addKeyval("width","available"))
-}
-
-fun fmtCellInline( elem : string, body : string, attrs : attrs, colfmt : string ) : string {
-  val colspan = attrs.lookupKey("column-span","1")
-  val align   = match(attrs.hasKey("text-align")) {
-                  Just(alignment) -> alignment.substr(0,1)
-                  Nothing -> if (elem=="th") then "c" else "l"
-                }
-  val bcolor  = match (attrs.hasKey("background-color")) {
-                  Nothing   -> ""
-                  Just(clr) -> "{\\mdcellcolor" + cssColorArg(clr) + "}"
-                }
-  val fmt     = (if (attrs.hasClass("cell-border-left")) then "|" else "") + align +
-                (if (attrs.hasClass("cell-border-right")) then "|" else "")
-
-  val attrsx  = attrs( classes = attrs.classes.filter(fn(c){ c != "cell-border-left" && c != "cell-border-right" && !(c.startsWith("align-"))}),
-                       keyvals = attrs.keyvals.filter(fn(kv){ kv.fst != "column-span" && kv.fst != "background-color" && kv.fst != "text-align"}))
-
-  val content = if (elem=="column")
-                 then texEnv(elem,body,attrsx)
-                 else texCmd(elem,body,attrsx.addKeyval("display","inline"))
-
-  if (colspan=="1" && fmt==colfmt) then bcolor + content
-   else "\\multicolumn{" + colspan + "}{" + fmt + "}{" + bcolor + content + "}"
-}
-
-
-fun texList( tag : string, body : string, attrs : attrs ) : string {
-  val args = cssListArgs( attrs )
-  val env  = (if (attrs.hasKey("list-style-type").bool) then "enumerate" else attrs.lookupKey("tex-env","enumerate")) + args
-  attrs.addKeyval("tex-env",env).cssAttrs(body,[("display","block")],"")
-}
-
-
-fun texAttrsX( attrs : attrs ) : string {
-  ""
-}
-
-/* --------------------------------------
-  Command and env
----------------------------------------- */
-
-fun texCmd( cmd : string, body : string, attrs : attrs = attrsNone, pre : string = "md" ) : string {
-  // val cmdName = if (attrs.texelem != "") then attrs.texelem else (pre + cmd.normalizeCmd.capitalize)
-  // "\\" + cmdName + attrs.texAttrsX + "{" + body + "}"
-  attrs.cssAttrs(body,[("display","inline")],cmd)
-}
-
-fun texCmdX( cmd : string, body : string, attrs : attrs = attrsNone, extra : list<(string,string)> = []) : string {
-  // val cmdName = if (attrs.texelem != "") then attrs.texelem else (pre + cmd.normalizeCmd.capitalize)
-  // "\\" + cmdName + attrs.texAttrsX + "{" + body + "}"
-  attrs.cssAttrs(body,[("display","inline"),("tex-cmd",cmd)] + extra)
-}
-
-
-fun texEnv( env : string, body : string, attrs : attrs = attrsNone ) : string {
-  texEnvPlain(env,body,attrs)
-}
-
-fun texEnvPlain( env : string, body : string, attrs : attrs ) : string {
-  //val envName = (if (attrs.texelem != "") then attrs.texelem else ("md" + env.normalizeCmd.capitalize))
-  val envCmd = // "\\begin{" + envName + "}" + attrs.texAttrsX + "%mdk\n" +
-               attrs.cssAttrs(body,[("display","block")],env) // + "%mdk\n" +
-               // "\\end{" + envName + "}%mdk\n"
-  envCmd
-  /*
-  match(attrs.hasKey("float")) {
-    Nothing   -> envCmd
-    Just(flt) -> "\\mdfloatbox{" + flt + "}{" + attrs.lookupKey("lines","") + "}{" + envCmd + "}"
-  }
-  */
-}
-
-fun texClassName( attrs : attrs, def : string ) : (string,attrs) {
-  val name = attrs.elementName(def)
-  (name.normalizeCmd.capitalize,attrs(classes=attrs.classes.filter(fn(c){ c != name })))
-}
-
-fun normalizeCmd( cmd : string ) {
-  cmd.replaceAll(rxCmdSpecial,"").replaceAll(rxDigits) fn(cap) {
-    list(1,cap.matched.parseInt.maybe(0,id)).map(fn(i) { "x" }).join
-  }
-}
-val rxDigits = regex(r"\d+")
-val rxCmdSpecial = regex(r"[^a-zA-Z0-9]")
+fun fmtRow( td : string, row : row, colfmts : list<string>, defcolwidth : string ) : string {""}
+// fun fmtRow( td : string, row : row, colfmts : list<string>, defcolwidth : string ) : string {
+//   /*
+//   rcolor = match (row.rowAttrs.hasKey("background-color")) {
+//              Nothing   -> ""
+//              Just(clr) -> "\\rowcolor" + fmtColorArg(clr)
+//            }
+//   rcolor + */
+//   compat/zipWith(row.cells,colfmts, fn(cell,colfmt) { fmtCell(td, cell.text_.trim,cell.cellAttrs,colfmt,defcolwidth) }).join("&")
+//     + "\\\\\n"
+// }
 
 
 
-/* --------------------------------------
-  Full header
----------------------------------------- */
-pub fun fmtLatexFull(body : string, options : options, metadata : dict<string>) : string {
-  fmtLatexFullX(body,options,metadata)
-}
+// fun fmtCell( elem : string, body : string, attrs : attrs, colfmt : string, defcolwidth : string ) : string {
+//   if (elem=="column" || attrs.lookupKey("display","") == "block")
+//    then fmtCellBlock(elem,body,attrs,colfmt,defcolwidth)
+//    else fmtCellInline(elem,body,attrs,colfmt)
+// }
 
-pub fun fmtLatexMathFull(body : string, options : options) : string {
-  fmtLatexFullX(body,options,dict())
-}
+// fun fmtCellBlock( elem : string, body : string, attrs : attrs, colfmt : string, defcolwidth : string ) : string {
+//   if (attrs.hasKey("width").bool)
+//     then texEnv(elem,body,attrs)
+//     else texEnv(elem,body,attrs.addKeyval("width","available"))
+// }
 
-fun fmtLatexFullX(body : string, options : options, metadata1 : dict<string>) : string
-{
-  val metadata0 = [("heading-base",options.headingBase.show),
-                   ("tex-section-num", options.texSectionNum.show.toLower),
-                   ("bib-label", "true"),
-                   ("font-spec", "true")].dict
-  val metadata = metadata0 + metadata1
+// fun fmtCellInline( elem : string, body : string, attrs : attrs, colfmt : string ) : string {
+//   val colspan = attrs.lookupKey("column-span","1")
+//   val align   = match(attrs.hasKey("text-align")) {
+//                   Just(alignment) -> alignment.substr(0,1)
+//                   Nothing -> if (elem=="th") then "c" else "l"
+//                 }
+//   val bcolor  = match (attrs.hasKey("background-color")) {
+//                   Nothing   -> ""
+//                   Just(clr) -> "{\\mdcellcolor" + cssColorArg(clr) + "}"
+//                 }
+//   val fmt     = (if (attrs.hasClass("cell-border-left")) then "|" else "") + align +
+//                 (if (attrs.hasClass("cell-border-right")) then "|" else "")
 
-  fun expand(s) { s.expandKeys(metadata) }
-  fun norm(p)   { normalize(options.sandbox,p) }
+//   val attrsx  = attrs( classes = attrs.classes.filter(fn(c){ c != "cell-border-left" && c != "cell-border-right" && !(c.startsWith("align-"))}),
+//                        keyvals = attrs.keyvals.filter(fn(kv){ kv.fst != "column-span" && kv.fst != "background-color" && kv.fst != "text-align"}))
 
-  val pkgs = (options.packages.expand + options.packagesx.expand).splitPaths
-  val doc0 = if (options.docClass != "") then options.docClass.norm
-             elif (options.headingBase >= 2) then "article" else "book"
-  val doc  = doc0.expand
+//   val content = if (elem=="column")
+//                  then texEnv(elem,body,attrsx)
+//                  else texCmd(elem,body,attrsx.addKeyval("display","inline"))
 
-  [fmtOptArg(r"\documentclass", doc, norm, ext = ".cls"),
-   "% generated by Madoko, version " + options.version,
-   "%mdk-data-line={1}",
-   pkgs.map(fn(pkg) {
-      match (pkg.find(rxTexFile)) {
-        Just -> {
-          log("files", changeExt(pkg,".tex") );
-          r"\input{" + pkg.norm + "}"
-        }
-        Nothing -> fmtOptArg(r"\usepackage",pkg,norm)
-      }
-    }).join("\n"),
-   options.texHeader.expand,
-   options.texHeaderx.expand,
-   r"\begin{document}",
-   options.texDocHeader.expand,
-   options.texDocHeaderx.expand,
-   body,
-   options.texFooter.expand,
-   r"\end{document}",""
-   ].join("\n")
-}
+//   if (colspan=="1" && fmt==colfmt) then bcolor + content
+//    else "\\multicolumn{" + colspan + "}{" + fmt + "}{" + bcolor + content + "}"
+// }
 
-val rxTexFile = regex(r"^[^\n\r\[\]]+?\.tex$",ignoreCase=True)
-
-fun fmtOptArg( pre:string, pkg : string, norm : string -> string,  ext : string = ".sty" ) : string
-{
-  pre + (match(pkg.find(rxPkgOpt)) {
-    Just(cap) -> {
-      val pname = cap.groups[2]
-      if (pname.extname!="" || pname.dirname!="") {
-        log("files", changeExt(pname,ext) );
-      }
-      (if (cap.groups[1] != "") then "[" + cap.groups[1] + "]" else "") +
-        "{" + (if (ext==".cls" || ext==".sty") then pname.noext else pname).norm + "}"
-    }
-    Nothing  -> {
-      val pname = pkg.trim
-      if (pname.extname!="" || pname.dirname!="") {
-        log("files", changeExt(pname,ext) )
-      }
-      "{" + (if (ext==".cls" || ext==".sty") then pname.noext else pname).norm + "}"
-    }
-  })
-}
+fun texList( tag : string, body : string, attrs : attrs ) : string {""}
+// fun texList( tag : string, body : string, attrs : attrs ) : string {
+//   val args = cssListArgs( attrs )
+//   val env  = (if (attrs.hasKey("list-style-type").bool) then "enumerate" else attrs.lookupKey("tex-env","enumerate")) + args
+//   attrs.addKeyval("tex-env",env).cssAttrs(body,[("display","block")],"")
+// }
 
 
-val rxPkgOpt = regex(r"^\s*(?:\[(.*?)\]\s*)?{?([^\*]+)\s*(?:\*\s*)?(?:}\s*)?$")
+// fun texAttrsX( attrs : attrs ) : string {
+//   ""
+// }
+
+// /* --------------------------------------
+//   Command and env
+// ---------------------------------------- */
+fun texCmd( cmd : string, body : string, attrs : attrs = attrsNone, pre : string = "md" ) : string {""}
+// fun texCmd( cmd : string, body : string, attrs : attrs = attrsNone, pre : string = "md" ) : string {
+//   // val cmdName = if (attrs.texelem != "") then attrs.texelem else (pre + cmd.normalizeCmd.capitalize)
+//   // "\\" + cmdName + attrs.texAttrsX + "{" + body + "}"
+//   attrs.cssAttrs(body,[("display","inline")],cmd)
+// }
+fun texCmdX( cmd : string, body : string, attrs : attrs = attrsNone, extra : list<(string,string)> = []) : string {""}
+// fun texCmdX( cmd : string, body : string, attrs : attrs = attrsNone, extra : list<(string,string)> = []) : string {
+//   // val cmdName = if (attrs.texelem != "") then attrs.texelem else (pre + cmd.normalizeCmd.capitalize)
+//   // "\\" + cmdName + attrs.texAttrsX + "{" + body + "}"
+//   attrs.cssAttrs(body,[("display","inline"),("tex-cmd",cmd)] + extra)
+// }
+
+fun texEnv( env : string, body : string, attrs : attrs = attrsNone ) : string {""}
+// fun texEnv( env : string, body : string, attrs : attrs = attrsNone ) : string {
+//   texEnvPlain(env,body,attrs)
+// }
+
+// fun texEnvPlain( env : string, body : string, attrs : attrs ) : string {
+//   //val envName = (if (attrs.texelem != "") then attrs.texelem else ("md" + env.normalizeCmd.capitalize))
+//   val envCmd = // "\\begin{" + envName + "}" + attrs.texAttrsX + "%mdk\n" +
+//                attrs.cssAttrs(body,[("display","block")],env) // + "%mdk\n" +
+//                // "\\end{" + envName + "}%mdk\n"
+//   envCmd
+//   /*
+//   match(attrs.hasKey("float")) {
+//     Nothing   -> envCmd
+//     Just(flt) -> "\\mdfloatbox{" + flt + "}{" + attrs.lookupKey("lines","") + "}{" + envCmd + "}"
+//   }
+//   */
+// }
+
+// fun texClassName( attrs : attrs, def : string ) : (string,attrs) {
+//   val name = attrs.elementName(def)
+//   (name.normalizeCmd.capitalize,attrs(classes=attrs.classes.filter(fn(c){ c != name })))
+// }
+
+// fun normalizeCmd( cmd : string ) {
+//   cmd.replaceAll(rxCmdSpecial,"").replaceAll(rxDigits) fn(cap) {
+//     list(1,cap.matched.parseInt.maybe(0,id)).map(fn(i) { "x" }).join
+//   }
+// }
+// val rxDigits = regex(r"\d+")
+// val rxCmdSpecial = regex(r"[^a-zA-Z0-9]")
+
+
+
+// /* --------------------------------------
+//   Full header
+// ---------------------------------------- */
+// pub fun fmtLatexFull(body : string, options : options, metadata : dict<string>) : string {
+//   fmtLatexFullX(body,options,metadata)
+// }
+
+// pub fun fmtLatexMathFull(body : string, options : options) : string {
+//   fmtLatexFullX(body,options,dict())
+// }
+
+// fun fmtLatexFullX(body : string, options : options, metadata1 : dict<string>) : string
+// {
+//   val metadata0 = [("heading-base",options.headingBase.show),
+//                    ("tex-section-num", options.texSectionNum.show.toLower),
+//                    ("bib-label", "true"),
+//                    ("font-spec", "true")].dict
+//   val metadata = metadata0 + metadata1
+
+//   fun expand(s) { s.expandKeys(metadata) }
+//   fun norm(p)   { normalize(options.sandbox,p) }
+
+//   val pkgs = (options.packages.expand + options.packagesx.expand).splitPaths
+//   val doc0 = if (options.docClass != "") then options.docClass.norm
+//              elif (options.headingBase >= 2) then "article" else "book"
+//   val doc  = doc0.expand
+
+//   [fmtOptArg(r"\documentclass", doc, norm, ext = ".cls"),
+//    "% generated by Madoko, version " + options.version,
+//    "%mdk-data-line={1}",
+//    pkgs.map(fn(pkg) {
+//       match (pkg.find(rxTexFile)) {
+//         Just -> {
+//           log("files", changeExt(pkg,".tex") );
+//           r"\input{" + pkg.norm + "}"
+//         }
+//         Nothing -> fmtOptArg(r"\usepackage",pkg,norm)
+//       }
+//     }).join("\n"),
+//    options.texHeader.expand,
+//    options.texHeaderx.expand,
+//    r"\begin{document}",
+//    options.texDocHeader.expand,
+//    options.texDocHeaderx.expand,
+//    body,
+//    options.texFooter.expand,
+//    r"\end{document}",""
+//    ].join("\n")
+// }
+
+// val rxTexFile = regex(r"^[^\n\r\[\]]+?\.tex$",ignoreCase=True)
+
+// fun fmtOptArg( pre:string, pkg : string, norm : string -> string,  ext : string = ".sty" ) : string
+// {
+//   pre + (match(pkg.find(rxPkgOpt)) {
+//     Just(cap) -> {
+//       val pname = cap.groups[2]
+//       if (pname.extname!="" || pname.dirname!="") {
+//         log("files", changeExt(pname,ext) );
+//       }
+//       (if (cap.groups[1] != "") then "[" + cap.groups[1] + "]" else "") +
+//         "{" + (if (ext==".cls" || ext==".sty") then pname.noext else pname).norm + "}"
+//     }
+//     Nothing  -> {
+//       val pname = pkg.trim
+//       if (pname.extname!="" || pname.dirname!="") {
+//         log("files", changeExt(pname,ext) )
+//       }
+//       "{" + (if (ext==".cls" || ext==".sty") then pname.noext else pname).norm + "}"
+//     }
+//   })
+// }
+
+
+// val rxPkgOpt = regex(r"^\s*(?:\[(.*?)\]\s*)?{?([^\*]+)\s*(?:\*\s*)?(?:}\s*)?$")
 
 
 

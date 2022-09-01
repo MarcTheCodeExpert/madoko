@@ -7,8 +7,8 @@ module interface optionsMeta
 import std/core/types = std/core/types = "";
 import std/core = std/core = "";
 import compat/dict = compat/dict = "";
-import compat/log = compat/log = "";
 import compat = compat = "";
+import compat/log = compat/log = "";
 import common = common = "";
 import compat/path = compat/path = "";
 import options = options = "";

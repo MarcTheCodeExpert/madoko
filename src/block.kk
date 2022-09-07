@@ -36,7 +36,10 @@ public type block {
   DefFootnote( id : string, content : list<block> )
   Empty()
   Div( content : list<block>, attrs : attrs = attrsNone )
-  Source( text : string, input : input = Markdown(), parentAttrs : attrs = attrsNone )     // raw content
+  // Used to represent TexRaw, source code, and sometimes MathPre (but I don't know why...)
+  // Markdown is (to the best of my knowledge) never used as input, despite being the default
+  Source( text : string, input : input, parentAttrs : attrs = attrsNone )
+  Comment( text : string)
   Special( name : string, value : string = "", attrs : attrs = attrsNone )  // Special blocks, like [TOC] or [FOOTNOTES]
 }
 
@@ -49,11 +52,7 @@ val inlineTags  = [ "a","em","strong","small","s","cite","q","dfn","abbr","data"
                     "var","samp","kbd","sub","sup","i","b","u","mark","ruby","rt","rp","bdi","bdo",
                     "span","br","wbr","ins","del","img" ]
 val atag        = @"(?!(?:" + inlineTags.join("|") + @")\b)\w+(?!:/|@)\b"
-val comment     = @"!--[\s\S]*?-->"
-public val tagContent  = @"(?:""[^""]*""|'[^']*'|[^'"">])*"
-val closedTag   = @"(" + atag + @")[\s\S]+?</\1>"
-val soloTag     = @"" + atag + tagContent + ">"
-val html        = @"<(?:" + [closedTag,soloTag,comment].join("|") + @") *(?:\n+|\s*$)"
+val comment      = @"<(?:!--[\s\S]*?-->) *(?:\n+|\s*$)"
 
 // Attributes: allow escaped newline
 val rattrs      = @"(?:<!--)?\{:?((?:[^\\'""\}\n]|\\[\s\S]|'(?:[^\\']|\\[\s\S])*'|""(?:[^""\\]|\\[\s\S])*"")*)\}(?:-->)?" // allow optional colon for maraku compat
@@ -99,7 +98,7 @@ val blockGrammar : grammar<block,blockContext> = [
   Rule("parax",      regex(@"^(" + notbspecial + @"[^|\n]*?(?:\n|$)(?:(?!" + endpara + @").+(?:\n|$))*)\n*"), blockPara ),
 
   Rule("code",       regex(@"^(    (?:.|\n+    )*)\n*"), blockCode ),
-  Rule("html",       regex(@"^ *" + html), blockHtml ),
+  Rule("comment",    regex(@"^ *" + comment), blockComment ),
   Rule("deflink",    regex(@"^ *\[(?!\^)" + xlinkid + @"\]: *<?((?:[^\\\s>]|\\(?:.|\n *))+)>?(?: +[""(]((?:[^\n\\]|\\(?:.|\n *))+)["")])?(?: |\\\n *)*" +iattrs+ @"(\n+|$)"), blockDefLink ),
   Rule("deffootnote",regex(@"^ *\[\^" + xlinkid + @"\]: *(?:\n {4})?(.*(?:\n+ {4}.*)*)(?:\n+|$)"), blockDefFootnote),
   Rule("hline",      regex(@"^ *" + hr), blockHLine ),
@@ -124,6 +123,7 @@ val blockGrammar : grammar<block,blockContext> = [
 val ruleLine = Rule("para-line",  regex(@"^.+(\n|$)"), blockLine)
 val ruleLineX= Rule("parax-line", regex(@"^" + notbspecial + @".*(\n|$)"), blockLine)
 
+// This grammar is actually necessary!
 val blockListGrammar = blockGrammar.ruleReplace( True, ruleLineX )
                                    .ruleReplace( True, ruleLine  )
 
@@ -138,7 +138,6 @@ rectype blockContext {
   BlockContext( grammar : grammar<block,blockContext>,
                 listGrammar : grammar<block,blockContext>,
                 metadata : dict<string>,
-                bench   : bool,
                 pedantic : bool,
                 loose   : bool = False,
                 lineNo  : int = 0,
@@ -219,7 +218,7 @@ val rxPattrs = regex(@"\n {0,3}" + xattrs + @"\s*$")
 
 function blockDefLink( cap : matched, context : blockContext ) :  block {
   val id = cap.groups[1].definitionId
-  DefLink(id, newLink(cap.groups[2].joinLines, cap.groups[3].joinLines, cap.groups[4].parseAttrs, id, context.bench ))
+  DefLink(id, newLink(cap.groups[2].joinLines, cap.groups[3].joinLines, cap.groups[4].parseAttrs, id))
 }
 
 function blockLine( cap : matched, context : blockContext ) : block {
@@ -234,8 +233,9 @@ function blockHLine( cap : matched, _context ) : block {
   HLine(cap.groups[1].parseAttrs)
 }
 
-function blockHtml( cap : matched, context : blockContext ) :  block  {
-  Source(cap.matched,Raw(Just(FmtHtml)),attrsNone)
+// this is only used for block comments
+function blockComment( cap : matched, context : blockContext ) :  block  {
+  Comment(cap.matched)
 }
 
 function blockHeading( cap : matched, context : blockContext ) : block  {
@@ -254,13 +254,13 @@ function makeHeading(depth:int, source:string, attrStr : string) {
 function blockCode( cap : matched, context : blockContext ) : block  {
   val source = cap.groups[1].replaceAll(rxindent4,"")
   Code(source, "",
-          if (!(context.pedantic || context.bench)) then attrsNone.addClass("pre-indented") else attrsNone)
+          if (!(context.pedantic)) then attrsNone.addClass("pre-indented") else attrsNone)
 }
 
 function blockFencedCode( cap : matched, context : blockContext ) {
   val attrs = cap.groups[3].parseAttrs
   Code(cap.groups[4], cap.groups[2],
-        if (!(context.pedantic || context.bench))
+        if (!(context.pedantic))
           then attrs.addClasses(["pre-fenced","pre-fenced" + cap.groups[1].length.show])
           else attrs)
 }
@@ -348,9 +348,9 @@ function blockListX( text : string, context : blockContext,
   val loose = text.contains(blankline)
   // we should merge any text blocks into a paragraph for a loose list
   // in sane mode, we only make text blocks paragraphs if they are followed by a blank line
-  val icontext = context(grammar = // context.grammar.filter( fun(r) { !(r.name.startsWith("paragraph")) }),
-                         context.listGrammar,
-                         loose = loose) // if (context.sane) then False else loose)
+  //
+  // TODO this is the only point where we change the grammar in a BlockContext
+  val icontext = context(grammar = context.listGrammar, loose = loose)
 
 
   val (txt,attrsTxt) = match(text.find(rxlattrs)) {
@@ -482,11 +482,10 @@ function columnStyle( style : string ) : attrs {
 // Parse text into blocks
 public function parseBlocks( src : string, lineNo : int, lineMap : lineMap,
                              mdata : dict<string>,
-                             bench : bool = False,
                              pedantic : bool = False
                              )  : list<block>
 {
-  val bcontext = BlockContext(blockGrammar, blockListGrammar, mdata, bench, pedantic, False, lineNo, lineMap)
+  val bcontext = BlockContext(blockGrammar, blockListGrammar, mdata, pedantic, False, lineNo, lineMap)
   parseBlocks(bcontext,src)
 }
 

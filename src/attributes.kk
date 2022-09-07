@@ -261,21 +261,23 @@ public function extendAttrs( attrs0 : attrs, attrsStr : string, source : string 
     elif (name=="input") {
       val v = kwvalue
       val r = if (v=="pre") then Pre
-              elif (v=="raw") then Raw(Nothing)
-              elif (v=="texraw") then Raw(Just(FmtTex))
-              elif (v=="htmlraw") then Raw(Just(FmtHtml))
+              elif (v=="raw") then Raw
+              // TODO drop texraw
+              elif (v=="texraw") then Raw
               elif (v=="tex") then Tex
               elif (v=="math") then Math
               elif (v=="mathpre") then MathPre
               elif (v=="mathdefs") then MathDefs
               elif (v=="mathpoly") then MathPoly
-              elif (v=="normal") then Markdown()
-              elif (v=="markdown") then Markdown()
-              elif (v=="htmlonly") then Markdown(Just(FmtHtml))
-              elif (v=="texonly") then Markdown(Just(FmtTex))
+              elif (v=="normal") then Markdown
+              elif (v=="markdown") then Markdown
+              // TODO deprecate
+              elif (v=="texonly") then Markdown
               else {
-                warning( "unrecognized input value: " + value)
-                Markdown()
+                warning("unrecognized input value: " + value)
+                warning("Maybe you are still using the deprecateed html or htmlraw input directives?")
+                warning("Try searching all uses of HtmlRaw and HtmlOnly in your code and your styles")
+                Markdown
               }
       acc(input=r)
     }
@@ -582,7 +584,18 @@ function expandKeyPattern( name : string, attrs : attrs ) : string {
   expandKeys(peanoN,"&" + name + ";",attrs.source,attrs,dict(), dict(), ignoreNotFound)
 }
 
-// expand keys in a string
+// Expand keys in a string
+// -----------------------
+// Keys are references to attributes, like "&title;". Expanding means
+// looking up the attribute and replacing the result in the string "txt".
+//
+// Special keys that are replaced, are:
+//   - &label;
+//   - &id;
+//   - &source;
+//   - &class; (the list of classes, which is joined with whitespaces)
+//
+// The first argument peano number is fuel to ensure termination.
 private function expandKeys( p0 : peano, txt : string, source : string,
                             attrs : attrs,
                             labels : dict<label>, metadata : dict<string>,
@@ -627,6 +640,7 @@ private function expandKeys( p0 : peano, txt : string, source : string,
     }
   }
 }
+// Matches either "\&" or an entity "&name;" or "&;"
 val rxkey = regex(@"\\&|(?:\\/)?&([\w\-:]*|&);(\\/)?")
 
 function keyNotFound( key: string, matched : string ) : string {

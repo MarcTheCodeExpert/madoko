@@ -21,7 +21,6 @@ import inline
 import options
 import attributes
 import codeAlign
-import storage        // for xnormalize
 import texCommon      // for texAccents et al
 import cssFormatter
 
@@ -29,7 +28,14 @@ function warning( msg : string ) {
   common/warning( msg, "texwarning" );
 }
 
-public function fmtLatexEnv(context : inlineContext, env : string, txt : string, attrs : attrs ) : string {
+public function fmtCmd(context : inlineContext, cmd : string, txt : string, attrs : attrs = attrsNone) : string {
+  if (cmd=="") then texText(txt)
+  elif (cmd=="br") then "\\mdbr\n"
+  // elif (cmd=="code") then "\\lstinline|" + txt + "|"
+  else texCmd(cmd,txt,attrs)
+}
+
+public function fmtEnv(context : inlineContext, env : string, txt : string, attrs : attrs = attrsNone) : string {
   if (env=="")
    then texText(txt)
   elif (env=="ul" || env=="ol")
@@ -37,52 +43,44 @@ public function fmtLatexEnv(context : inlineContext, env : string, txt : string,
    else texEnv(env,txt,attrs)
 }
 
-public function fmtLatexCmd(context : inlineContext, cmd : string, txt : string, attrs : attrs ) : string {
-  if (cmd=="") then texText(txt)
-  elif (cmd=="br") then "\\mdbr\n"
-  // elif (cmd=="code") then "\\lstinline|" + txt + "|"
-  else texCmd(cmd,txt,attrs)
+public function fmtText(context : inlineContext, txt : string) : string {
+  fmtCmd(context, "", txt, attrsNone)
 }
 
-public function fmtLatexMathEnv(context : inlineContext, env : string, txt : string, attrs : attrs ) : string {
+public function fmtMathEnv(context : inlineContext, env : string, txt : string, attrs : attrs = attrsNone ) : string {
   attrs.cssAttrs(txt,[("display","inline")],"span")
 }
 
-public function fmtLatexMathCmd(context : inlineContext, cmd : string, txt : string, attrs : attrs ) : string {
+public function fmtMathCmd(context : inlineContext, cmd : string, txt : string, attrs : attrs = attrsNone ) : string {
   attrs.cssAttrs(txt,[("display","inline")],"span")
 }
 
-public function fmtLatexLineInfo( context : inlineContext, lineInfo : string ) : string {
+public function fmtLineInfo( context : inlineContext, lineInfo : string ) : string {
   //"%mdk-data-line={" + lineInfo + "}\n"
   "\\mdline{fmtLatexLineInfo}"
 }
 
-public function fmtLatexEscape( context : inlineContext, txt : string, allowEntity : bool ) : string {
-  //texText(htmlEscape(txt,allowEntity))
-  if (allowEntity)
-   then texText(htmlEscape(txt,allowEntity))
-   else // we use lstlisting with 'mathescape' and escape just $ and |
-        txt.replaceAll(regex(@"\$"),@"$\mbox{\$}$").replaceAll(regex(@"\|"),@"$\mbox{\char124}$")
+public function fmtEscape( context : inlineContext, txt : string) : string {
+  texText(htmlEscape(txt, True))
 }
 
-public function fmtLatexFootnote(context : inlineContext, id : string, fn : footnote ) : string {
+public function fmtEscapePre( context : inlineContext, txt : string ) : string {
+  txt.replaceAll(regex(@"\$"), @"$\mbox{\$}$").replaceAll(regex(@"\|"), @"$\mbox{\char124}$")
+}
+
+public function fmtFootnote(context : inlineContext, id : string, fn : footnote ) : string {
   texCmdX( "\\mdfootnote" + fn.footnoteNum.braced, ((fn.footnoteContent)(context)).trimLeft, attrsNone, [("id","back-fn-" + id)])
 }
 
-function normalize( sandbox: bool, path : string ) : string {
-  if (sandbox) then xnormalize(path) else path
-}
-
-public function fmtLatexLink( context : inlineContext, isImage : bool, link : link, content : string ) {
+public function fmtLink( context : inlineContext, isImage : bool, link : link, content : string ) : string {
   val attrs = if (link.linkid.bool) then link.linkattrs.addKeyval("data-linkid",link.linkid) else link.linkattrs
   val url   = texLinkText(if (link.href.startsWith("#")) then link.href.substr(1) else link.href)
   if (isImage) {
     // expand extensions and set file refers
     val hrefs  = url.expandChoices
     // pick best one for images
-    val imgref = pickExtension(latexImageExtensions, hrefs)
-    val imgname = normalize(context.sandbox,imgref)
-    log("files",imgname)
+    val imgname = pickExtension(latexImageExtensions, hrefs)
+    log("files", imgname)
 
     val (attrsx, args) = cssImageArgs(attrs)
     texCmdX( "\\includegraphics[" + args + "]" + imgname.noext.braced, "" /*content*/, attrsx )
@@ -108,17 +106,16 @@ function extractText( s : string ) : string {
 
 val regxTexCmd = regex(rxTexCmd)
 
-public function fmtLatexCodePlain( context : inlineContext, txt : string, startline : bool ) : string
-{
+
+public function fmtCodePlain( context : inlineContext, txt : string, startline : bool = True ) : string {
   txt.htmlEscape(False).texText.preSpace(startline)
 }
 
-public function fmtLatexCodeToken(context:inlineContext, classes : list<string>, txt : string, lang : string, attrs : attrs ) : string
-{
-    texCmd("span",txt,attrs)
+public function fmtCodeToken(context:inlineContext, classes : list<string>, txt : string, lang : string, attrs : attrs ) : string {
+  texCmd("span", txt, attrs)
 }
 
-public function preSpace( txt : string, start : bool = True ) : string {
+function preSpace( txt : string, start : bool = True ) : string {
   val txt1 = if (!start) then txt
               else txt.replaceAll(rxIndent, fun(cap) {
                      cap.groups[1] + @"\preindent{" + cap.groups[2].length.show + "}"
@@ -132,7 +129,7 @@ function texLinkText( txt : string ) : string {
   txt.replaceAll( regex(@"([%{}&#\\])"), fun(cap) { cap.matched.list.map( fun(c) { @"\%" + c.int.showHex(2) } ).join })
 }
 
-public function texText( txt : string ) : string {
+function texText( txt : string ) : string {
   txt.replaceAll(rxSpecial,texSpecial).replaceAll(rxEntity,texEntity)
 }
 
@@ -168,8 +165,7 @@ function texSpecial( cap : matched ) : string {
   }
 }
 
-val accents
-  = texAccents.list.map(fun(te) { (te.snd, te.fst ) }).dict
+val accents = texAccents.list.map(fun(te) { (te.snd, te.fst ) }).dict
 
 function texEntity( cap : matched ) {
   match(accents[cap.groups[3]]) {
@@ -185,14 +181,14 @@ function getTableEnv( attrs : attrs ) : string {
    else "tabular"
 }
 
-public function fmtLatexCodeTable( context : inlineContext, ct : codeTable, attrs : attrs ) : string {
+public function fmtCodeTable( context : inlineContext, ct : codeTable, attrs : attrs = attrsNone ) : string {
   val table = attrs.getTableEnv
   val content =
-      "\\begin{mdcodetabular}" + ct.columns.show.braced +
+    "\\begin{mdcodetabular}" + ct.columns.show.braced +
     "\\begin" + table.braced + "{" + list(1,ct.columns).map(fun(_) {"l"}).join("") + "}\n" +
     ct.rows.map( fun(row) { row.map(fmtLatexCodeCell).join("&") }).join("\\\\\n") +
     "\n\\end" + table.braced + "\\end{mdcodetabular}%mdk\n"
-  texEnv("",content,attrs.addClass("para-block"))
+  texEnv("", content, attrs.addClass("para-block"))
 }
 
 function fmtLatexCodeCell( ccell : ccell ) : string {
@@ -200,7 +196,7 @@ function fmtLatexCodeCell( ccell : ccell ) : string {
   if (ccell.span <= 1) then ccell.content else "\\multicolumn{" + ccell.span.show + "}{" + align + "}{" + ccell.content + "}"
 }
 
-public function fmtLatexTable( context : inlineContext, head : list<row>, body : list<row>, colattrs : list<attrs>, attrs : attrs ) : string {
+public function fmtTable( context : inlineContext, head : list<row>, body : list<row>, colattrs : list<attrs>, attrs : attrs ) : string {
   val rows = head + body
   val td = if (attrs.hasClass("columns")) then "column" else "td"
   val breakable = attrs.hasBoolKey("breakable") || attrs.hasClass("long") /* legacy */
@@ -219,22 +215,22 @@ public function fmtLatexTable( context : inlineContext, head : list<row>, body :
   attrs.cssAttrs(tbody, if (breakable) then [("display","block")] else [])
 }
 
-public function fmtLatexPolyTable( context : inlineContext, ct : codeTable, attrs : attrs ) : string {
+public function fmtPolyTable( context : inlineContext, ct : codeTable, attrs : attrs ) : string {
   val table = attrs.getTableEnv
   val cols = list(1, ct.columns)
   val colDefs = cols.map(fun(col) { "\\column{C" + col.show + "}{l}%mdk\n" })
-  val rowss = ct.rows.map(fun(row) { fmtLatexPolyRow(row, 1) })
+  val rowss = ct.rows.map(fun(row) { fmtPolyRow(row, 1) })
   val content =
       "\\begin{mdmathpre}\\begin{pmboxed}%mdk\n" + colDefs.join("") + rowss.join("\\\\%mdk-2281\n") + "%mdk-2282\n\\end{pmboxed}\\end{mdmathpre}%mdk"
   texEnv("",content,attrs.addClass("para-block"))
 }
 
-function fmtLatexPolyRow(cells: list<ccell>, col: int) : string {
+function fmtPolyRow(cells: list<ccell>, col: int) : string {
   match(cells) {
     Nil -> ""
     Cons(cell, rest) -> {
       val rendered = "\\>[C" + col.show + "][l]" + cell.content
-      rendered + fmtLatexPolyRow(rest, col + cell.span)
+      rendered + fmtPolyRow(rest, col + cell.span)
     }
   }
 }
@@ -326,8 +322,9 @@ function fmtRow( td : string, row : row, colfmts : list<string>, defcolwidth : s
              Just(clr) -> "\\rowcolor" + fmtColorArg(clr)
            }
   rcolor + */
-  zipWith(row.cells,colfmts, fun(cell,colfmt) { fmtCell(td,cell.text.trim,cell.cellAttrs,colfmt,defcolwidth) }).join("&")
-    + "\\\\\n"
+  zipWith(row.cells, colfmts, fun(cell, colfmt) {
+    fmtCell(td, cell.text.trim, cell.cellAttrs, colfmt, defcolwidth)
+  }).join("&") + "\\\\\n"
 }
 
 
@@ -398,10 +395,6 @@ function texCmdX( cmd : string, body : string, attrs : attrs = attrsNone, extra 
 
 
 function texEnv( env : string, body : string, attrs : attrs = attrsNone ) : string {
-  texEnvPlain(env,body,attrs)
-}
-
-function texEnvPlain( env : string, body : string, attrs : attrs ) : string {
   //val envName = (if (attrs.texelem != "") then attrs.texelem else ("md" + env.normalizeCmd.capitalize))
   val envCmd = // "\\begin{" + envName + "}" + attrs.texAttrsX + "%mdk\n" +
                attrs.cssAttrs(body,[("display","block")],env) // + "%mdk\n" +
@@ -433,16 +426,7 @@ val rxCmdSpecial = regex(@"[^a-zA-Z0-9]")
 /* --------------------------------------
   Full header
 ---------------------------------------- */
-public function fmtLatexFull(body : string, options : options, metadata : dict<string>) : string {
-  fmtLatexFullX(body,options,metadata)
-}
-
-public function fmtLatexMathFull(body : string, options : options) : string {
-  fmtLatexFullX(body,options,dict())
-}
-
-function fmtLatexFullX(body : string, options : options, metadata1 : dict<string>) : string
-{
+public function fmtLatexFull(body : string, options : options, metadata1 : dict<string>) : string {
   val metadata0 = [("heading-base",options.headingBase.show),
                    ("tex-section-num", options.texSectionNum.show.toLower),
                    ("bib-label", "true"),
@@ -450,23 +434,22 @@ function fmtLatexFullX(body : string, options : options, metadata1 : dict<string
   val metadata = metadata0 + metadata1
 
   function expand(s) { s.expandKeys(metadata) }
-  function norm(p)   { normalize(options.sandbox,p) }
 
   val pkgs = (options.packages.expand + options.packagesx.expand).splitPaths
-  val doc0 = if (options.docClass != "") then options.docClass.norm
+  val doc0 = if (options.docClass != "") then options.docClass
              elif (options.headingBase >= 2) then "article" else "book"
   val doc  = doc0.expand
 
-  [fmtOptArg(@"\documentclass", doc, norm, ext = ".cls"),
+  [fmtOptArg(@"\documentclass", doc, ext = ".cls"),
    "% generated by Madoko, version " + options.version,
    "%mdk-data-line={1}",
    pkgs.map(fun(pkg) {
       match (pkg.find(rxTexFile)) {
         Just -> {
           log("files", changeExt(pkg,".tex") );
-          @"\input{" + pkg.norm + "}"
+          @"\input{" + pkg + "}"
         }
-        Nothing -> fmtOptArg(@"\usepackage",pkg,norm)
+        Nothing -> fmtOptArg(@"\usepackage", pkg)
       }
     }).join("\n"),
    options.texHeader.expand,
@@ -480,9 +463,14 @@ function fmtLatexFullX(body : string, options : options, metadata1 : dict<string
    ].join("\n")
 }
 
+public function fmtLatexMathFull(body : string, options : options) : string {
+  fmtLatexFull(body,options,dict())
+}
+
+
 val rxTexFile = regex(@"^[^\n\r\[\]]+?\.tex$",ignoreCase=True)
 
-function fmtOptArg( pre:string, pkg : string, norm : string -> string,  ext : string = ".sty" ) : string
+function fmtOptArg( pre:string, pkg : string,  ext : string = ".sty" ) : string
 {
   pre + (match(pkg.find(rxPkgOpt)) {
     Just(cap) -> {
@@ -491,14 +479,14 @@ function fmtOptArg( pre:string, pkg : string, norm : string -> string,  ext : st
         log("files", changeExt(pname,ext) );
       }
       (if (cap.groups[1] != "") then "[" + cap.groups[1] + "]" else "") +
-        "{" + (if (ext==".cls" || ext==".sty") then pname.noext else pname).norm + "}"
+        "{" + (if (ext==".cls" || ext==".sty") then pname.noext else pname) + "}"
     }
     Nothing  -> {
       val pname = pkg.trim
       if (pname.extname!="" || pname.dirname!="") {
         log("files", changeExt(pname,ext) )
       }
-      "{" + (if (ext==".cls" || ext==".sty") then pname.noext else pname).norm + "}"
+      "{" + (if (ext==".cls" || ext==".sty") then pname.noext else pname) + "}"
     }
   })
 }
@@ -562,7 +550,7 @@ function applyBlock( body : string, isBlock : bool, attrs : attrs ) : string {
     Just(info) -> "\n%mdk-data-line={" + info + "}"
     Nothing    -> ""
   }
-  if (isBlock) then lineinfo + "\n" + body.trim + "%mdk-565\n" else body
+  if (isBlock) then lineinfo + "\n" + body.trim + "%mdk\n" else body
 }
 
 function applyCmd( body : string, kvs : dict<string>, key : string ) : string {
@@ -621,6 +609,13 @@ function trimEnv( body : string, env : string, args : string = "" ) {
   body.trim.blockEnv(env,args)
 }
 
+// the unbrace here is used to obtain
+//   braceCmd("\\small", "{my text}")
+//   -->
+//   {\\small my text}
+//
+// instead of
+//   {\\small{my text}}
 function braceCmd( body : string, cmd : string ) : string {
   "{" + cmd.cmdconnect(body.unbrace) + "}"
 }
@@ -637,10 +632,16 @@ function unbrace( s : string ) : string {
 
 val rxCommentEnd = regex(@"(?:^|[^\\])%.*$")
 
+// this function defines how two tex strings are concatenated.
 function cmdconnect( cmd : string, s : string ) : string {
+  // if the first one ends with a "}", then we can safely concat
   if (cmd.isEmpty || s.isEmpty || cmd.endsWith("}")) then cmd + s
+  // the second one starts with a delimiter (that is not a letter, number or space), again safe to concat
   elif (s.contains(rxCmdOk)) then cmd + s
+  // the second one starts with a space, we add a {} to the command
+  // TODO I don't know why this would be necessary and would drop it.
   elif (s.contains(rxCmdSpace)) then cmd + "{}" + s
+  // Otherwise, it is potentially not safe to concatenate two snippets, so we insert a space
   else cmd + " " + s
 }
 val rxCmdOk = regex(@"^[^a-zA-Z0-9\s]")

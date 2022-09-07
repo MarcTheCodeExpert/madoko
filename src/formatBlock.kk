@@ -19,6 +19,8 @@ import block
 import inline
 import formatInline
 
+import latexFormatter
+
 
 public struct formatContext(
   inlineContext : inlineContext,
@@ -27,34 +29,30 @@ public struct formatContext(
   headingBase: int,
   langPrefix : string,
   pedantic : bool,
-  lineMap : lineMap,
-  fmt : formatter = FmtHtml
+  lineMap : lineMap
 )
 
 public function initialFormatContext( icontext : inlineContext, lineMap: lineMap,
-                                      headingBase : int, pedantic : bool, fmt : formatter ) {
-  FormatContext(icontext,dict(),Empty,headingBase,"language-",pedantic, lineMap, fmt)
+                                      headingBase : int, pedantic : bool ) {
+  FormatContext(icontext,dict(),Empty,headingBase,"language-",pedantic, lineMap)
 }
 
+/**
+ * Helper extracting the inline context
+ */
 function fmtEnv( context : formatContext, env : string, txt : string, attrs : attrs = attrsNone ) : string {
   context.inlineContext.fmtEnv(env,txt,attrs)
 }
 
 function fmtCmd( context : formatContext, cmd : string, txt : string, attrs : attrs = attrsNone ) : string {
-  (context.inlineContext.xfmtCmd)(context.inlineContext,cmd,txt,attrs)
-}
-
-function fmtText( context : formatContext, txt : string ) : string {
-  (context.inlineContext.xfmtCmd)(context.inlineContext,"",txt,attrsNone)
+  fmtCmd(context.inlineContext, cmd, txt, attrs)
 }
 
 function fmtTable( context : formatContext, head : list<row>, body : list<row>, colattrs : list<attrs>, attrs : attrs = attrsNone ) : string {
-  (context.inlineContext.xfmtTable)(context.inlineContext,head,body,colattrs,attrs)
+  fmtTable(context.inlineContext, head, body, colattrs, attrs)
 }
 
-function escapeMath( txt : string, fmt : formatter ) : string {
-  txt
-}
+function escapeMath( txt : string ) : string { txt }
 
 /* --------------------------------------
   Process inline text in the blocks
@@ -98,7 +96,7 @@ function formatBlocksAcc( context : formatContext, blocks : list<block>, acc : b
         }
         // For TeX output, an equation or list environment should be part of a paragraph
         // If a paragraph is followed by a `.para-block` we mark the paragraph as `.para-continue`
-        Para(text,attrs) | !(context.inlineContext.bench) -> {
+        Para(text,attrs) -> {
           match(rest) {
             Cons(Div(_,attrsd),_) | attrsd.hasClass("para-block") -> {
               formatBlocksAcc(context,rest,acc.append(formatBlock(context,Para(text,attrs.addClass("para-continue")))))
@@ -142,68 +140,41 @@ public function formatBlock( context : formatContext, block : block ) : div stri
        //"<p>" + formatInline(context.inlineContext,txt) + "</p>"
     }
 
-    Line(txt,_loose,attrs) -> {
-      formatInline(context.inlineContext, txt, attrs)
-    }
+    Line(txt,_loose,attrs) -> formatInline(context.inlineContext, txt, attrs)
 
     Blank -> ""
 
-    Code(txt,_,attrs) -> {
-      attrs.logDataLine
-      context.inlineContext.fmtCode( "pre", txt, attrs )
-    }
+    Code(txt,_,attrs) -> context.inlineContext.fmtCode( "pre", txt, attrs )
 
-    List(tagname,items,attrs) -> {
-      context.fmtEnv(tagname, formatBlocksX(context,items), attrs)
-    }
+    List(tagname,items,attrs) -> context.fmtEnv(tagname, formatBlocksX(context,items), attrs)
 
-    Item(bs,attrs)  -> {
-      context.fmtEnv("li",formatBlocksX(context,bs), attrs)
-    }
+    Item(bs,attrs)  -> context.fmtEnv("li",formatBlocksX(context,bs), attrs)
 
     Heading(d,txt,attrs) -> {
       context.fmtCmd("h" + min(6,max(1, d + context.headingBase -1)).show, formatInline(context.inlineContext,txt,attrs),
                      attrs.addKeyval("data-heading-depth",d.show))
     }
 
-    HLine(attrs) -> {
-      context.fmtCmd("hr", "", attrs)
-    }
+    HLine(attrs) -> context.fmtCmd("hr", "", attrs)
 
-    Source(txt,input,parentAttrs) -> {
-      parentAttrs.logDataLine
-      match(input) {
-        Pre       -> {
-          context.inlineContext.fmtCode("pre",txt)
-        }
-        Math      -> {
-          context.inlineContext.fmtMath(True,txt,parentAttrs.deriveMathAttrs)
-        }
-        MathPre   -> {
-          context.inlineContext.fmtMath(True,txt.mathPreBlock,parentAttrs.deriveMathAttrs)
-        }
+    Source(txt, input, parentAttrs) -> {
+      match (input) {
+        Pre       -> context.inlineContext.fmtCode("pre", txt)
+        Math      -> context.inlineContext.fmtMath(True, txt,parentAttrs.deriveMathAttrs)
+        MathPre   -> context.inlineContext.fmtMath(True, txt.mathPreBlock, parentAttrs.deriveMathAttrs)
         MathPoly  -> context.inlineContext.fmtPoly(txt, parentAttrs)
-        MathDefs  -> txt.escapeMath(context.fmt)
-        Markdown  -> context.inlineContext.formatInline(txt,parentAttrs)
-        Raw(monly)-> {
-          if (context.inlineContext.sanitize) then ""
-          else match(monly) {
-            Nothing -> txt + "\n"
-            Just(FmtTex) | context.fmt == FmtTex -> {
-              "%mdk-197\n" + txt + "\n"
-            }
-            Just(f) | f == context.fmt -> txt + "\n"
-            _       -> "\n"
-          }
-        }
+        MathDefs  -> txt.escapeMath
+        Markdown  -> context.inlineContext.formatInline(txt, parentAttrs)
+        Raw       -> txt + "\n"
         // these should not happen by now
         Tex  -> context.inlineContext.fmtEscapePre(txt)
       }
     }
 
-    Quote(bs,attrs) -> {
-      context.fmtEnv("blockquote", formatBlocksX(context,bs), attrs)
-    }
+    // Block comments are rendered as linebreak.
+    Comment(_) -> "\n"
+
+    Quote(bs,attrs) -> context.fmtEnv("blockquote", formatBlocksX(context,bs), attrs)
 
     Table(header,colstyles0,cells,attrs) -> {
       val colstyles = colstyles0.map( fun(colstyle) { context.inlineContext.defaults.matchRules("tc",colstyle) } )
@@ -248,8 +219,7 @@ public function formatBlock( context : formatContext, block : block ) : div stri
         }
         Nothing     -> ()
       }
-      if ((attrs.classes.isNil && attrs.keyvals.isNil && attrs.name=="") || attrs.notag || rnd.isRaw ||
-            (context.fmt==FmtTex && rnd.isMathDefs))
+      if ((attrs.classes.isNil && attrs.keyvals.isNil && attrs.name=="") || attrs.notag || rnd.isRaw || rnd.isMathDefs)
         then txt
         else context.fmtEnv("div",txt,attrs.addInputClass)
     }
@@ -260,7 +230,6 @@ public function formatBlock( context : formatContext, block : block ) : div stri
         val blks = context.tocBlocks[value.toLower].maybe([],id)
         linfo + formatBlocksX(context,blks)
       }
-      elif (name.toLower=="footnotes" && context.fmt.isFmtHtml) then linfo + formatBlock(context,context.footnoteBlock)
       else "" // formatBlock(context,Para("[" + name + "]\n"))
     }
 

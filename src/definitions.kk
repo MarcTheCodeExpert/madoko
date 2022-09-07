@@ -26,14 +26,13 @@ import texParser
 // Parse source into blocks (see "parseBlocks") and
 // process all definitions (see "parseDefinitions").
 public function parseBody( fcontext : formatContext,
-                           lineNo : int,
                            src : string,
                            metadata : metadata,
                            tocDepth : int,
                            secBase : int,
                            secDepth : int) :  div (list<block>,formatContext)
 {
-  parseDefinitions(fcontext, [Div([],(".madoko; line-adjust:0; line:" + lineNo.show).parseAttrs("body",src))],
+  parseDefinitions(fcontext, [Div([],(".madoko; line-adjust:0; line:0").parseAttrs("body",src))],
                    metadata,tocDepth,secBase,secDepth)
 }
 
@@ -42,44 +41,10 @@ public function parseBody( fcontext : formatContext,
 public function parseDefinitions(
                      fcontext : formatContext,
                      blocks : list<block>,
-                     metadata : metadata,
+                     mdata : metadata,
                      tocDepth : int = 0,
                      secBase : int = 1,
                      secDepth : int = 6 ) :  div (list<block>,formatContext)
-{
-  if (fcontext.inlineContext.bench)
-    then parseDefinitionsBench(fcontext,blocks)
-    else parseDefinitionsFull(fcontext,blocks,metadata,tocDepth,secBase,secDepth)
-}
-
-// Fast version for benchmarking
-function parseDefinitionsBench(
-                     fcontext : formatContext,
-                     blocks : list<block> ) :  div (list<block>,formatContext)
-{
-  val links  = mdict()
-
-  blocks.foreach fun(block) {
-    match(block) {
-      DefLink(id,link) -> {
-        links[id] := link
-      }
-      _ -> ()
-    }
-  }
-
-  (blocks, fcontext( fcontext.inlineContext.copy( links=links.freeze ), dict(), Empty)  )
-}
-
-
-// Full version that does attribute processing
-function parseDefinitionsFull(
-                     fcontext : formatContext,
-                     blocks : list<block>,
-                     mdata : metadata,
-                     tocDepth : int = 0,
-                     secBase : int,
-                     secDepth : int ) :  div (list<block>,formatContext)
 {
   val counters = mdict()
   val nested   = mdict()
@@ -108,7 +73,7 @@ function parseDefinitionsFull(
                   }
 
     // stop processing if display=none or not the right backend
-    if (!attrsd.shouldRender(fcontext.fmt)) return Empty
+    if (!attrsd.shouldRender) return Empty
 
     //adjust counters
     if (bname!="" && attrs.defaults && !attrs.hasClass("clearnum")) counters.adjustCounter(bname,"",nested)
@@ -159,7 +124,7 @@ function parseDefinitionsFull(
       _ -> attrsx
     }
 
-    // render
+    // render -- this itself does NOT recursively transform parse blocks!
     val rblock = block.setAttrs(attrsp,fcontext)
 
     // toc
@@ -277,6 +242,8 @@ type parinfo {
   ParBlock
 }
 
+// This function recursively maps `action` over the blocks in `blocks` and all
+// blocks that result from calling `action` itself.
 function mapBlocks( blocks : list<block>,
                     action : (parinfo,block) -> <st<h>,div|e> block  ) : <st<h>,div|e> list<block> {
   var previousPar := ParNone
@@ -286,7 +253,7 @@ function mapBlocks( blocks : list<block>,
     match(nblock) {
       Para(_,xs)  -> previousPar := (if (xs.hasClass("para-block")) then ParBlock else ParEnded)
       Div(_,xs)   | nblock.blockName == "figure" || xs.hasClass("float") -> ()  // leave as is
-      Source(input,Raw(Just(FmtHtml))) | input.startsWith("<!--") -> () // ignore comments too
+      Comment(_) -> ()
       Div(_,xs)   -> previousPar := (if (xs.hasClass("para-end")) then ParEnded elif (xs.hasClass("para-block")) then ParBlock else ParNone)
       Code(_,_,xs)-> previousPar := (if (xs.hasClass("para-end")) then ParEnded elif (xs.hasClass("para-block")) then ParBlock else ParNone)
       DefFootnote -> ()
@@ -311,6 +278,9 @@ function mapBlocks( blocks : list<block>,
 }
 
 // Sets new attributes for a block, and applies conversion to text
+// ------
+// Together with attributes/expandKeys this function is one of the most
+// important ones that define the semantics of Madoko.
 function setAttrs( block : block, xs : attrs, fcontext : formatContext ) : block {
   match(block) {
     HLine(_)            -> HLine(xs)
@@ -321,22 +291,13 @@ function setAttrs( block : block, xs : attrs, fcontext : formatContext ) : block
     Item(content)       -> transformItem(content,xs)
     Div( content  )     -> transformDiv(content, xs, fcontext )
     Quote( content )    -> Quote(content, xs)
-    Code( text, lang)   -> {
-      if (lang=="" && !(xs.input.isPre))
-        then transformDiv([Source(text)], xs(source=text,elem="pre"), fcontext )
-        else Code(xs.transformText(text,dict(),fcontext.inlineContext.metadata),lang,xs)
-    }
+    Code( text, lang)   -> Code(xs.transformText(text,dict(),fcontext.inlineContext.metadata),lang,xs)
     _                   -> block
   }
 }
 
-function shouldRender( attrs : attrs, fmt : formatter ) :bool {
-  if (attrs.lookupKey("display","") == "none") then False
-  else match (attrs.input) {
-    Markdown(Just(mfmt)) -> mfmt == fmt
-    Raw(Just(mfmt))      -> mfmt == fmt
-    _ -> True
-  }
+function shouldRender( attrs : attrs ) :bool {
+  attrs.lookupKey("display","") != "none"
 }
 
 function transformItem( blocks : list<block>, attrs: attrs ) : block {
@@ -348,12 +309,21 @@ function transformItem( blocks : list<block>, attrs: attrs ) : block {
 
 function transformDiv( blocks : list<block>, attrs : attrs, fcontext : formatContext )  : block {
   if (attrs.lookupKey("transform","") == "false") return Div(blocks,attrs)
-  match(blocks) {                       // needed for internal divs like definition lists
+
+  // We only perform the transformation, if the Div element does not have any blocks
+  // Divs that contain blocks are internally used to represent elements like definition lists.
+  // Those should not be transformed (Why exactly?)
+  match(blocks) {
     Nil              -> ()
-    Cons(Source,Nil) -> ()              // but with just one Source we should transform (look above for Code transforms)
+    // This was used to represent Code without a lanuage -- dropped this for simplification.
+    //Cons(Source,Nil) -> ()
     _ -> return Div(blocks,attrs)
   }
-  val txt = attrs.transformText(attrs.source,dict(),fcontext.inlineContext.metadata)
+
+  // get the source text of the div
+  val txt = attrs.transformText(attrs.source, dict(), fcontext.inlineContext.metadata)
+
+  // check for the input mode to parse the source
   match(attrs.input) {
     Tex -> {
       Div(txt.parseTex(attrs.name,"",fcontext.inlineContext.verbose >= 3)
@@ -548,7 +518,10 @@ function tocItems( headings : list<(int,attrs)>, outerDepth : int, labels : dict
 // counters
 //--------------------------------------------------------
 
-// expand counters in label,
+// Expand counters in label,
+// -------------------------
+// Just like in attributes/expandKeys, expanding here means substitution.
+// That is, counters of the form @myCounter are substituted for their value.
 function expandCounters( attrs : attrs, counters : mdict<h,counter>, metadata : dict<string>, nested : mdict<h,list<string>> ) : st<h> attrs {
   val xlab = attrs.label.expandKeys(attrs.source,attrs,dict(),metadata).expandCounter(counters, nested)
   val attrs1 = if (xlab != attrs.label) then attrs(label=xlab) else attrs
@@ -589,7 +562,7 @@ function adjustCounter(counters : mdict<h,counter>,name : string, value : string
 }
 
 // increment or set a count to a value
-function increment(counter :counter, xvalue : string) : counter {
+function increment(counter : counter, xvalue : string) : counter {
   val v = xvalue.toLower
   if (v=="++" || v=="") then counter(value=counter.value+1)
   elif (v=="--") then counter(value=counter.value-1)

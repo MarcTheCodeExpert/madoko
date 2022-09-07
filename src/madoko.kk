@@ -81,12 +81,54 @@ public struct blockInfo (
 ---------------------------------------- */
 
 // Takes source markdown input and returns formatted html
-public function markdown( src : string,
-                          options : options = initialOptions0,
-                          fmt : formatter = FmtTex
-                        ) : pure (string,options,list<block>,formatContext)
+public function markdown(
+  src0 : string,
+  options0 : options = initialOptions0) : pure (string,options,list<block>,formatContext)
 {
-  if (options.xmp) then markdownXmp(src,options,fmt) else markdownNormal(src,options,fmt)
+  // first normalize the input: all tabs to 4 spaces.
+  val (options1,src) = parseMeta(options0,src0.normalizeSource)
+  val options = options1(metadata = options1.metadata.completeAuthorKeys)
+  val xfull = options.full.maybe(True,id)
+
+  if (options.verbose>=4) then {
+    options.metadata.foreach fun(md) {
+      trace("  " + md.fst + ": " + md.snd.cutoff(80))
+    }
+    trace("parse blocks")
+  }
+  //val blocks = parseBlocks(src,options.citestyle,options.pedantic )
+
+  if (options.citeAll) then log("aux",@"\citation{*}")
+
+  // parse definitions
+  val icontext  = inlineContext(
+    options.metadata.dict,
+    options.embedinfos,
+    options.verbose,
+    options.highlight,
+    options.prettyAlign)
+
+  val (fblocks,fcontext)
+    = parseBody(initialFormatContext(icontext, options.lineMap, options.headingBase, options.pedantic),
+                src,
+                options.metadata, options.tocDepth,
+                options.sectionBase,options.sectionMax)
+
+  // parse inline elements
+  if (options.verbose>=3) then trace("parse inline")
+  val body = formatBlocks(fcontext,fblocks)
+  if (options.verbose>=3) then trace("generate output")
+
+  // generate full html/tex if needed
+  val res = if (xfull)
+             then fmtLatexFull(body,options,fcontext.inlineContext.metadata)
+             else body
+
+  // emit file references if necessary
+  if (!xfull)  then fmtLatexFull("",options,fcontext.inlineContext.metadata) else ""
+
+  if (options.verbose>=3) then trace("done")
+  (res,options,fblocks,fcontext)
 }
 
 /* --------------------------------------
@@ -107,7 +149,6 @@ public function analyze(
 
   val options = Options(
     version=version/version,
-    lineNoWeb=True,
     embedLimit=0,
     verbose=1,
     full=Just(False),
@@ -128,70 +169,9 @@ public function analyze(
   ()
 }
 
-
-// Process only markdown between <xmp> tags
-function markdownXmp( src : string, options : options = initialOptions0, fmt : formatter = FmtTex ) : pure (string,options,list<block>,formatContext)
-{
-  val commented = "~begin htmlraw\n" + src.replaceAll(rxxmp,"\n~end htmlraw\n$2\n~begin htmlraw\n") + "\n~end htmlraw"
-  markdownNormal(commented, options, fmt)
-}
-val rxxmp = regex(@"(<xmp\b" + tagContent + @">)([\s\S]*?)</xmp>")
-
 public function normalizeSource( src : string ) : string {
   val srcnl = if (src.contains('\r')) then src.replaceAll(regex(@"\r\n?"),"\n") else src
   srcnl.replaceAll(regex(@"\t"), "    ")
-}
-
-// Takes source markdown input and returns formatted html
-function markdownNormal( src0 : string, options0 : options = initialOptions0, fmt : formatter = FmtTex ) : pure (string,options,list<block>,formatContext)
-{
-  // first normalize the input: all tabs to 4 spaces.
-  val (options1,src) = parseMeta(options0,fmt,src0.normalizeSource)
-  val options = options1(metadata = options1.metadata.completeAuthorKeys)
-  val xfull = options.full.maybe(True,id)
-  val logo  = if (xfull && options.logo) then "\n\n~Begin LogoMadoko\n&LogoMadoko;\n~End LogoMadoko\n" else "\n"
-
-  if (options.verbose>=4) then {
-    trace("metadata: " + fmt.showFormatter)
-    options.metadata.foreach fun(md) {
-      trace("  " + md.fst + ": " + md.snd.cutoff(80))
-    }
-    trace("parse blocks")
-  }
-  //val blocks = parseBlocks(src,options.citestyle,options.bench,options.pedantic )
-
-  if (options.citeAll) then log("aux",@"\citation{*}")
-
-  // parse definitions
-  val icontext  = inlineContext(fmt,options.metadata.dict,
-                                    options.embedinfos,
-                                    options.sanitize,options.bench,options.verbose,
-                                    options.highlight,options.starBold,options.sandbox,options.prettyAlign)
-
-  val (fblocks,fcontext)
-    = parseBody(initialFormatContext(icontext,options.lineMap,
-                                      options.headingBase,options.pedantic,fmt),
-                options.lineNo,
-                src + logo,
-                options.metadata, options.tocDepth,
-                options.sectionBase,options.sectionMax)
-
-  // parse inline elements
-  if (options.verbose>=3) then trace("parse inline")
-  val body = formatBlocks(fcontext,fblocks)
-  if (options.verbose>=3) then trace("generate output")
-
-
-  // generate full html/tex if needed
-  val res = if (xfull)
-             then fmtLatexFull(body,options,fcontext.inlineContext.metadata)
-             else body
-
-  // emit file references if necessary
-  if (!xfull || !(fmt.isFmtTex))  then fmtLatexFull("",options,fcontext.inlineContext.metadata) else ""
-
-  if (options.verbose>=3) then trace("done")
-  (res,options,fblocks,fcontext)
 }
 
 // Export initial options for JavaScript usage
@@ -216,39 +196,16 @@ function logMetadata( mdata : metadata ) {
 
 
 // Create an ":inlineContext"
-public function inlineContext( fmt : formatter,
-                               metadata : dict<string>,
+public function inlineContext( metadata : dict<string>,
                                embedinfos : dict<embedinfo>,
-                               sanitize : bool = False,
-                               bench: bool = False,
                                verbose : int = 0,
                                highlight : bool = True,
-                               starBold : bool = False,
-                               sandbox: bool = False,
                                prettyAlign : int = 2 ) : inlineContext
 {
-  val isTex2  = match(metadata["tex2"]) {
-                  Just(value) -> value.toLower == "true"
-                  _ -> False
-                }
+  InlineContext( inlineGrammar, dict(), dict(), dict(), emptyRules,
 
-  InlineContext( inlineGrammar(fmt,bench), dict(), dict(), dict(),
-                 emptyRules,
                  metadata, embedinfos,
-                 sanitize, bench, verbose, highlight, starBold, sandbox, prettyAlign,
-                 fmtLatexCmd,
-                 fmtLatexEscape,
-                 fmtLatexLink,
-                 fmtLatexFootnote,
-                 fmtLatexTable,
-                 fmtLatexEnv,
-                 fmtLatexCodePlain,
-                 fmtLatexCodeToken,
-                 fmtLatexLineInfo,
-                 fmtLatexCodeTable,
-                 fmtLatexMathCmd, // math cmd
-                 fmtLatexMathEnv, // math env
-                 fmt
+                 verbose, highlight, prettyAlign
                )
 }
 
@@ -316,7 +273,7 @@ function labelInfo(elem: (string, label)): referenceInfo {
 
 // TODO change to labelRange
 function labelPosition(label : label) : maybe<position> {
-  match(label.labelAttrs.hasKey("data-line")) { 
+  match(label.labelAttrs.hasKey("data-line")) {
     Just(info) -> {
       val (path, lineno) = parseLineInfo(info)
       Just(Position(path.lastPathSegment, lineno))

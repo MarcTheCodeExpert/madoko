@@ -1,9 +1,9 @@
 Package      : [heading-base=&heading-base;]madoko
 
-~Equation    : label='[(@equation)]{.equation-label}' 
-                replace='[&label;]{.equation-before}&nl;~ Begin MathDisplay { color="&color;" math-needpdf="&math-needpdf;" line-adjust=0}&nl;&source;&nl;~ End MathDisplay&nl;' 
+~Equation    : label='[(@equation)]{.equation-label}'
+                replace='[&label;]{.equation-before}&nl;~ Begin MathDisplay { color="&color;" math-needpdf="&math-needpdf;" line-adjust=0}&nl;&source;&nl;~ End MathDisplay&nl;'
                 tight .para-block line-adjust=0
-~Math        : replace='~ Begin MathDisplay { color="&color;" math-needpdf="&math-needpdf;" line-adjust=0}&nl;&source;&nl;~ End MathDisplay&nl;' 
+~Math        : replace='~ Begin MathDisplay { color="&color;" math-needpdf="&math-needpdf;" line-adjust=0}&nl;&source;&nl;~ End MathDisplay&nl;'
                 tight .para-block
 
 ~TableFigure : label='[@tablefigure]{.table-label}' toc=tot .Floating float-env=table float-name=Table
@@ -53,7 +53,6 @@ Package      : [heading-base=&heading-base;]madoko
 
 ~Tex        : input=tex notag
 .TexRaw     : input=texraw
-.HtmlRaw    : input=htmlraw
 .MathInline : input=math
 ~MathDisplay: input=math .para-block
 ~MathPre    : input=mathpre .para-block
@@ -74,10 +73,10 @@ Package      : [heading-base=&heading-base;]madoko
 
 Defaults  : True
 
-.booktable:  
-  rule-top-width=2px rule-bottom-width=2px 
-  rule-mid-width=1.35px thead-tr-font-weight=normal   
-  rule-top-sep=4pt rule-bottom-sep=4pt rule-mid-sep=3pt 
+.booktable:
+  rule-top-width=2px rule-bottom-width=2px
+  rule-mid-width=1.35px thead-tr-font-weight=normal
+  rule-top-sep=4pt rule-bottom-sep=4pt rule-mid-sep=3pt
   thead-tr-1-padding-top=3pt thead-tr-padding-bottom=3pt
 
 ~Bibitem: replace='?if &bib-search-url; && &searchterm;\
@@ -143,16 +142,16 @@ thm-caption-end     : &&;br;
 
 ~TitleBlock,~TitleHeader  : tight
 ~Title,~Subtitle          : tight
-~TitleNote,~TitleFooter   : tight  
+~TitleNote,~TitleFooter   : tight
 ~Authors,~AuthorRow,~Author: tight
 ~AuthorName,~AuthorAddress: tight
-~AuthorEmail,~AuthorNote  : tight 
+~AuthorEmail,~AuthorNote  : tight
 
 @nomaketitle ~TitleBlock,~TitleHeader,~Authors,~TitleFooter: .align-center
 @nomaketitle ~TitleBlock,~Title,~Subtitle,~TitleNote:.para-block
 
 @nomaketitle ~Authors     : width=80%
-@nomaketitle ~AuthorRow   : .columns margin-top=2ex width=100% 
+@nomaketitle ~AuthorRow   : .columns margin-top=2ex width=100%
 @nomaketitle ~Author      : .column text-align=center
 @nomaketitle .AuthorEmail : .email
 

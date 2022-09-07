@@ -23,29 +23,27 @@ import expression
 
 // Parse the meta-data at the start of a document,
 // and return updated options and the rest of the document
-public function parseMeta( options0 : options, fmt : formatter, txt : string ) : div (options, string)
+public function parseMeta( options0 : options, txt : string ) : div (options, string)
 {
   // read initial metadata
   val (txt1,lineCount0) = stripInitialWhite(txt)
-  val (mdata1,rest,lineCount) = parsePlainMeta(txt1, fmt, options0.lineMap, verbose=options0.verbose >= 4, lines=lineCount0 )
+  val (mdata1,rest,lineCount) = parsePlainMeta(txt1, options0.lineMap, verbose=options0.verbose >= 4, lines=lineCount0 )
   // read further <!--meta sections
   val mdatas = rest.findAll( rxMetaSection ).list.map fun(cap) {
     val (metaTxt,lineCountMeta) = stripInitialWhite(cap.groups[1] + "\n")
     val lineNo = lineCount + rest.substr(0,cap.index).count("\n") + lineCountMeta
-    val (mdatax,_,_) = parsePlainMeta(metaTxt, fmt, options0.lineMap, [], options0.verbose >= 4, lineNo )
+    val (mdatax,_,_) = parsePlainMeta(metaTxt, options0.lineMap, [], options0.verbose >= 4, lineNo )
     mdatax
   }
   val mdata2 = mdata1 + mdatas.concat
-  val mdataDef  = parsePlainMeta(defaultMeta(options0,fmt), fmt,options0.lineMap, verbose=options0.verbose >= 4).fst
+  val mdataDef  = parsePlainMeta(defaultMeta(options0), options0.lineMap, verbose=options0.verbose >= 4).fst
   // set options from metadata
   val mdataFull = mdataDef + options0.cmetadata + mdata2
   val mdataModed = mdataFull.evalConditionals(options0.verbose)
   val options2 = options0.fromMeta(mdataModed)
   val options = options2( metadata = mdataModed )
 
-  if (options.lineNo > 0)
-   then (options(lineNo = options.lineNo + lineCount),rest)
-   else (options,rest)
+  (options, rest)
 }
 val rxMetaSection = regex(@"^<!--meta *\n([\s\S]*?)^-->", multiline=True)
 
@@ -95,16 +93,16 @@ function makeKey(k,pre,value,rawvalue,lineMap,lines,isMatching) : ckey {
    else Support( pre, [ckey], translateLine(lineMap,lines))
 }
 
-function parsePlainMeta( txt : string, fmt : formatter, lineMap: lineMap, metadata : cmetadata = [], verbose : bool = False, lines : int = 0 ) : div (cmetadata,string,int)
+function parsePlainMeta( txt : string, lineMap: lineMap, metadata : cmetadata = [], verbose : bool = False, lines : int = 0 ) : div (cmetadata,string,int)
 {
   match(txt.find(rxMetaComment)) {
     Just(cap) -> {
       if (cap.groups[1].bool) {
-        parsePlainMeta(cap.groups[2].unindent + cap.groups[3] + txt.substr1(cap.next), fmt, lineMap, metadata, verbose,
+        parsePlainMeta(cap.groups[2].unindent + cap.groups[3] + txt.substr1(cap.next), lineMap, metadata, verbose,
                        lines + txt.substr(0,cap.index).count("\n") + 1)
       }
       else {
-        parsePlainMeta(txt.substr1(cap.next), fmt, lineMap, metadata, verbose,
+        parsePlainMeta(txt.substr1(cap.next), lineMap, metadata, verbose,
                         lines + txt.substr(0,cap.next).count("\n"))
       }
     }
@@ -112,12 +110,12 @@ function parsePlainMeta( txt : string, fmt : formatter, lineMap: lineMap, metada
       match(txt.find(rxSupports)) {
         Just(cap) -> {
           if (verbose) trace("meta data: @if " +  cap.groups[1].trim + "{" + cap.groups[2] + "}{" )
-          val (body,rest,_) = parsePlainMeta(cap.groups[2].unindent.trim, fmt, lineMap, [], verbose, lines + cap.groups[1].count("\n") )
+          val (body,rest,_) = parsePlainMeta(cap.groups[2].unindent.trim, lineMap, [], verbose, lines + cap.groups[1].count("\n") )
           if (rest != "") warning("invalid metadata: " + rest.cutoff(40))
           if (verbose) trace("}" )
           val support = Support(cap.groups[1].trim, body, translateLine(lineMap,lines+1))
           val lines2 = txt.substr(0,cap.next).count("\n")
-          parsePlainMeta( txt.substr1(cap.next), fmt, lineMap, Cons(support,metadata), verbose, lines + lines2 )
+          parsePlainMeta( txt.substr1(cap.next), lineMap, Cons(support,metadata), verbose, lines + lines2 )
         }
         Nothing -> match(txt.find(rxMeta)) {
           Nothing   -> {
@@ -134,7 +132,7 @@ function parsePlainMeta( txt : string, fmt : formatter, lineMap: lineMap, metada
             val pre = if (cap.groups[1] != "") then "@" + cap.groups[1] + " " else ""
             val kvs = rawkeys.map( fun(k) { makeKey(k,pre,value,rawvalue,lineMap,lines,(cap.groups[5]=="}")) } );
             val lines2 = txt.substr(0,cap.next).count("\n")
-            parsePlainMeta( txt.substr1(cap.next), fmt,lineMap, kvs + metadata, verbose, lines+lines2 )
+            parsePlainMeta( txt.substr1(cap.next), lineMap, kvs + metadata, verbose, lines+lines2 )
           }
         }
       }
@@ -223,7 +221,12 @@ function flatten( mdata:cmetadata, modes:mdict<h,constant>, verbose : int ) : <d
 function evaluateBool( cond : string, modes : mdict<h,constant>, mdata : cmetadata, verbose : int  , current : list<string> = []) : <div,st<h>> bool {
   var recursive := False
   function lookup(v,display) {
-    if (current.contains(v)) {
+
+    // TODO actually delete!
+    if (v=="html") {
+      trace("'html' is disabled in this LaTeX version of Madoko; defaults to False.")
+      String("False")
+    } elif (current.contains(v)) {
       recursive := True
       String("False")
     }
@@ -305,14 +308,12 @@ function containsKey( mdata : cmetadata, key : string ) : div bool {
 // Default metadata
 // --------------------------------------------------------------
 
-function defaultMeta( options : options, fmt : formatter ) : string {
-  ( [ "Tex: False", "Html: False", "Prelude: prelude",
+function defaultMeta( options : options ) : string {
+  ( [ "Prelude: prelude",
       // formatter
-      fmt.showFormatter + ": True",
+      "Tex: True",
       // full?
-      "Full: " + options.full.maybe(True,id).show,
-      // legacy for old prelude
-      @"bibliography { 'bibdata:'" + options.bib.splitPaths.join(",") + "'; tex-elem:mdBibliography }",
+      "Full: " + options.full.maybe(True,id).show
     ] +
     ["\n"]
   ).join("\n")

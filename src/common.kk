@@ -203,9 +203,9 @@ public function definitionId( s : string ) : string {
 }
 val rxspaces = regex(@"\s+")
 
-public function newLink( href : string, title : string = "", linkattrs : attrs = attrsNone, linkid : string = "", bench : bool ) : link {
+public function newLink( href : string, title : string = "", linkattrs : attrs = attrsNone, linkid : string = "" ) : link {
   Link(href,title,
-       if (!bench && href.startsWith("#"))
+       if (href.startsWith("#"))
         then linkattrs.addClass("localref")
         else linkattrs,
        linkid)
@@ -271,19 +271,19 @@ public type input {
   MathDefs    // TeX math definitions
   MathPoly    // Column aligned tex math
   Tex         // TeX code that should be parsed (i.e for the bibliography)
-  Raw( only: maybe<formatter> = Nothing ) // Raw content for some backend (or all)
-  Markdown( only: maybe<formatter> = Nothing )  // Markdown -- perhaps only for some backend
+  Raw         // Raw content
+  Markdown    // Markdown -- the standard input mode
 }
 
 public function showInput( r : input ) {
   match(r) {
-    Pre -> "pre"
-    MathPre -> "mathpre"
-    Math -> "math"
+    Pre      -> "pre"
+    MathPre  -> "mathpre"
+    Math     -> "math"
     MathDefs -> "mathdefs"
     MathPoly -> "mathpoly"
-    Tex-> "tex"
-    Raw(monly) -> "raw(" + (monly.maybe("",showFormatter)) + ")"
+    Tex      -> "tex"
+    Raw      -> "raw"
     Markdown -> "markdown"
   }
 }
@@ -312,7 +312,7 @@ public struct attrs  (
   replacers : list<string> = [],    // replacers
   notag   : bool = False,           // suppress output of tag
   tight   : bool = False,           // suppress first paragraph
-  input   : input = Markdown(),       // how to input the content
+  input   : input = Markdown,       // how to input the content
 
   elem    : string = "",            // element name
   texelem : string = "",            // element name used for TeX command or environment

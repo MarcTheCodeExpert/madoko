@@ -134,6 +134,18 @@ public function fmtMath( context : inlineContext, isDisplay : bool, txt0 : strin
     else context.fmtMathEnv("div",  left+txt+right+rightx, attrsd)
 }
 
+public function fmtMathPlain( context : inlineContext, txt0 : string, attrs : attrs = attrsNone) : string {
+  val class  = "math-pre-inline"
+  val attrsd = context.applyDefaults("span",attrs.addClass(class))
+
+  // This is very dangerous! Trimming lines from potentially generated code
+  // might result in
+  //   foo%mdk\n -> foo%mdk
+  // TODO not sure what it means to NOT trim lines here
+  val txt    = txt0.trimLines
+  context.fmtMathEnv("div", txt, attrsd)
+}
+
 function logMathLocation(digest: string, attrs: attrs) {
   val start = attrs.lookupKey("data-line-start", "")
   val end   = attrs.lookupKey("data-line-end", "")
@@ -586,6 +598,7 @@ function fmtSpan( context : inlineContext, txt0 : string, attrs : attrs ) : stri
     Pre      -> context.fmtCode("", txt, attrsd) // todo: use sname as env name?
     Math     -> context.fmtMath(False,txt.mathUnline,attrsd)
     MathPre  -> context.fmtMath(False,txt.mathUnline.mathPre,attrsd)
+    MathPreInline -> context.fmtMath(False,txt.mathUnline.mathPre,attrsd)
     Raw -> context.fmtCmd("span", txt, attrsd )
     Markdown | attrsd.notag -> context.formatInline(txt)
     // MathDefs, Tex, Markdown

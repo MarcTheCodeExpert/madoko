@@ -162,6 +162,7 @@ public function formatBlock( context : formatContext, block : block ) : div stri
         Pre       -> context.inlineContext.fmtCode("pre", txt)
         Math      -> context.inlineContext.fmtMath(True, txt,parentAttrs.deriveMathAttrs)
         MathPre   -> context.inlineContext.fmtMath(True, txt.mathPreBlock, parentAttrs.deriveMathAttrs)
+        MathPreInline -> context.inlineContext.fmtMathPlain(txt.mathPreX, parentAttrs.deriveMathAttrs)
         MathPoly  -> context.inlineContext.fmtPoly(txt, parentAttrs)
         MathDefs  -> txt.escapeMath
         Markdown  -> context.inlineContext.formatInline(txt, parentAttrs)

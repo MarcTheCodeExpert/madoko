@@ -270,6 +270,7 @@ public type input {
   Math        // TeX math
   MathDefs    // TeX math definitions
   MathPoly    // Column aligned tex math
+  MathPreInline // Inline preformatted math
   Tex         // TeX code that should be parsed (i.e for the bibliography)
   Raw         // Raw content
   Markdown    // Markdown -- the standard input mode
@@ -282,6 +283,7 @@ public function showInput( r : input ) {
     Math     -> "math"
     MathDefs -> "mathdefs"
     MathPoly -> "mathpoly"
+    MathPreInline -> "mathpreinline"
     Tex      -> "tex"
     Raw      -> "raw"
     Markdown -> "markdown"

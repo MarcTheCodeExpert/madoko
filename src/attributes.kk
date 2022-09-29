@@ -267,6 +267,7 @@ public function extendAttrs( attrs0 : attrs, attrsStr : string, source : string 
               elif (v=="tex") then Tex
               elif (v=="math") then Math
               elif (v=="mathpre") then MathPre
+              elif (v=="mathpreinline") then MathPreInline
               elif (v=="mathdefs") then MathDefs
               elif (v=="mathpoly") then MathPoly
               elif (v=="normal") then Markdown

@@ -89,7 +89,7 @@ function formatInlineAcc( context : inlineContext, acc : builder<h>, txt : strin
 
 
 
-function mathPreX( txt : string ) : string
+public function mathPreX( txt : string ) : string
 {
   val ignorearg = @"(?:mbox|begin|end|(?:text|math|varmath)(?:kw|id|rm|sf|tt|up|it|sl|sc|bf|md|lf|normal|bb|cal|scr|bbm|bbmss|bbmtt|ds|frak|swab|goth)?)"
   txt.replaceAll(regex(@"(\\" + ignorearg + @"{(?:[^\\}]|\\.)*}|\\[a-zA-Z@]+ *|\\[^a-z@])|^( +)|( +)|(\n)",multiline=True), fun(cap) {

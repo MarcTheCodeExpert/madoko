@@ -18,6 +18,7 @@ import * as $std_os_env from './std_os_env.mjs';
 import * as $std_os_flags from './std_os_flags.mjs';
 import * as $compat_path from './compat_path.mjs';
 import * as $compat_env from './compat_env.mjs';
+import * as $compat_array from './compat_array.mjs';
 import * as $std_num_int64 from './std_num_int64.mjs';
 import * as $std_num_float64 from './std_num_float64.mjs';
  

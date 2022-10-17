@@ -1,10 +1,11 @@
 module includes 
 
-import v1/std/text/string
-import v1/std/log
-import std/text/regex
-import std/os/path
-import std/data/dict
+import compat/string
+import compat/log
+import compat/regex
+import compat/path
+import compat/dict
+import compat
 import common
 import options
 import block    // for lineMap
@@ -15,22 +16,41 @@ struct snippet(
   startLine: int,
   content  : string
 )
+pub val options_out = Options()
+val includes  = retMdictIncl()
+val snippets  = retMdictSnip()
+val outName_out = ""
+
+fun retMdictSnip() {
+  unsafe-total{
+    val md: mdict<global,snippet> = mdict()
+    md
+  }
+  
+}
+
+fun retMdictIncl() {
+  unsafe-total{
+    val md: mdict<global,string> = mdict()
+    md
+  }
+}
 
 pub fun include( text : string, fast : bool, inName : string, outName : string, dirs : list<string>, options : options, action : (string,lineMap) -> <io|e> a ) : <io|e> a {
   if (fast) then return action(text,End) 
 
   val includes : mdict<global,string> = mdict()
   val snippets : mdict<global,snippet> = mdict()
+  
 
   val snippetStart = text.find(rxFragStart).maybe(options.extractStart,fn(cap) { cap.groups[1].trim })
   val snippetEnd   = text.find(rxFragEnd).maybe(options.extractEnd,fn(cap) { cap.groups[1].trim })
 
   val rxSnippetStart = regex(snippetStart, multiline=True, ignoreCase=True)
   val rxSnippetEnd = regex(snippetEnd, multiline=True, ignoreCase=True)
-
+  
   //trace("snippet start: " + rxSnippetStart.source)
   //trace("snippet end: " + rxSnippetEnd.source)
-
   fun warning( msg, lineNo = 0, fileName = "") {
     options.printErr( "warning: " + 
              (if (fileName != "" || lineNo > 0)
@@ -40,7 +60,7 @@ pub fun include( text : string, fast : bool, inName : string, outName : string, 
   }
 
   fun saveSnippet( name, fname, lineNo, content) : io () {
-    if (snippets[name].isJust) {
+    if (snippets[name].is-just) {
       warning( "snippet " + name + " is redefined", lineNo, fname )
     }
     snippets[name] := Snippet(fname, lineNo, content)
@@ -114,9 +134,9 @@ pub fun include( text : string, fast : bool, inName : string, outName : string, 
                       }
                     }
       val content = ("~ Begin Bibl { id: \"" + auxStem + "\"; bib-id: \"" + auxStem + "\"; bbl-file: \"" + fileName + "\" }\n" + 
-                     (if (bbl=="") then "~ Begin Bibliography { .bib-numeric; caption:\"0\"}\n~ End Bibliography\n" 
-                                   else bbl) + 
-                     "\n~ End Bibl\n")
+                      (if (bbl=="") then "~ Begin Bibliography { .bib-numeric; caption:\"0\"}\n~ End Bibliography\n" 
+                                    else bbl) + 
+                      "\n~ End Bibl\n")
       (fileName,content)
     }
     else {
@@ -142,7 +162,7 @@ pub fun include( text : string, fast : bool, inName : string, outName : string, 
               Just -> ()
               Nothing -> {
                 includes[fileName] := content
-                content.lines.list.findSnippets(fileName) // record snippets only once
+                content.lines.findSnippets(fileName) // record snippets only once
               }
             }
             (fileName,content)
@@ -152,8 +172,10 @@ pub fun include( text : string, fast : bool, inName : string, outName : string, 
     }
   }
 
-  val rxRange = regex(@"^(\d+)(?:--?(\d+))?$")
-  val rxSnippetName = regex(@"^(\w+)$")
+  
+
+  val rxRange = regex(r"^(\d+)(?:--?(\d+))?$")
+  val rxSnippetName = regex(r"^(\w+)$")
   fun findRange( incfile: string, incline: string, range : string, content : string, fname : string, lineNo : int ) : io (string,int,string)
   {
     if (range=="") return (incfile, 1,content)
@@ -181,28 +203,17 @@ pub fun include( text : string, fast : bool, inName : string, outName : string, 
       Just(cap) -> {
         val start = cap.groups[1].parseInt().maybe(1,id)
         if (start<=0) return (incfile,0,"")
-        val end   = max(start-1,cap.groups[2].parseIntDefault(start + 1000000))
-        val fragment = content.lines.list.drop(start-1).take((end - start) + 1).join("\n")
+        val end   = max(start - 1,cap.groups[2].parseIntDefault(start + 1000000))
+        val fragment = content.lines.drop(start - 1).take((end - start) + 1).join("\n")
         //trace("include: " + start.show + "," + end.show + ":\n" + fragment)
         (incfile,start,fragment)
       }
     }
   }
 
-  fun processIncludes( txt : string, fname : string ) : io (int,lineMap,string)
-  {
-    val prelude = match(txt.findAll(rxPrelude).list.reverse) { // find last prelude definition
-      Cons(cap) -> {
-        val value = cap.groups[1]
-        val lvalue = value.toLower()
-        if (lvalue=="none" || lvalue=="clear" || lvalue=="false") then "" else value
-      }
-      Nil -> options.prelude
-    }
-    processIncludesRec(txt,fname,[fname],1,prelude)
-  }
+  
 
-  fun processIncludeLine( fname : string, line : string, included : list<string>, lineMap, lineNo : int, extra : int = 0 ) : io (string,lineMap,int)
+  fun processIncludeLine( fname : string, line : string, included : list<string>, lineMap, lineNo : int, extra : int = 0 ) : io (int,lineMap,string)
   {
     val mbincname = match (line.find(rxInclude)) {
       Just(cap) -> Just((cap.matched,cap.groups.firstMatched(1,3),cap.groups[4]))
@@ -217,22 +228,120 @@ pub fun include( text : string, fast : bool, inName : string, outName : string, 
         val (fileName0,content) = readInclude(incname,fname,lineNo,included)
         val (fileName,istart,fragment) = fileName0.findRange(matched, range, content, fname, lineNo);
         if (istart<=0) 
-         then ("",lineMap,1)
-         else {
-          val (lcount,lmap,icontent) = processIncludesRec( fragment, fileName, Cons(fileName,included), istart )
+          then ("",lineMap,1)
+          else {
+          val (icontent,lmap,lcount) = fn( txt: string = fragment, fname: string = fileName, included: list<string> = Cons(fileName,included), start: int = istart, prelude: string = "" ) : io (int,lineMap,string)
+            if (start<=0) return (0,End,"")
+            var lineNo := start - 1
+            var lineCount := 0
+            var lineMap := End
+            val preludeTxt = 
+              if (prelude != "") {
+                val (icontent,lmap,lcount) = processIncludeLine(fname,"[INCLUDE=\"" + prelude + "\"]",included,lineMap,lineNo,1)
+                lineCount := lineCount + lcount 
+                lineMap   := lmap
+                ((if (options.xmp) then "<xmp>" + icontent + "</xmp>" else icontent) + "\n")
+              }
+              else ""
+              val ls = txt.lines.map fn(line) {
+                lineNo := lineNo + 1;
+                //lineCount := lineCount + 1;
+                val (icontent,lmap,lcount) = processIncludeLine(fname,line,included,lineMap,lineNo)
+                lineCount := lineCount + lcount
+                lineMap   := lmap
+                
+                /*
+                match (line.find(rxInclude)) {
+                  Nothing -> line
+                  Just(cap) -> {
+                    val incname = cap.groups.firstMatched(1,4)
+                    val (fileName0,content) = readInclude(incname,fname,lineNo)
+                    val (fileName,istart,fragment)  = fileName0.findRange(cap.matched, cap.groups[5], content, fname, lineNo);
+                    if (istart<=0) then "" else {
+                      val (lcount,lmap,icontent) = processIncludesRec( fragment, fileName, istart )
+                      lineMap := Include(lineNo,istart,lcount,fileName,lmap,lineMap)
+                      lineCount := lineCount + lcount - 1
+                      //trace("include: " + lineNo.show + ", " + lcount.show + ", " + lineCount.show)
+                      icontent
+                    }
+                  }
+                }
+                */
+                icontent      
+              }
+          (lineCount, lineMap.reverse, preludeTxt + ls.unlines)
+          }
           val lineMapNew = Include(lineNo,istart,lcount+extra,fileName,lmap,lineMap)
           //lineCount := lineCount + lcount - 1
           //trace("include: " + lineNo.show + ", " + lcount.show + ", " + lineCount.show)
-          (icontent, lineMapNew, lcount)
+          (lcount, lineMapNew, icontent)
+          }
+          
         }
       }
     }
+
+  fun processIncludes( txt : string, fname : string ) : io (int,lineMap,string)
+  {
+    val prelude = match(txt.findAll(rxPrelude).list.reverse) { // find last prelude definition
+      Cons(cap) -> {
+        val value = cap.groups[1]
+        val lvalue = value.toLower()
+        if (lvalue=="none" || lvalue=="clear" || lvalue=="false") then "" else value
+      }
+      Nil -> options.prelude
+    }
+    //processIncludesRec(txt,fname,[fname],1,prelude)
+    val (lineCount, lineMap_final, preludeTxt_final) = fn(included: list<string> = [fname], start: int = 1) : io (int,lineMap,string) {
+      if (start<=0) return (0,End,"")
+      var lineNo := start - 1
+      var lineCount := 0
+      var lineMap := End
+      val preludeTxt = 
+        if (prelude != "") {
+          val (icontent,lmap,lcount) = processIncludeLine(fname,"[INCLUDE=\"" + prelude + "\"]",included,lineMap,lineNo,1)
+          lineCount := lineCount + lcount 
+          lineMap   := lmap
+          ((if (options.xmp) then "<xmp>" + icontent + "</xmp>" else icontent) + "\n")
+        }
+        else ""
+      val ls = txt.lines.map fn(line) {
+        lineNo := lineNo + 1;
+        //lineCount := lineCount + 1;
+        val (icontent,lmap,lcount) = processIncludeLine(fname,line,included,lineMap,lineNo)
+        lineCount := lineCount + lcount
+        lineMap   := lmap
+        icontent
+        /*
+        match (line.find(rxInclude)) {
+          Nothing -> line
+          Just(cap) -> {
+            val incname = cap.groups.firstMatched(1,4)
+            val (fileName0,content) = readInclude(incname,fname,lineNo)
+            val (fileName,istart,fragment)  = fileName0.findRange(cap.matched, cap.groups[5], content, fname, lineNo);
+            if (istart<=0) then "" else {
+              val (lcount,lmap,icontent) = processIncludesRec( fragment, fileName, istart )
+              lineMap := Include(lineNo,istart,lcount,fileName,lmap,lineMap)
+              lineCount := lineCount + lcount - 1
+              //trace("include: " + lineNo.show + ", " + lcount.show + ", " + lineCount.show)
+              icontent
+            }
+          }
+        }
+        */
+      }
+
+    (lineCount, lineMap.reverse, preludeTxt + ls.unlines)
+    }
+    (lineCount, lineMap_final, preludeTxt_final)
+  
   }
+  
 
   fun processIncludesRec( txt : string, fname : string, included : list<string>, start : int = 1, prelude : string = ""  ) : io (int,lineMap,string)
   {
     if (start<=0) return (0,End,"")
-    var lineNo := start-1
+    var lineNo := start - 1
     var lineCount := 0
     var lineMap := End
     val preludeTxt = 
@@ -272,15 +381,23 @@ pub fun include( text : string, fast : bool, inName : string, outName : string, 
     (lineCount, lineMap.reverse, preludeTxt + ls.unlines)
   }
 
+
   val (_lcount,lmap,content) = processIncludes(text,inName)
   action(content,lmap)
 }
-val rxInclude = regex(@"^ {0,3}\[(?:INCLUDE *(?:= *(?:""([^""\n]+)""|'([^'\n]+)'|([^\s:=\]]+)) *)?(?:[:] *([\w\-]+))?)\] *(?=\n|$)",multiline=True)
-val rxBib     = regex(@"^ {0,3}\[BIB *(?:= *(?:""([^""\n]+)""|'([^'\n]+)'|([^\s:=\]]+)) *)?\] *(?=\n|$)",multiline=True)
-val rxPrelude = regex(@"^ {0,3}[Pp]relude[ \t]*:[ \t]*(\S*)[ \t\r]*(\n|$)",multiline=True)
 
-val rxFragStart = regex(@"^Fragment *Start *: *(.+)$", ignoreCase=True, multiline=True)
-val rxFragEnd   = regex(@"^Fragment *End *: *(.+)$", ignoreCase=True, multiline=True)
+
+
+
+
+
+
+val rxInclude = regex(r#"^ {0,3}\[(?:INCLUDE *(?:= *(?:""([^""\n]+)""|'([^'\n]+)'|([^\s:=\]]+)) *)?(?:[:] *([\w\-]+))?)\] *(?=\n|$)"#,multiline=True)
+val rxBib     = regex(r#"^ {0,3}\[BIB *(?:= *(?:""([^""\n]+)""|'([^'\n]+)'|([^\s:=\]]+)) *)?\] *(?=\n|$)"#,multiline=True)
+val rxPrelude = regex(r"^ {0,3}[Pp]relude[ \t]*:[ \t]*(\S*)[ \t\r]*(\n|$)",multiline=True)
+
+val rxFragStart = regex(r"^Fragment *Start *: *(.+)$", ignoreCase=True, multiline=True)
+val rxFragEnd   = regex(r"^Fragment *End *: *(.+)$", ignoreCase=True, multiline=True)
 
 pub fun searchReadTextFileDef( fname : string, def : string, dirs : list<string>, ext : string = "", required : bool = True ) : io string {
   match(trySearchReadTextFile(fname,dirs,ext,required)) {

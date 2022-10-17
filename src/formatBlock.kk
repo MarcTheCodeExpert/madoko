@@ -12,6 +12,7 @@ module formatBlock
 import compat/string
 import compat/regex
 import compat/dict
+import compat/log
 
 
 import common
@@ -66,7 +67,7 @@ fun escapeMath( txt : string, fmt : formatter ) : string {
 // Format blocks into html and parse and format all inline elements
 pub fun formatBlocks( ctx : formatContext, blocks : list<block> ) : string
 {
-  unsafeNoDiv{ formatBlocksX(ctx,blocks) }
+  unsafe-no-div{ formatBlocksX(ctx,blocks) }
 }
 
 pub fun formatBlocksX( ctx : formatContext, blocks : list<block> ) : div string
@@ -251,7 +252,7 @@ pub fun formatBlock( ctx : formatContext, block : block ) : div string
         }
         Nothing     -> ()
       }
-      if ((attrs.classes.isNil && attrs.keyvals.isNil && attrs.name=="") || attrs.notag || rnd.isRaw ||
+      if ((attrs.classes.is-nil && attrs.keyvals.is-nil && attrs.name=="") || attrs.notag || rnd.isRaw ||
             (ctx.fmt==FmtTex && rnd.isMathDefs))
         then txt
         else ctx.fmtEnv("div",txt,attrs.addInputClass)
@@ -286,9 +287,22 @@ fun deriveMathAttrs( parentAttrs : attrs ) {
 
 fun formatRows( rows : list<row>,
                       colstyles : list<attrs>, ctx : formatContext,
-                      attrs : attrs, isBody : bool ) : list<row>
+                      attrs : attrs, isBody : bool ) : <div> list<row>
 {
-  if (rows.isNil) then return Nil
+  if (rows.is-nil) then return Nil
+
+  fun filterKeyvals( keyvals : list<(string,string)>, prefixes : list<string> ) : list<(string,string)> {
+      keyvals.filter-map fn(kv) {
+        val (key,value) = kv
+        match (prefixes.reverse.find(fn(pre) { key.startsWith(pre) })) {
+          Just(pre) -> {
+            val skey = key.substr(pre.length)
+            if (skey.find(rxSubSelect).is-just) then Nothing else Just((skey,value))
+          }
+          Nothing -> Nothing
+        }
+      }
+  }
 
   fun defaultCellKeyvals( colNum : int, rowstyle : attrs, isLast : bool ) : list<(string,string)> {
     val mod  = if (colNum.even) then "even-" else "odd-"
@@ -296,13 +310,13 @@ fun formatRows( rows : list<row>,
     val idx  = colNum.show + "-"
     val prefixes = ["cell-","col-","col-" + mod, "col-" + idx,
                     elem, elem + mod, elem+idx] +
-                   (if (isLast) then ["col-last-",elem + "last-"] else [])
+                    (if (isLast) then ["col-last-",elem + "last-"] else [])
     val allkvs  = attrs.keyvals + rowstyle.keyvals
     val kvs = allkvs.filterKeyvals(prefixes)
     kvs
   }
 
-  fun formatRow( colNum : int, row : list<cell>, cols : list<attrs>, rowstyle : attrs ) : list<cell> {
+  fun formatRow( colNum : int, row : list<cell>, cols : list<attrs>, rowstyle : attrs ) : <div> list<cell> {
     match(row) {
       Cons(cell,rs) -> {
         match(cols) {
@@ -320,29 +334,29 @@ fun formatRows( rows : list<row>,
                                     else {
                                       val colstylex = colstyle0.addKeyval("column-span",colspan.show)
                                       val colstyley = if (isBody) then colstylex
-                                                       else colstylex.addKeyval("text-align",rowstyle.hasKey("text-align").maybe("center",id))
+                                                        else colstylex.addKeyval("text-align",rowstyle.hasKey("text-align").maybe("center",id))
                                       match(cs.drop(colspan - 2)) {
-                                       Cons(colstylez,csx)
-                                           -> (colstyley.addClasses(colstylez.classes.filter(noalign))
+                                        Cons(colstylez,csx)
+                                            -> (colstyley.addClasses(colstylez.classes.filter(noalign))
                                                         .addKeyval("column-span",colspan.show),
-                                               csx )
-                                       Nil -> (colstyley.addKeyval("column-span",colspan.show),Nil)
+                                                csx )
+                                        Nil -> (colstyley.addKeyval("column-span",colspan.show),Nil)
                                       }
                                     }
             // horizontal line?
             val (colstyle2,txt2,elemName) = if (txt1.contains(rxDashes))
                                     then (colstyle1.addClass("cell-line"), "","tl")
-                                   elif (txt1.contains(rxDDashes))
+                                    elif (txt1.contains(rxDDashes))
                                     then (colstyle1.addClass("cell-double-line"), "","tl")
                                     else (colstyle1,txt1,if (isBody) then "td" else "th")
 
-            val isLast = rs.isNil
+            val isLast = rs.is-nil
             val extraClasses = [if (colNum.even) then "col-even" else "col-odd"] +
                                 (if (isLast) then ["col-last"] else []) +
                                 (if (colNum==1) then ["col-first"] else [])
 
             val colstyle3 = colstyle2.addClasses(extraClasses)
-                                     .addKeyval("data-col",colNum.show)
+                                      .addKeyval("data-col",colNum.show)
             val colstyle4 = colstyle3.addKeyvals(defaultCellKeyvals(colNum,rowstyle,isLast))
             val colstyle5 = ctx.inlineContext.defaults.matchRules(elemName, colstyle4)
             val elem = Cell(ctx.inlineContext.formatInline(txt2,colstyle5), colstyle5)
@@ -357,38 +371,38 @@ fun formatRows( rows : list<row>,
 
 
   fun addRowKey( target : string, key : string, test : bool ) : list<(string,string)> {
-    if (!test) then [] else {
-      match(attrs.hasKey(key)) {
-        Nothing -> []
-        Just(value) -> [(target,value)]
+      if (!test) then [] else {
+        match(attrs.hasKey(key)) {
+          Nothing -> []
+          Just(value) -> [(target,value)]
+        }
       }
-    }
   }
 
   fun filterKeyvals( keyvals : list<(string,string)>, prefixes : list<string> ) : list<(string,string)> {
-    keyvals.filterMap fn(kv) {
-      val (key,value) = kv
-      match (prefixes.reverse.find(fn(pre) { key.startsWith(pre) })) {
-        Just(pre) -> {
-          val skey = key.substr(pre.length)
-          if (skey.find(rxSubSelect).isJust) then Nothing else Just((skey,value))
+      keyvals.filterMap fn(kv) {
+        val (key,value) = kv
+        match (prefixes.reverse.find(fn(pre) { key.startsWith(pre) })) {
+          Just(pre) -> {
+            val skey = key.substr(pre.length)
+            if (skey.find(rxSubSelect).is-just) then Nothing else Just((skey,value))
+          }
+          Nothing -> Nothing
         }
-        Nothing -> Nothing
       }
-    }
   }
 
   fun defaultKeyvals( hasLine :  bool, rowNum : int, isLast : bool ) : list<(string,string)> {
-    val mod = if (rowNum.even && rowNum != 0) then "even-" else "odd-"
-    val row = if (isBody) then "tbody-tr-" else "thead-tr-"
-    val idx = rowNum.show + "-"
-    val prefixes = ["tr-","tr-" + mod,"tr-" + idx,
-                    row, row + mod, row + idx ] +
-                   (if (isLast) then ["tr-last-",row + "last-"] else [])
-    val kvs = attrs.keyvals.filterKeyvals(prefixes)
-    if (hasLine)
-     then kvs.filter(fn(kv){kv.fst.startsWith("background-color") || kv.fst.startsWith("rule") })
-     else kvs
+      val mod = if (rowNum.even && rowNum != 0) then "even-" else "odd-"
+      val row = if (isBody) then "tbody-tr-" else "thead-tr-"
+      val idx = rowNum.show + "-"
+      val prefixes = ["tr-","tr-" + mod,"tr-" + idx,
+                      row, row + mod, row + idx ] +
+                    (if (isLast) then ["tr-last-",row + "last-"] else [])
+      val kvs = attrs.keyvals.filterKeyvals(prefixes)
+      if (hasLine)
+      then kvs.filter(fn(kv){kv.fst.startsWith("background-color") || kv.fst.startsWith("rule") })
+      else kvs
   }
 
   fun containsDashes( row : row ) : bool {

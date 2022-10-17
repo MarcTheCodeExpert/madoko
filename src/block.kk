@@ -45,6 +45,13 @@ pub type block {
   Special( name : string, value : string = "", attrs : attrs = attrsNone )  // Special blocks, like [TOC] or [FOOTNOTES]
 }
 
+pub fun isLine(x: block): bool {
+  match(x) {
+    Line -> True
+    _ -> False
+  }
+}
+
 /* --------------------------------------
  Block grammar
 ---------------------------------------- */

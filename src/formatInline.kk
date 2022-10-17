@@ -44,7 +44,7 @@ val linkreg  = linktxt + r"((?:\(" + linkhref + r"\)|\s*\[" + xlinkid + r"\])?(?
 
 pub val rxLink = regex(linkreg)
 
-fun inlineCoreGrammar( fmt : formatter ) : grammar<string,inlineContext> {
+fun inlineCoreGrammar( fmt : formatter ) : <div> grammar<string,inlineContext> {
   val inGrammer = [
   Rule("itext",     regex(r"^" + normal + "+"), inlineNormal ),
 
@@ -84,17 +84,19 @@ fun inlineCoreGrammar( fmt : formatter ) : grammar<string,inlineContext> {
   inGrammer
 }
 
-val benchGrammar
-  = inlineCoreGrammar(FmtHtml).stripFancyRules
+fun benchGrammar(): <div> grammar<string,inlineContext> {
+  inlineCoreGrammar(FmtHtml).stripFancyRules
+}
 
-fun stripFancyRules( g : grammar<string,inlineContext> ) : grammar<string,inlineContext> {
+
+fun stripFancyRules( g : grammar<string,inlineContext> ) : <div> grammar<string,inlineContext> {
   g.ruleReplace(True, Rule("itext", regex("^" + normalbench + "+"), inlineNormal ))
    .ruleReplace(True, Rule("iquotes", regex(r#"^[""']"#), inlineQuot ))
    .ruleRemove(True,["idashes","ielipsis","tex","iguil","textcite"])
 }
 
 pub fun inlineGrammar( fmt : formatter, bench : bool = False ) {
-  if (bench) then benchGrammar else inlineCoreGrammar(fmt)
+  if (bench) then benchGrammar() else inlineCoreGrammar(fmt)
 }
 
 
@@ -118,27 +120,27 @@ fun inlineEntity( cap : matched, ctx : inlineContext ) : <div> string {
   }
 }
 
-fun inlineNormal( cap : matched, ctx : inlineContext ) : string {
+fun inlineNormal( cap : matched, ctx : inlineContext ) : <div> string {
   ctx.fmtText(cap.matched)
 }
 
-fun inlineMath( cap : matched, ctx : inlineContext ) : string {
+fun inlineMath( cap : matched, ctx : inlineContext ) : <div>string {
   val attrs = cap.groups[2].parseAttrs("math-inline");
   ctx.fmtSpan( cap.groups[1], attrs ); // can be taken over by the user
 }
 
 
-fun inlineMathBlock( cap : matched, ctx : inlineContext ) : string {
+fun inlineMathBlock( cap : matched, ctx : inlineContext ) : <div> string {
   val attrsd = ctx.defaults.matchRules("math-display",attrsNone)
   ctx.fmtMath(True,cap.groups[1],attrsd)
 }
 
-pub fun fmtMath( ctx : inlineContext, isDisplay : bool, txt0 : string, attrs : attrs = attrsNone) : string {
+pub fun fmtMath( ctx : inlineContext, isDisplay : bool, txt0 : string, attrs : attrs = attrsNone) : <div> string {
   val (kind,left,right,rightx) =
     if (attrs.hasClass("snippet"))
      then (if (isDisplay) then "Display" else "Inline","","","")
     elif (isDisplay)
-     then ("Display","\\[" + (if (attrs.name.isEmpty) then "" else "\\label{" + attrs.name + "}"),"\n\\]","%mdk-136\n")  // add newline because of comments in latex (and we do use trimLines on the content)
+     then ("Display","\\[" + (if (attrs.name.is-empty) then "" else "\\label{" + attrs.name + "}"),"\n\\]","%mdk-136\n")  // add newline because of comments in latex (and we do use trimLines on the content)
      else ("Inline","$","$","")
   val lkind  = kind.toLower
   val class  = "math-" + lkind
@@ -201,17 +203,17 @@ fun inlineDel( cap : matched, ctx ) : <div> string {
   ctx.fmtCmd("del", formatInline(ctx,cap.groups[1]), ctx.defaults.matchRules("del",attrsNone))
 }
 
-fun inlineTag( cap : matched, ctx : inlineContext ) : string {
+fun inlineTag( cap : matched, ctx : inlineContext ) : <div> string {
   inlineTagX(cap.matched,ctx)
 }
 
-fun inlineTagX( tag : string, ctx : inlineContext ) : string {
+fun inlineTagX( tag : string, ctx : inlineContext ) : <div> string {
   if (ctx.sanitize || !(ctx.fmt.isFmtHtml))
    then "\\mdline{inlineTagX}"
    else tag
 }
 
-fun inlineTagCode( cap : matched, ctx : inlineContext ) : string {
+fun inlineTagCode( cap : matched, ctx : inlineContext ) : <div> string {
   // TODO: we do not process fully inside <code> for now; remove this later
   // when koka documentation generates markdown instead of html.
   val ictx = ctx.copy(grammar = ctx.grammar.stripFancyRules)
@@ -220,7 +222,7 @@ fun inlineTagCode( cap : matched, ctx : inlineContext ) : string {
    inlineTagX(cap.groups[3],ctx)
 }
 
-fun inlineCode( cap : matched, ctx ) : string {
+fun inlineCode( cap : matched, ctx ) : <div> string {
   val txt0 = cap.groups[2]
   val txt1 = if (txt0.startsWith(" `")) then txt0.substr(1) else txt0
   val txt  = if (txt0.endsWith("` ")) then txt1.substr(0,txt1.length - 1) else txt1
@@ -232,7 +234,7 @@ fun inlineCode( cap : matched, ctx ) : string {
           attrs.addClasses(["code","code" + cap.groups[1].length.show]))
 }
 
-pub fun fmtCode( ctx : inlineContext, env0 : string, txt : string, attrs0 : attrs = attrsNone ) : string {
+pub fun fmtCode( ctx : inlineContext, env0 : string, txt : string, attrs0 : attrs = attrsNone ) : <div> string {
   val env = if (env0=="") then "code" else env0
   //trace("code: " + env + ": " + attrs0.show)
   val lang   = attrs0.hasKey("language").maybe("",id)
@@ -267,7 +269,7 @@ pub fun fmtCode( ctx : inlineContext, env0 : string, txt : string, attrs0 : attr
           }
   }
 
-  fun colorToken( classes : list<string>, content : string ) : <div|_e> string {
+  fun colorToken( classes : list<string>, content : string ) : <div> string {
     if (plain || classes.is-nil) then content else {
       val pclasses = if (!pretty) then classes else Cons("ptoken",classes.filter(fn(cname) { cname!="token" } ))
       val tokAttrs = ctx.formatDefaults( attrsNone(elem="span").addClasses(pclasses) )
@@ -291,11 +293,12 @@ pub fun fmtCode( ctx : inlineContext, env0 : string, txt : string, attrs0 : attr
     });
   }
 
-  fun codeEscape( code : string ) : <div|_e> string {
-    ctx.fmtCodeEscaped(txt,colorize,colorToken,attrs).fst   // possibly tokenize with colors, and process escapes
+  fun codeEscape( code : string ) : <div> string {
+
+    unsafe-total{ctx.fmtCodeEscaped(txt,colorize,colorToken,attrs).fst}   // possibly tokenize with colors, and process escapes
   }
 
-  fun codeUnescape( ecode : string, col : int ) : string {
+  fun codeUnescape( ecode : string, col : int ) : <div> string {
     fmtCodeUnescape( ecode, fn(s,startLine) {
       if (plain) then ctx.fmtCodePlain(s) else colorCode(s, startLine /* col==0 */)
     })
@@ -331,7 +334,7 @@ fun htmlUnescape( s : string ) : string {
 }
 val rxEntity = regex( r"&(#[xX]\d+|\w+);" )
 
-fun fmtCodeUnescape( txt : string, fmt : (string,bool) -> string ) : string {
+fun fmtCodeUnescape( txt : string, fmt : (string,bool) -> <div> string ) : <div> string {
   fun unspan(caps : list<matched>, i : int ) {
     match(caps) {
       Nil -> txt.substr(i).fmt(i==0)
@@ -346,7 +349,7 @@ fun fmtCodeUnescape( txt : string, fmt : (string,bool) -> string ) : string {
 val rxEscaped = regex(r"<ESCAPED\b[^>]*>([\s\S]*?)</ESCAPED>")
 
 fun fmtCodeEscaped( ctx : inlineContext, txt : string, format : (string,maybe<a>) -> (string,maybe<a>),
-                         formatToken : (list<string>,string) -> string,
+                         formatToken : (list<string>,string) -> <div> string,
                          attrs : attrs = attrsNone, st : maybe<a> = Nothing ) : <div|_e> (string,maybe<a>) {
   if (attrs.hasClass("noescape")) return format(txt,st)
 
@@ -410,7 +413,7 @@ fun inlineOther( cap : matched, ctx ) : string {
   ctx.fmtEscape(cap.matched)
 }
 
-fun inlineEscape( cap : matched, ctx : inlineContext ) : string {
+fun inlineEscape( cap : matched, ctx : inlineContext ) : <div> string {
   val txt = cap.groups[1]
   if (txt==" ") then ctx.formatInline("&nbsp;")
   elif (txt=="\n") then inlineBreak(cap,ctx)
@@ -438,15 +441,15 @@ fun inlineAutoLink( cap : matched, ctx : inlineContext ) : <div> string {
   }
 }
 
-fun inlineLink( cap : matched, ctx : inlineContext ) : string {
+fun inlineLink( cap : matched, ctx : inlineContext ) : <div> string {
   inlineLinkEx(False,cap,ctx)
 }
 
-fun inlineImg( cap : matched, ctx : inlineContext ) : string {
+fun inlineImg( cap : matched, ctx : inlineContext ) : <div> string {
   inlineLinkEx(True,cap,ctx)
 }
 
-fun inlineLinkEx( isImage : bool, cap : matched, ctx : inlineContext ) : string {
+fun inlineLinkEx( isImage : bool, cap : matched, ctx : inlineContext ) : <div> string {
   // cap.groups = 1:optional spaces, 2:txt, 3:everything after it,
   //               AND 4:href, 5:href-title, OR 6: linkid, AND 7:span attributes
   val attrs  = if (cap.groups.matchedOn(7)) then ctx.formatAttrs(cap.groups[7].parseAttrs) else attrsNone
@@ -481,7 +484,7 @@ struct cite(
   ordinal : int
 )
 
-fun inlineLinkNoRef( isImage:bool, spaces : string, nbsp : string, txt : string, after : string, attrs : attrs, ctx : inlineContext ) : string
+fun inlineLinkNoRef( isImage:bool, spaces : string, nbsp : string, txt : string, after : string, attrs : attrs, ctx : inlineContext ) : <div> string
 {
   // TODO do not look up citation in ctx.labels[lab] (since we don't use BIB)!
   val citationss
@@ -498,7 +501,7 @@ fun inlineLinkNoRef( isImage:bool, spaces : string, nbsp : string, txt : string,
                       })
 
   //trace("citations: " + citationss.concat.join("-"))
-  if (citationss.isCons && citationss.all(isCons)) {
+  if (citationss.is-cons && citationss.all(is-cons)) {
     // Citations link: set defaults as "citations" block
     val attrsc = attrs.addKeyval("target-element","bibitem")
     val attrsd = ctx.defaults.matchRules("citations",attrsc)
@@ -520,7 +523,7 @@ fun inlineCite( cap : matched, ctx : inlineContext ) : <div> string {
 }
 
 fun inlineLinkRef( isImage : bool, spaces : string, nbsp : string, txt : string, after : string, ref : string,
-                          attrs : attrs, ctx : inlineContext ) : string
+                          attrs : attrs, ctx : inlineContext ) : <div> string
 {
   val id = if (ref != "") then ref.definitionId else txt.definitionId
   val elemName = if (isImage) then "img" else "a"
@@ -563,7 +566,7 @@ fun inlineLinkRef( isImage : bool, spaces : string, nbsp : string, txt : string,
               if (txt.startsWith("#")) {
                 warning( "reference to missing id: " + txt)
               }
-              elif (ctx.labels[id].isJust) {
+              elif (ctx.labels[id].is-just) {
                 warning( "possibly forgot '#' to reference id: " + txt)
               }
               else {
@@ -597,7 +600,7 @@ fun formatDefaults( ctx : inlineContext, attrs : attrs, elemName : string = "" )
 }
 
 // Format a span element
-fun fmtSpan( ctx : inlineContext, txt0 : string, attrs : attrs ) : string {
+fun fmtSpan( ctx : inlineContext, txt0 : string, attrs : attrs ) : <div> string {
   val sname   = if (attrs.elem != "") then attrs.elem
                 else match (attrs.classes) {
                   Cons(cname,_) -> cname
@@ -627,9 +630,9 @@ fun fmtSpan( ctx : inlineContext, txt0 : string, attrs : attrs ) : string {
   }
 }
 
-pub fun fmtPoly( ctx : inlineContext, txt0 : string, attrs : attrs = attrsNone) : string {
+pub fun fmtPoly( ctx : inlineContext, txt0 : string, attrs : attrs = attrsNone) : <div> string {
   // add newline because of comments in latex (and we do use trimLines on the content)
-  val (kind,left,right,rightx) = ("Display","\\[" + (if (attrs.name.isEmpty) then "" else "\\label{" + attrs.name + "}"),"\n\\]","%mdk-614\n")
+  val (kind,left,right,rightx) = ("Display","\\[" + (if (attrs.name.is-empty) then "" else "\\label{" + attrs.name + "}"),"\n\\]","%mdk-614\n")
 
   // idea: have special math mode where we
   // 1) compute the alignment

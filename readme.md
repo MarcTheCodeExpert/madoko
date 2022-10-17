@@ -80,6 +80,9 @@ Files:
 - formatInlie.kk (Lines: 34, 35, 38, 40, 50, 65, 66, 67, 92, 376)
 - latexFormatter.kk (Lines: 191,192,193)
 - cssFormatter.kk (lines: 120, 126)
+- texParser.kk (lines: 179)
+- texParserItems.kk (lines: 871)
+- includes.kk (lines: 278,279)
 
 
 ### Effect Problems

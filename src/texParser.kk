@@ -13,11 +13,11 @@
 // recognized in order to allow author names with correct accent characters.
 module texParser
 
-import std/data/dict
-import v1/std/text/string
-import std/text/regex
-import v1/std/crypto
-import std/os/path
+import compat/dict
+import compat/string
+import compat/regex
+import compat
+import compat/path
 import common
 import entity
 import texCommon
@@ -176,7 +176,7 @@ val texGrammar : grammar<string,texContext> = [
 
 
   Rule("texsize",     regex(r"^\{\\(" + texFontSizes + r")\b\s*" + texargs + r"\}"), texFontSize ),
-  Rule("texaccent",   regex(r"^\\([`'^""~]|[vrc]\b)\s*" + texarg), texAccent ),
+  Rule("texaccent",   regex(r#"^\\([`'^""~]|[vrc]\b)\s*"# + texarg), texAccent ),
   Rule("texdash",     regex(r"^---?"), texDash ),
 
   // Rule("texchar",     regex(r"^\\(" + rxtexchar + r")\b"), texChar ),
@@ -230,7 +230,7 @@ val texGrammar : grammar<string,texContext> = [
 
 
 // Parse TeX elements and return Markdown
-pub fun parseTex( txt : string, id: string = "", bststyle: string = "", verbose : bool = False, ignore : bool = True  ) : string
+pub fun parseTex( txt : string, id: string = "", bststyle: string = "", verbose : bool = False, ignore : bool = True  ) : <div> string
 {
   val normTxt = txt.replaceAll(regex(r"\r\n?"),"\n").replaceAll(regex(r"\t"),"   ")
   val md = contextParse(TexContext(texGrammar,bststyle,ignore,id,contextParse), normTxt)
@@ -238,15 +238,15 @@ pub fun parseTex( txt : string, id: string = "", bststyle: string = "", verbose 
   md
 }
 
-fun contextParse( context : texContext, txt : string ) : string {
+fun contextParse( ctx : texContext, txt : string ) : <div> string {
   if (txt=="") then "" else {
-    parseTexAcc(context,builder(), txt.unbrace)
+    parseTexAcc(ctx,builder(), txt.unbrace)
   }
 }
 
-fun parseTexAcc( context : texContext, acc : builder<h>, txt : string ) : st<h> string
+fun parseTexAcc( ctx : texContext, acc : builder<h>, txt : string ) : <div,st<h>> string
 {
   if (txt=="") return acc.build
-  val (s,next,_) = matchRules(context.grammar,context,txt,id)
-  parseTexAcc(context, acc.append(s), txt.substr1(next))
+  val (s,next,_) = matchRules(ctx.grammar,ctx,txt,id)
+  parseTexAcc(ctx, acc.append(s), txt.substr1(next))
 }

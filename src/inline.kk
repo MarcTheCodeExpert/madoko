@@ -206,12 +206,11 @@ val rxDataLine = regex( r"^(.*:)?(\d+)$")
 // changed effect st<_h> --> <div,alloc<_h>, read<_h>,write<_h>|e>
 fun formatInlineAcc( ctx : inlineContext, acc : builder<h>, txt : string) : <div,st<h>> string
 {
-  unsafe-total (fn() {
+  unsafe-total {
     if (txt=="") return acc.build
     val (s,next,_) = matchRules(ctx.grammar,ctx,txt,id)
     formatInlineAcc(ctx, acc.append(s), txt.substr1(next))
-    }
-  )
+  }
 }
 
 

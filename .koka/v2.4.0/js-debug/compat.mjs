@@ -271,20 +271,20 @@ export function contains(s, c) /* (s : string, c : char) -> bool */  {
  
  
 // monadic lift
-export function _mlift2271_dropWhile(_y_2233) /* forall<a,e> ((list<a>, list<a>)) -> e list<a> */  {
-  return _y_2233.snd;
+export function _mlift2748_dropWhile(_y_2697) /* forall<a,e> ((list<a>, list<a>)) -> e list<a> */  {
+  return _y_2697.snd;
 }
  
 export function dropWhile(xs, predicate) /* forall<a,e> (xs : list<a>, predicate : (a) -> e bool) -> e list<a> */  {
    
-  var x_2279 = $std_core.span(xs, predicate);
+  var x_2758 = $std_core.span(xs, predicate);
   if ($std_core_hnd._yielding()) {
-    return $std_core_hnd.yield_extend(function(_y_2233 /* (list<349>, list<349>) */ ) {
-      return _y_2233.snd;
+    return $std_core_hnd.yield_extend(function(_y_2697 /* (list<382>, list<382>) */ ) {
+      return _y_2697.snd;
     });
   }
   else {
-    return x_2279.snd;
+    return x_2758.snd;
   }
 }
  
@@ -303,6 +303,12 @@ export function error(_arg1) /* forall<a> (string) -> exn a */  {
 }
  
  
+// Returns "true" if the integer `i`  is an even number.
+export function even(i) /* (i : int) -> bool */  {
+  return $std_core._int_eq(($std_core._int_mod(i,2)),0);
+}
+ 
+ 
 /*
   Return the extension (including the `.`)  
   `extname("foo.ext") == ".ext"`, `extname("bla.") == "."`, `extname("bla") == ""` 
@@ -312,11 +318,15 @@ export function extname(p) /* (p : string) -> string */  {
   return path.extname(p);
 }
  
+export function floor(d) /* (d : float64) -> float64 */  {
+  return Math.floor(d);
+}
+ 
  
 // Fold a list from the right, i.e. `foldr([1,2],0,(+)) == 1+(2+0)` 
 // Note, "foldr" is less efficient than "foldl" as it reverses the list first.
 export function foldr(xs, z, f) /* forall<a,b,e> (xs : list<a>, z : b, f : (a, b) -> e b) -> e b */  {
-  return $std_core.foldl($std_core.reverse(xs), z, function(x /* 374 */ , y /* 378 */ ) {
+  return $std_core.foldl($std_core.reverse(xs), z, function(x /* 447 */ , y /* 451 */ ) {
       return f(y, x);
     });
 }
@@ -329,16 +339,8 @@ export function gformat(value, format) /* forall<a> (value : a, format : string)
   return $gformat(value, format);
 }
  
- 
-// Does string `s`  contain the character `c`  ?
-export function indexOf(s, c) /* (s : string, c : char) -> int */  {
-  return ((s).indexOf(c));
-}
- 
- 
-// Does string `s`  contain the string `sub`  ?
-export function indexOf_1(s, sub) /* (s : string, sub : string) -> int */  {
-  return ((s).indexOf(sub));
+export function isNothing(x) /* forall<a> (x : maybe<a>) -> bool */  {
+  return (x === null);
 }
  
 export function isWhite(c) /* (c : char) -> bool */  {
@@ -373,10 +375,20 @@ var maxInt = 2147483647;
 export var maxListStack;
 var maxListStack = 200;
  
+export function mbstring(ms) /* (ms : maybe<string>) -> string */  {
+  return (ms === null) ? "" : ms.value;
+}
+ 
  
 // Compute an md5 hash of a string.
 export function md5(s) /* (s : string) -> string */  {
   return $md5(s);
+}
+ 
+ 
+// Returns "true" if the integer `i`  is an odd number.
+export function odd(i) /* (i : int) -> bool */  {
+  return $std_core._int_ne(($std_core._int_mod(i,2)),0);
 }
  
  
@@ -463,37 +475,37 @@ export function align(s, width, char) /* (s : string, width : int, char : option
   }
   else {
      
-    var n0_2101 = $std_core._int_sub(width,n);
+    var n0_2553 = $std_core._int_sub(width,n);
      
-    if ($std_core._int_le(n0_2101,0)) {
-      var left_2099 = "";
+    if ($std_core._int_le(n0_2553,0)) {
+      var left_2551 = "";
     }
     else {
       var _x0 = (char !== undefined) ? char : 0x0020;
-      var left_2099 = makeString(n0_2101, _x0);
+      var left_2551 = makeString(n0_2553, _x0);
     }
-    return $std_core._lp__plus__plus__1_rp_(left_2099, s);
+    return $std_core._lp__plus__plus__1_rp_(left_2551, s);
   }
 }
  
  
 // monadic lift
-export function _mlift2272_concat(_y_2238) /* forall<a,e> (list<list<a>>) -> e list<a> */  {
-  return $std_core.concat(_y_2238);
+export function _mlift2749_concat(_y_2702) /* forall<a,e> (list<list<a>>) -> e list<a> */  {
+  return $std_core.concat(_y_2702);
 }
  
  
 // Concatenate the result lists from applying a function to all elements
 export function concat(xs, f) /* forall<a,b,e> (xs : list<a>, f : (a) -> e list<b>) -> e list<b> */  {
    
-  var x_2285 = $std_core.map_5(xs, f);
+  var x_2764 = $std_core.map_5(xs, f);
   if ($std_core_hnd._yielding()) {
-    return $std_core_hnd.yield_extend(function(_y_2238 /* list<list<892>> */ ) {
-      return $std_core.concat(_y_2238);
+    return $std_core_hnd.yield_extend(function(_y_2702 /* list<list<998>> */ ) {
+      return $std_core.concat(_y_2702);
     });
   }
   else {
-    return $std_core.concat(x_2285);
+    return $std_core.concat(x_2764);
   }
 }
  
@@ -505,27 +517,143 @@ export function fill(s, width, char) /* (s : string, width : int, char : optiona
   }
   else {
      
-    var n0_2108 = $std_core._int_sub(width,n);
+    var n0_2560 = $std_core._int_sub(width,n);
      
-    if ($std_core._int_le(n0_2108,0)) {
-      var right_2107 = "";
+    if ($std_core._int_le(n0_2560,0)) {
+      var right_2559 = "";
     }
     else {
       var _x0 = (char !== undefined) ? char : 0x0020;
-      var right_2107 = makeString(n0_2108, _x0);
+      var right_2559 = makeString(n0_2560, _x0);
     }
-    return $std_core._lp__plus__plus__1_rp_(s, right_2107);
+    return $std_core._lp__plus__plus__1_rp_(s, right_2559);
   }
 }
  
  
 // monadic lift
-export function _mlift2273_foreachUntil(action, xx, _y_2239) /* forall<a,b,e> (action : (a) -> e maybe<b>, xx : list<a>, maybe<b>) -> e maybe<b> */  {
-  if (_y_2239 === null) {
+export function _mlift2750_op(_acc, pred, xx, _y_2703) /* forall<a,b,e> (ctail<list<b>>, pred : (a) -> e maybe<b>, xx : list<a>, maybe<b>) -> e list<b> */  {
+  if (_y_2703 === null) {
+    return _ctail_filterMap(xx, pred, _acc);
+  }
+  else {
+     
+    var _ctail_2686 = undefined;
+     
+    var _ctail_2687 = $std_core.Cons(_y_2703.value, _ctail_2686);
+    return _ctail_filterMap(xx, pred, $std_core_types._ctail_link(_acc,_ctail_2687,({value: _ctail_2687, field: "tail"})));
+  }
+}
+ 
+ 
+// monadic lift
+export function _mlift2751_op(_accm, pred0, xx0, _y_2708) /* forall<a,b,e> ((list<b>) -> list<b>, pred : (a) -> e maybe<b>, xx : list<a>, maybe<b>) -> e list<b> */  {
+  if (_y_2708 === null) {
+    return _ctailm_filterMap(xx0, pred0, _accm);
+  }
+  else {
+    return _ctailm_filterMap(xx0, pred0, function(_ctail_2689 /* list<1128> */ ) {
+        return _accm($std_core.Cons(_y_2708.value, _ctail_2689));
+      });
+  }
+}
+ 
+export function _ctail_filterMap(xs, pred1, _acc0) /* forall<a,b,e> (xs : list<a>, pred : (a) -> e maybe<b>, ctail<list<b>>) -> e list<b> */  { tailcall: while(1)
+{
+  if (xs === null) {
+    return $std_core_types._ctail_resolve(_acc0,($std_core.Nil));
+  }
+  else {
+     
+    var x0_2768 = pred1(xs.head);
+    if ($std_core_hnd._yielding()) {
+      return $std_core_hnd.yield_extend(function(_y_27030 /* maybe<1128> */ ) {
+        return _mlift2750_op(_acc0, pred1, xs.tail, _y_27030);
+      });
+    }
+    else {
+      if (x0_2768 === null) {
+        {
+          // tail call
+          xs = xs.tail;
+          continue tailcall;
+        }
+      }
+      else {
+         
+        var _ctail_26860 = undefined;
+         
+        var _ctail_26870 = $std_core.Cons(x0_2768.value, _ctail_26860);
+        {
+          // tail call
+          var _x0 = $std_core_types._ctail_link(_acc0,_ctail_26870,({value: _ctail_26870, field: "tail"}));
+          xs = xs.tail;
+          _acc0 = _x0;
+          continue tailcall;
+        }
+      }
+    }
+  }
+}}
+ 
+export function _ctailm_filterMap(xs0, pred2, _accm0) /* forall<a,b,e> (xs : list<a>, pred : (a) -> e maybe<b>, (list<b>) -> list<b>) -> e list<b> */  { tailcall: while(1)
+{
+  if (xs0 === null) {
+    return _accm0($std_core.Nil);
+  }
+  else {
+     
+    var x2_2771 = pred2(xs0.head);
+    if ($std_core_hnd._yielding()) {
+      return $std_core_hnd.yield_extend(function(_y_27080 /* maybe<1128> */ ) {
+        return _mlift2751_op(_accm0, pred2, xs0.tail, _y_27080);
+      });
+    }
+    else {
+      if (x2_2771 === null) {
+        {
+          // tail call
+          xs0 = xs0.tail;
+          continue tailcall;
+        }
+      }
+      else {
+        {
+          // tail call
+          var _x3 = function(__dot_accm01 /* (list<1128>) -> list<1128> */ , _y22 /* 1128 */ ) {
+            return function(_ctail_26890 /* list<1128> */ ) {
+              return __dot_accm01($std_core.Cons(_y22, _ctail_26890));
+            };
+          }(_accm0, x2_2771.value);
+          xs0 = xs0.tail;
+          _accm0 = _x3;
+          continue tailcall;
+        }
+      }
+    }
+  }
+}}
+ 
+export function filterMap(xs1, pred3) /* forall<a,b,e> (xs : list<a>, pred : (a) -> e maybe<b>) -> e list<b> */  {
+  var _x4 = $std_core_hnd._evv_is_affine();
+  if (_x4) {
+    return _ctail_filterMap(xs1, pred3, $std_core_types._ctail_nil());
+  }
+  else {
+    return _ctailm_filterMap(xs1, pred3, function(_ctail_2688 /* list<1128> */ ) {
+        return _ctail_2688;
+      });
+  }
+}
+ 
+ 
+// monadic lift
+export function _mlift2752_foreachUntil(action, xx, _y_2716) /* forall<a,b,e> (action : (a) -> e maybe<b>, xx : list<a>, maybe<b>) -> e maybe<b> */  {
+  if (_y_2716 === null) {
     return foreachUntil(xx, action);
   }
   else {
-    return _y_2239;
+    return _y_2716;
   }
 }
  
@@ -538,14 +666,14 @@ export function foreachUntil(xs, action0) /* forall<a,b,e> (xs : list<a>, action
   }
   else {
      
-    var x0_2289 = action0(xs.head);
+    var x0_2774 = action0(xs.head);
     if ($std_core_hnd._yielding()) {
-      return $std_core_hnd.yield_extend(function(_y_22390 /* maybe<1011> */ ) {
-        return _mlift2273_foreachUntil(action0, xs.tail, _y_22390);
+      return $std_core_hnd.yield_extend(function(_y_27160 /* maybe<1163> */ ) {
+        return _mlift2752_foreachUntil(action0, xs.tail, _y_27160);
       });
     }
     else {
-      if (x0_2289 === null) {
+      if (x0_2774 === null) {
         {
           // tail call
           xs = xs.tail;
@@ -553,91 +681,134 @@ export function foreachUntil(xs, action0) /* forall<a,b,e> (xs : list<a>, action
         }
       }
       else {
-        return x0_2289;
+        return x0_2774;
       }
     }
   }
 }}
  
+export function indexOfAcc(xs, pred, idx) /* forall<a> (xs : list<a>, pred : (a) -> bool, idx : int) -> int */  { tailcall: while(1)
+{
+  if (xs === null) {
+    return $std_core._int_sub(0,1);
+  }
+  else {
+    var _x5 = pred(xs.head);
+    if (_x5) {
+      return idx;
+    }
+    else {
+      {
+        // tail call
+        var _x6 = $std_core._int_add(idx,1);
+        xs = xs.tail;
+        idx = _x6;
+        continue tailcall;
+      }
+    }
+  }
+}}
+ 
+ 
+// Does string `s`  contain the character `c`  ?
+export function indexOf(s, c) /* (s : string, c : char) -> int */  {
+  return ((s).indexOf(c));
+}
+ 
+ 
+// Does string `s`  contain the string `sub`  ?
+export function indexOf_1(s, sub) /* (s : string, sub : string) -> int */  {
+  return ((s).indexOf(sub));
+}
+ 
+ 
+// Returns the index of the first element where "pred" holds, or "-1" if no such element exists.
+export function indexOf_2(xs, pred) /* forall<a> (xs : list<a>, pred : (a) -> bool) -> int */  {
+  return indexOfAcc(xs, pred, 0);
+}
+ 
+ 
+// Parse digits in a "base" between 2 and 36 (default 10) given an initial value "acc" (default 0)
+// Returns "acc" on the empty string, and "Nothing" if an invalid digit is encountered.
 export function parseDigits(cs, base, acc) /* (cs : list<char>, base : optional<int>, acc : optional<int>) -> maybe<int> */  {
    
-  var _base_1015 = (base !== undefined) ? base : 10;
+  var _base_1267 = (base !== undefined) ? base : 10;
   if (cs === null) {
-    var _x0 = (acc !== undefined) ? acc : 0;
-    return $std_core_types.Just(_x0);
+    var _x7 = (acc !== undefined) ? acc : 0;
+    return $std_core_types.Just(_x7);
   }
   else {
      
-    var _cont_2090 = function(_x_2091 /* int */ ) {
+    var _cont_2542 = function(_x_2543 /* int */ ) {
        
-      var _x1 = (acc !== undefined) ? acc : 0;
-      var x_2112 = $std_core._int_mul(_base_1015,_x1);
-      return parseDigits(cs.tail, _base_1015, $std_core._int_add(x_2112,_x_2091));
+      var _x8 = (acc !== undefined) ? acc : 0;
+      var x_2568 = $std_core._int_mul(_base_1267,_x8);
+      return parseDigits(cs.tail, _base_1267, $std_core._int_add(x_2568,_x_2543));
     };
     if (((cs.head) >= 0x0030)) {
-      if ($std_core._int_ge(_base_1015,10)) {
-        var _x2 = 0x0039;
+      if ($std_core._int_ge(_base_1267,10)) {
+        var _x9 = 0x0039;
       }
       else {
          
-        var d_2115 = (($std_core._int_sub(_base_1015,1)));
+        var d_2571 = (($std_core._int_sub(_base_1267,1)));
          
         var x_16954 = 0x0030;
          
-        var y_16955 = d_2115;
-        var _x2 = (($std_core._int_add(x_16954,y_16955)));
+        var y_16955 = d_2571;
+        var _x9 = (($std_core._int_add(x_16954,y_16955)));
       }
-      var _x1 = ((cs.head) <= _x2);
-      if (_x1) {
+      var _x8 = ((cs.head) <= _x9);
+      if (_x8) {
          
         var x_16956 = (cs.head);
          
         var y_16957 = 0x0030;
-        return _cont_2090(((($std_core._int_sub(x_16956,y_16957)))));
+        return _cont_2542(((($std_core._int_sub(x_16956,y_16957)))));
       }
       else {
-        if ($std_core._int_gt(_base_1015,10)) {
-          if ($std_core._int_le(_base_1015,36)) {
+        if ($std_core._int_gt(_base_1267,10)) {
+          if ($std_core._int_le(_base_1267,36)) {
             if (((cs.head) >= 0x0061)) {
                
-              var d1_2121 = (($std_core._int_sub(_base_1015,11)));
+              var d1_2577 = (($std_core._int_sub(_base_1267,11)));
                
               var x_169540 = 0x0061;
                
-              var y_169550 = d1_2121;
-              var _x3 = ((cs.head) <= ((($std_core._int_add(x_169540,y_169550)))));
-              if (_x3) {
+              var y_169550 = d1_2577;
+              var _x10 = ((cs.head) <= ((($std_core._int_add(x_169540,y_169550)))));
+              if (_x10) {
                  
                 var x_169560 = (cs.head);
                  
                 var y_169570 = 0x0061;
                  
-                var x2_2124 = ((($std_core._int_sub(x_169560,y_169570))));
+                var x2_2580 = ((($std_core._int_sub(x_169560,y_169570))));
                  
-                var _x_2215_2089 = $std_core._int_add(x2_2124,10);
-                return _cont_2090(_x_2215_2089);
+                var _x_2675_2541 = $std_core._int_add(x2_2580,10);
+                return _cont_2542(_x_2675_2541);
               }
               else {
-                if ($std_core._int_gt(_base_1015,10)) {
-                  if ($std_core._int_le(_base_1015,36)) {
+                if ($std_core._int_gt(_base_1267,10)) {
+                  if ($std_core._int_le(_base_1267,36)) {
                     if (((cs.head) >= 0x0041)) {
                        
-                      var d3_2129 = (($std_core._int_sub(_base_1015,11)));
+                      var d3_2585 = (($std_core._int_sub(_base_1267,11)));
                        
                       var x_169541 = 0x0041;
                        
-                      var y_169551 = d3_2129;
-                      var _x4 = ((cs.head) <= ((($std_core._int_add(x_169541,y_169551)))));
-                      if (_x4) {
+                      var y_169551 = d3_2585;
+                      var _x11 = ((cs.head) <= ((($std_core._int_add(x_169541,y_169551)))));
+                      if (_x11) {
                          
                         var x_169561 = (cs.head);
                          
                         var y_169571 = 0x0041;
                          
-                        var x4_2132 = ((($std_core._int_sub(x_169561,y_169571))));
+                        var x4_2588 = ((($std_core._int_sub(x_169561,y_169571))));
                          
-                        var _x_2216_2089 = $std_core._int_add(x4_2132,10);
-                        return _cont_2090(_x_2216_2089);
+                        var _x_2676_2541 = $std_core._int_add(x4_2588,10);
+                        return _cont_2542(_x_2676_2541);
                       }
                       else {
                         return $std_core_types.Nothing;
@@ -657,26 +828,26 @@ export function parseDigits(cs, base, acc) /* (cs : list<char>, base : optional<
               }
             }
             else {
-              if ($std_core._int_gt(_base_1015,10)) {
-                if ($std_core._int_le(_base_1015,36)) {
+              if ($std_core._int_gt(_base_1267,10)) {
+                if ($std_core._int_le(_base_1267,36)) {
                   if (((cs.head) >= 0x0041)) {
                      
-                    var d5_2137 = (($std_core._int_sub(_base_1015,11)));
+                    var d5_2593 = (($std_core._int_sub(_base_1267,11)));
                      
                     var x_169542 = 0x0041;
                      
-                    var y_169552 = d5_2137;
-                    var _x5 = ((cs.head) <= ((($std_core._int_add(x_169542,y_169552)))));
-                    if (_x5) {
+                    var y_169552 = d5_2593;
+                    var _x12 = ((cs.head) <= ((($std_core._int_add(x_169542,y_169552)))));
+                    if (_x12) {
                        
                       var x_169562 = (cs.head);
                        
                       var y_169572 = 0x0041;
                        
-                      var x6_2140 = ((($std_core._int_sub(x_169562,y_169572))));
+                      var x6_2596 = ((($std_core._int_sub(x_169562,y_169572))));
                        
-                      var _x_2217_2089 = $std_core._int_add(x6_2140,10);
-                      return _cont_2090(_x_2217_2089);
+                      var _x_2677_2541 = $std_core._int_add(x6_2596,10);
+                      return _cont_2542(_x_2677_2541);
                     }
                     else {
                       return $std_core_types.Nothing;
@@ -696,26 +867,26 @@ export function parseDigits(cs, base, acc) /* (cs : list<char>, base : optional<
             }
           }
           else {
-            if ($std_core._int_gt(_base_1015,10)) {
-              if ($std_core._int_le(_base_1015,36)) {
+            if ($std_core._int_gt(_base_1267,10)) {
+              if ($std_core._int_le(_base_1267,36)) {
                 if (((cs.head) >= 0x0041)) {
                    
-                  var d7_2145 = (($std_core._int_sub(_base_1015,11)));
+                  var d7_2601 = (($std_core._int_sub(_base_1267,11)));
                    
                   var x_169543 = 0x0041;
                    
-                  var y_169553 = d7_2145;
-                  var _x6 = ((cs.head) <= ((($std_core._int_add(x_169543,y_169553)))));
-                  if (_x6) {
+                  var y_169553 = d7_2601;
+                  var _x13 = ((cs.head) <= ((($std_core._int_add(x_169543,y_169553)))));
+                  if (_x13) {
                      
                     var x_169563 = (cs.head);
                      
                     var y_169573 = 0x0041;
                      
-                    var x8_2148 = ((($std_core._int_sub(x_169563,y_169573))));
+                    var x8_2604 = ((($std_core._int_sub(x_169563,y_169573))));
                      
-                    var _x_2218_2089 = $std_core._int_add(x8_2148,10);
-                    return _cont_2090(_x_2218_2089);
+                    var _x_2678_2541 = $std_core._int_add(x8_2604,10);
+                    return _cont_2542(_x_2678_2541);
                   }
                   else {
                     return $std_core_types.Nothing;
@@ -735,26 +906,26 @@ export function parseDigits(cs, base, acc) /* (cs : list<char>, base : optional<
           }
         }
         else {
-          if ($std_core._int_gt(_base_1015,10)) {
-            if ($std_core._int_le(_base_1015,36)) {
+          if ($std_core._int_gt(_base_1267,10)) {
+            if ($std_core._int_le(_base_1267,36)) {
               if (((cs.head) >= 0x0041)) {
                  
-                var d9_2153 = (($std_core._int_sub(_base_1015,11)));
+                var d9_2609 = (($std_core._int_sub(_base_1267,11)));
                  
                 var x_169544 = 0x0041;
                  
-                var y_169554 = d9_2153;
-                var _x7 = ((cs.head) <= ((($std_core._int_add(x_169544,y_169554)))));
-                if (_x7) {
+                var y_169554 = d9_2609;
+                var _x14 = ((cs.head) <= ((($std_core._int_add(x_169544,y_169554)))));
+                if (_x14) {
                    
                   var x_169564 = (cs.head);
                    
                   var y_169574 = 0x0041;
                    
-                  var x10_2156 = ((($std_core._int_sub(x_169564,y_169574))));
+                  var x10_2612 = ((($std_core._int_sub(x_169564,y_169574))));
                    
-                  var _x_2219_2089 = $std_core._int_add(x10_2156,10);
-                  return _cont_2090(_x_2219_2089);
+                  var _x_2679_2541 = $std_core._int_add(x10_2612,10);
+                  return _cont_2542(_x_2679_2541);
                 }
                 else {
                   return $std_core_types.Nothing;
@@ -775,48 +946,48 @@ export function parseDigits(cs, base, acc) /* (cs : list<char>, base : optional<
       }
     }
     else {
-      if ($std_core._int_gt(_base_1015,10)) {
-        if ($std_core._int_le(_base_1015,36)) {
+      if ($std_core._int_gt(_base_1267,10)) {
+        if ($std_core._int_le(_base_1267,36)) {
           if (((cs.head) >= 0x0061)) {
              
-            var d11_2161 = (($std_core._int_sub(_base_1015,11)));
+            var d11_2617 = (($std_core._int_sub(_base_1267,11)));
              
             var x_169545 = 0x0061;
              
-            var y_169555 = d11_2161;
-            var _x8 = ((cs.head) <= ((($std_core._int_add(x_169545,y_169555)))));
-            if (_x8) {
+            var y_169555 = d11_2617;
+            var _x15 = ((cs.head) <= ((($std_core._int_add(x_169545,y_169555)))));
+            if (_x15) {
                
               var x_169565 = (cs.head);
                
               var y_169575 = 0x0061;
                
-              var x12_2164 = ((($std_core._int_sub(x_169565,y_169575))));
+              var x12_2620 = ((($std_core._int_sub(x_169565,y_169575))));
                
-              var _x_2220_20890 = $std_core._int_add(x12_2164,10);
-              return _cont_2090(_x_2220_20890);
+              var _x_2680_25410 = $std_core._int_add(x12_2620,10);
+              return _cont_2542(_x_2680_25410);
             }
             else {
-              if ($std_core._int_gt(_base_1015,10)) {
-                if ($std_core._int_le(_base_1015,36)) {
+              if ($std_core._int_gt(_base_1267,10)) {
+                if ($std_core._int_le(_base_1267,36)) {
                   if (((cs.head) >= 0x0041)) {
                      
-                    var d13_2169 = (($std_core._int_sub(_base_1015,11)));
+                    var d13_2625 = (($std_core._int_sub(_base_1267,11)));
                      
                     var x_169546 = 0x0041;
                      
-                    var y_169556 = d13_2169;
-                    var _x9 = ((cs.head) <= ((($std_core._int_add(x_169546,y_169556)))));
-                    if (_x9) {
+                    var y_169556 = d13_2625;
+                    var _x16 = ((cs.head) <= ((($std_core._int_add(x_169546,y_169556)))));
+                    if (_x16) {
                        
                       var x_169566 = (cs.head);
                        
                       var y_169576 = 0x0041;
                        
-                      var x14_2172 = ((($std_core._int_sub(x_169566,y_169576))));
+                      var x14_2628 = ((($std_core._int_sub(x_169566,y_169576))));
                        
-                      var _x_2221_20890 = $std_core._int_add(x14_2172,10);
-                      return _cont_2090(_x_2221_20890);
+                      var _x_2681_25410 = $std_core._int_add(x14_2628,10);
+                      return _cont_2542(_x_2681_25410);
                     }
                     else {
                       return $std_core_types.Nothing;
@@ -836,26 +1007,26 @@ export function parseDigits(cs, base, acc) /* (cs : list<char>, base : optional<
             }
           }
           else {
-            if ($std_core._int_gt(_base_1015,10)) {
-              if ($std_core._int_le(_base_1015,36)) {
+            if ($std_core._int_gt(_base_1267,10)) {
+              if ($std_core._int_le(_base_1267,36)) {
                 if (((cs.head) >= 0x0041)) {
                    
-                  var d15_2177 = (($std_core._int_sub(_base_1015,11)));
+                  var d15_2633 = (($std_core._int_sub(_base_1267,11)));
                    
                   var x_169547 = 0x0041;
                    
-                  var y_169557 = d15_2177;
-                  var _x10 = ((cs.head) <= ((($std_core._int_add(x_169547,y_169557)))));
-                  if (_x10) {
+                  var y_169557 = d15_2633;
+                  var _x17 = ((cs.head) <= ((($std_core._int_add(x_169547,y_169557)))));
+                  if (_x17) {
                      
                     var x_169567 = (cs.head);
                      
                     var y_169577 = 0x0041;
                      
-                    var x16_2180 = ((($std_core._int_sub(x_169567,y_169577))));
+                    var x16_2636 = ((($std_core._int_sub(x_169567,y_169577))));
                      
-                    var _x_2222_20890 = $std_core._int_add(x16_2180,10);
-                    return _cont_2090(_x_2222_20890);
+                    var _x_2682_25410 = $std_core._int_add(x16_2636,10);
+                    return _cont_2542(_x_2682_25410);
                   }
                   else {
                     return $std_core_types.Nothing;
@@ -875,26 +1046,26 @@ export function parseDigits(cs, base, acc) /* (cs : list<char>, base : optional<
           }
         }
         else {
-          if ($std_core._int_gt(_base_1015,10)) {
-            if ($std_core._int_le(_base_1015,36)) {
+          if ($std_core._int_gt(_base_1267,10)) {
+            if ($std_core._int_le(_base_1267,36)) {
               if (((cs.head) >= 0x0041)) {
                  
-                var d17_2185 = (($std_core._int_sub(_base_1015,11)));
+                var d17_2641 = (($std_core._int_sub(_base_1267,11)));
                  
                 var x_169548 = 0x0041;
                  
-                var y_169558 = d17_2185;
-                var _x11 = ((cs.head) <= ((($std_core._int_add(x_169548,y_169558)))));
-                if (_x11) {
+                var y_169558 = d17_2641;
+                var _x18 = ((cs.head) <= ((($std_core._int_add(x_169548,y_169558)))));
+                if (_x18) {
                    
                   var x_169568 = (cs.head);
                    
                   var y_169578 = 0x0041;
                    
-                  var x18_2188 = ((($std_core._int_sub(x_169568,y_169578))));
+                  var x18_2644 = ((($std_core._int_sub(x_169568,y_169578))));
                    
-                  var _x_2223_20890 = $std_core._int_add(x18_2188,10);
-                  return _cont_2090(_x_2223_20890);
+                  var _x_2683_25410 = $std_core._int_add(x18_2644,10);
+                  return _cont_2542(_x_2683_25410);
                 }
                 else {
                   return $std_core_types.Nothing;
@@ -914,26 +1085,26 @@ export function parseDigits(cs, base, acc) /* (cs : list<char>, base : optional<
         }
       }
       else {
-        if ($std_core._int_gt(_base_1015,10)) {
-          if ($std_core._int_le(_base_1015,36)) {
+        if ($std_core._int_gt(_base_1267,10)) {
+          if ($std_core._int_le(_base_1267,36)) {
             if (((cs.head) >= 0x0041)) {
                
-              var d19_2193 = (($std_core._int_sub(_base_1015,11)));
+              var d19_2649 = (($std_core._int_sub(_base_1267,11)));
                
               var x_169549 = 0x0041;
                
-              var y_169559 = d19_2193;
-              var _x12 = ((cs.head) <= ((($std_core._int_add(x_169549,y_169559)))));
-              if (_x12) {
+              var y_169559 = d19_2649;
+              var _x19 = ((cs.head) <= ((($std_core._int_add(x_169549,y_169559)))));
+              if (_x19) {
                  
                 var x_169569 = (cs.head);
                  
                 var y_169579 = 0x0041;
                  
-                var x20_2196 = ((($std_core._int_sub(x_169569,y_169579))));
+                var x20_2652 = ((($std_core._int_sub(x_169569,y_169579))));
                  
-                var _x_2224_20890 = $std_core._int_add(x20_2196,10);
-                return _cont_2090(_x_2224_20890);
+                var _x_2684_25410 = $std_core._int_add(x20_2652,10);
+                return _cont_2542(_x_2684_25410);
               }
               else {
                 return $std_core_types.Nothing;
@@ -958,51 +1129,101 @@ export function parseDigits(cs, base, acc) /* (cs : list<char>, base : optional<
 export function parsePosInt(s, base) /* (s : list<char>, base : optional<int>) -> maybe<int> */  {
   if (s !== null && s.tail !== null) {
     if (((s.head) === 0x0030)) {
-      var _x13 = (((s.tail.head) === 0x0078)) ? true : ((s.tail.head) === 0x0058);
+      var _x20 = (((s.tail.head) === 0x0078)) ? true : ((s.tail.head) === 0x0058);
     }
     else {
-      var _x13 = false;
+      var _x20 = false;
     }
-    if (_x13){
+    if (_x20){
       return parseDigits(s.tail.tail, 16);
     }
   }
-  var _x14 = (base !== undefined) ? base : 10;
-  return parseDigits(s, _x14);
+  var _x21 = (base !== undefined) ? base : 10;
+  return parseDigits(s, _x21);
 }
  
 export function parseInt(s, hex) /* (s : string, hex : optional<bool>) -> maybe<int> */  {
    
-  var xs_2200 = $std_core.list_6(s);
+  var xs_2656 = $std_core.list_6(s);
    
-  var _this_2225 = $std_core.span(xs_2200, isWhite);
-  if (_this_2225.snd === null) {
+  var _this_2685 = $std_core.span(xs_2656, isWhite);
+  if (_this_2685.snd === null) {
     return $std_core_types.Just(0);
   }
-  if (_this_2225.snd !== null) {
-    if (((_this_2225.snd.head) === 0x002D)){
+  if (_this_2685.snd !== null) {
+    if (((_this_2685.snd.head) === 0x002D)){
       if (hex !== undefined) {
-        var _x16 = (hex) ? 16 : 10;
+        var _x23 = (hex) ? 16 : 10;
       }
       else {
-        var _x16 = 10;
+        var _x23 = 10;
       }
-      var _x15 = parsePosInt(_this_2225.snd.tail, _x16);
-      if (_x15 === null) {
+      var _x22 = parsePosInt(_this_2685.snd.tail, _x23);
+      if (_x22 === null) {
         return $std_core_types.Nothing;
       }
       else {
-        return $std_core_types.Just($std_core._int_sub(0,(_x15.value)));
+        return $std_core_types.Just($std_core._int_sub(0,(_x22.value)));
       }
     }
   }
   if (hex !== undefined) {
-    var _x17 = (hex) ? 16 : 10;
+    var _x24 = (hex) ? 16 : 10;
   }
   else {
-    var _x17 = 10;
+    var _x24 = 10;
   }
-  return parsePosInt(_this_2225.snd, _x17);
+  return parsePosInt(_this_2685.snd, _x24);
+}
+ 
+export function parseFixed(s) /* (s : string) -> maybe<float64> */  {
+   
+  var v_17123 = (s).split(("."), 2);
+  var _x25 = $std_core.vlist(v_17123);
+  if (_x25 !== null && _x25.tail !== null && _x25.tail.tail === null) {
+    var _x26 = parseInt(_x25.head);
+    if (_x26 === null) {
+      return $std_core_types.Nothing;
+    }
+    else {
+      var _x27 = parseInt(_x25.tail.head);
+      if (_x27 === null) {
+        return $std_core_types.Nothing;
+      }
+      else {
+        if ($std_core._int_lt((_x27.value),0)) {
+          return $std_core_types.Nothing;
+        }
+        else {
+          if ($std_core._int_eq((_x27.value),0)) {
+            return $std_core_types.Just($std_core._int_to_double((_x26.value)));
+          }
+          else {
+            return $std_core_types.Just((($std_core._int_to_double((_x26.value))) + (((Math.pow((10.0),($std_core._int_to_double(($std_core.count_1(_x25.tail.head)))))) / ($std_core._int_to_double((_x27.value)))))));
+          }
+        }
+      }
+    }
+  }
+  else {
+    var _x28 = parseInt(s);
+    if (_x28 === null) {
+      return $std_core_types.Nothing;
+    }
+    else {
+      return $std_core_types.Just($std_core._int_to_double((_x28.value)));
+    }
+  }
+}
+ 
+export function parseFixedDefault(s, $default) /* (s : string, default : optional<float64>) -> float64 */  {
+  var _x29 = parseFixed(s);
+  if (_x29 === null) {
+    return ($default !== undefined) ? $default : 0.0;
+  }
+  else {
+    return _x29.value;
+  }
 }
  
 export function parseIntDefault(s, $default, hex) /* (s : string, default : optional<int>, hex : optional<bool>) -> int */  {
@@ -1010,13 +1231,13 @@ export function parseIntDefault(s, $default, hex) /* (s : string, default : opti
     return ($default !== undefined) ? $default : 0;
   }
   else {
-    var _x19 = (hex !== undefined) ? hex : false;
-    var _x18 = parseInt(s, _x19);
-    if (_x18 === null) {
+    var _x31 = (hex !== undefined) ? hex : false;
+    var _x30 = parseInt(s, _x31);
+    if (_x30 === null) {
       return ($default !== undefined) ? $default : 0;
     }
     else {
-      return _x18.value;
+      return _x30.value;
     }
   }
 }
@@ -1027,23 +1248,23 @@ export function parseIntDefault(s, $default, hex) /* (s : string, default : opti
 */
 export function showHex(i, width, useCapitals) /* (i : int, width : optional<int>, useCapitals : optional<bool>) -> string */  {
    
-  var _x21 = (width !== undefined) ? width : 1;
-  var _x20 = $std_core._int_lt(_x21,0);
-  if (_x20) {
+  var _x33 = (width !== undefined) ? width : 1;
+  var _x32 = $std_core._int_lt(_x33,0);
+  if (_x32) {
     var w = 0;
   }
   else {
     var w = (width !== undefined) ? width : 1;
   }
    
-  var right_2206 = $std_core.show(w);
+  var right_2666 = $std_core.show(w);
   if (useCapitals !== undefined) {
-    var _x20 = (useCapitals) ? "X" : "x";
+    var _x32 = (useCapitals) ? "X" : "x";
   }
   else {
-    var _x20 = "X";
+    var _x32 = "X";
   }
-  return gformat(i, $std_core._lp__plus__plus__1_rp_(_x20, right_2206));
+  return gformat(i, $std_core._lp__plus__plus__1_rp_(_x32, right_2666));
 }
  
 export function substr(s, start) /* (s : string, start : int) -> string */  {
@@ -1061,8 +1282,8 @@ export function substr_1(s, start, len) /* (s : string, start : int, len : int) 
  
  
 // monadic lift
-export function _mlift2274_zipWithAcc(acc, f, i, xx, yy, _y_2243) /* forall<e,a,b,c> (acc : list<b>, f : (int, a, c) -> e b, i : int, xx : list<a>, yy : list<c>, b) -> e list<b> */  {
-  return zipWithAcc(f, $std_core._int_add(i,1), $std_core.Cons(_y_2243, acc), xx, yy);
+export function _mlift2753_zipWithAcc(acc, f, i, xx, yy, _y_2720) /* forall<e,a,b,c> (acc : list<b>, f : (int, a, c) -> e b, i : int, xx : list<a>, yy : list<c>, b) -> e list<b> */  {
+  return zipWithAcc(f, $std_core._int_add(i,1), $std_core.Cons(_y_2720, acc), xx, yy);
 }
  
 export function zipWithAcc(f0, i0, acc0, xs, ys) /* forall<a,b,c,e> ((int, a, b) -> e c, int, list<c>, list<a>, list<b>) -> e list<c> */  { tailcall: while(1)
@@ -1076,19 +1297,19 @@ export function zipWithAcc(f0, i0, acc0, xs, ys) /* forall<a,b,c,e> ((int, a, b)
     }
     else {
        
-      var x0_2292 = f0(i0, xs.head, ys.head);
+      var x0_2777 = f0(i0, xs.head, ys.head);
       if ($std_core_hnd._yielding()) {
-        return $std_core_hnd.yield_extend(function(_y_22430 /* 1863 */ ) {
-          return _mlift2274_zipWithAcc(acc0, f0, i0, xs.tail, ys.tail, _y_22430);
+        return $std_core_hnd.yield_extend(function(_y_27200 /* 2315 */ ) {
+          return _mlift2753_zipWithAcc(acc0, f0, i0, xs.tail, ys.tail, _y_27200);
         });
       }
       else {
         {
           // tail call
-          var _x21 = $std_core._int_add(i0,1);
-          var _x22 = $std_core.Cons(x0_2292, acc0);
-          i0 = _x21;
-          acc0 = _x22;
+          var _x33 = $std_core._int_add(i0,1);
+          var _x34 = $std_core.Cons(x0_2777, acc0);
+          i0 = _x33;
+          acc0 = _x34;
           xs = xs.tail;
           ys = ys.tail;
           continue tailcall;
@@ -1100,25 +1321,25 @@ export function zipWithAcc(f0, i0, acc0, xs, ys) /* forall<a,b,c,e> ((int, a, b)
  
  
 // monadic lift
-export function _mlift2275_op(_acc, _y_2247) /* forall<e,a> (ctail<list<a>>, list<a>) -> e list<a> */  {
-  return $std_core_types._ctail_resolve(_acc,_y_2247);
+export function _mlift2754_op(_acc, _y_2724) /* forall<e,a> (ctail<list<a>>, list<a>) -> e list<a> */  {
+  return $std_core_types._ctail_resolve(_acc,_y_2724);
 }
  
  
 // monadic lift
-export function _mlift2276_op(_acc0, f, i, xx, yy, _ctail_2226) /* forall<e,a,b,c> (ctail<list<c>>, f : (int, a, b) -> e c, i : int, xx : list<a>, yy : list<b>, c) -> e list<c> */  {
+export function _mlift2755_op(_acc0, f, i, xx, yy, _ctail_2690) /* forall<e,a,b,c> (ctail<list<c>>, f : (int, a, b) -> e c, i : int, xx : list<a>, yy : list<b>, c) -> e list<c> */  {
    
-  var _ctail_2227 = undefined;
+  var _ctail_2691 = undefined;
    
-  var _ctail_2228 = $std_core.Cons(_ctail_2226, _ctail_2227);
-  return _ctail_zipWithIter(f, $std_core._int_add(i,1), xx, yy, $std_core_types._ctail_link(_acc0,_ctail_2228,({value: _ctail_2228, field: "tail"})));
+  var _ctail_2692 = $std_core.Cons(_ctail_2690, _ctail_2691);
+  return _ctail_zipWithIter(f, $std_core._int_add(i,1), xx, yy, $std_core_types._ctail_link(_acc0,_ctail_2692,({value: _ctail_2692, field: "tail"})));
 }
  
  
 // monadic lift
-export function _mlift2277_op(_accm, f0, i0, xx0, yy0, _ctail_2231) /* forall<e,a,b,c> ((list<c>) -> list<c>, f : (int, a, b) -> e c, i : int, xx : list<a>, yy : list<b>, c) -> e list<c> */  {
-  return _ctailm_zipWithIter(f0, $std_core._int_add(i0,1), xx0, yy0, function(_ctail_2230 /* list<1948> */ ) {
-      return _accm($std_core.Cons(_ctail_2231, _ctail_2230));
+export function _mlift2756_op(_accm, f0, i0, xx0, yy0, _ctail_2695) /* forall<e,a,b,c> ((list<c>) -> list<c>, f : (int, a, b) -> e c, i : int, xx : list<a>, yy : list<b>, c) -> e list<c> */  {
+  return _ctailm_zipWithIter(f0, $std_core._int_add(i0,1), xx0, yy0, function(_ctail_2694 /* list<2400> */ ) {
+      return _accm($std_core.Cons(_ctail_2695, _ctail_2694));
     });
 }
  
@@ -1126,14 +1347,14 @@ export function _ctail_zipWithIter(f1, i1, xs, ys, _acc1) /* forall<a,b,c,e> ((i
 {
   if ($std_core._int_gt(i1,200)) {
      
-    var x_2295 = zipWithAcc(f1, i1, $std_core.Nil, xs, ys);
+    var x_2780 = zipWithAcc(f1, i1, $std_core.Nil, xs, ys);
     if ($std_core_hnd._yielding()) {
-      return $std_core_hnd.yield_extend(function(_y_22470 /* list<1948> */ ) {
-        return _mlift2275_op(_acc1, _y_22470);
+      return $std_core_hnd.yield_extend(function(_y_27240 /* list<2400> */ ) {
+        return _mlift2754_op(_acc1, _y_27240);
       });
     }
     else {
-      return $std_core_types._ctail_resolve(_acc1,x_2295);
+      return $std_core_types._ctail_resolve(_acc1,x_2780);
     }
   }
   else {
@@ -1146,25 +1367,25 @@ export function _ctail_zipWithIter(f1, i1, xs, ys, _acc1) /* forall<a,b,c,e> ((i
       }
       else {
          
-        var x1_2298 = f1(i1, xs.head, ys.head);
+        var x1_2783 = f1(i1, xs.head, ys.head);
         if ($std_core_hnd._yielding()) {
-          return $std_core_hnd.yield_extend(function(_ctail_22260 /* 1948 */ ) {
-            return _mlift2276_op(_acc1, f1, i1, xs.tail, ys.tail, _ctail_22260);
+          return $std_core_hnd.yield_extend(function(_ctail_26900 /* 2400 */ ) {
+            return _mlift2755_op(_acc1, f1, i1, xs.tail, ys.tail, _ctail_26900);
           });
         }
         else {
            
-          var _ctail_22270 = undefined;
+          var _ctail_26910 = undefined;
            
-          var _ctail_22280 = $std_core.Cons(x1_2298, _ctail_22270);
+          var _ctail_26920 = $std_core.Cons(x1_2783, _ctail_26910);
           {
             // tail call
-            var _x23 = $std_core._int_add(i1,1);
-            var _x24 = $std_core_types._ctail_link(_acc1,_ctail_22280,({value: _ctail_22280, field: "tail"}));
-            i1 = _x23;
+            var _x35 = $std_core._int_add(i1,1);
+            var _x36 = $std_core_types._ctail_link(_acc1,_ctail_26920,({value: _ctail_26920, field: "tail"}));
+            i1 = _x35;
             xs = xs.tail;
             ys = ys.tail;
-            _acc1 = _x24;
+            _acc1 = _x36;
             continue tailcall;
           }
         }
@@ -1177,12 +1398,12 @@ export function _ctailm_zipWithIter(f2, i2, xs0, ys0, _accm0) /* forall<a,b,c,e>
 {
   if ($std_core._int_gt(i2,200)) {
      
-    var x2_2301 = zipWithAcc(f2, i2, $std_core.Nil, xs0, ys0);
+    var x2_2786 = zipWithAcc(f2, i2, $std_core.Nil, xs0, ys0);
     if ($std_core_hnd._yielding()) {
       return $std_core_hnd.yield_extend(_accm0);
     }
     else {
-      return _accm0(x2_2301);
+      return _accm0(x2_2786);
     }
   }
   else {
@@ -1195,25 +1416,25 @@ export function _ctailm_zipWithIter(f2, i2, xs0, ys0, _accm0) /* forall<a,b,c,e>
       }
       else {
          
-        var x4_2303 = f2(i2, xs0.head, ys0.head);
+        var x4_2788 = f2(i2, xs0.head, ys0.head);
         if ($std_core_hnd._yielding()) {
-          return $std_core_hnd.yield_extend(function(_ctail_22310 /* 1948 */ ) {
-            return _mlift2277_op(_accm0, f2, i2, xs0.tail, ys0.tail, _ctail_22310);
+          return $std_core_hnd.yield_extend(function(_ctail_26950 /* 2400 */ ) {
+            return _mlift2756_op(_accm0, f2, i2, xs0.tail, ys0.tail, _ctail_26950);
           });
         }
         else {
           {
             // tail call
-            var _x27 = $std_core._int_add(i2,1);
-            var _x28 = function(__dot_accm025 /* (list<1948>) -> list<1948> */ , _x4_230326 /* 1948 */ ) {
-              return function(_ctail_22300 /* list<1948> */ ) {
-                return __dot_accm025($std_core.Cons(_x4_230326, _ctail_22300));
+            var _x39 = $std_core._int_add(i2,1);
+            var _x40 = function(__dot_accm037 /* (list<2400>) -> list<2400> */ , _x4_278838 /* 2400 */ ) {
+              return function(_ctail_26940 /* list<2400> */ ) {
+                return __dot_accm037($std_core.Cons(_x4_278838, _ctail_26940));
               };
-            }(_accm0, x4_2303);
-            i2 = _x27;
+            }(_accm0, x4_2788);
+            i2 = _x39;
             xs0 = xs0.tail;
             ys0 = ys0.tail;
-            _accm0 = _x28;
+            _accm0 = _x40;
             continue tailcall;
           }
         }
@@ -1223,13 +1444,13 @@ export function _ctailm_zipWithIter(f2, i2, xs0, ys0, _accm0) /* forall<a,b,c,e>
 }}
  
 export function zipWithIter(f3, i3, xs1, ys1) /* forall<a,b,c,e> ((int, a, b) -> e c, int, list<a>, list<b>) -> e list<c> */  {
-  var _x29 = $std_core_hnd._evv_is_affine();
-  if (_x29) {
+  var _x41 = $std_core_hnd._evv_is_affine();
+  if (_x41) {
     return _ctail_zipWithIter(f3, i3, xs1, ys1, $std_core_types._ctail_nil());
   }
   else {
-    return _ctailm_zipWithIter(f3, i3, xs1, ys1, function(_ctail_2229 /* list<1948> */ ) {
-        return _ctail_2229;
+    return _ctailm_zipWithIter(f3, i3, xs1, ys1, function(_ctail_2693 /* list<2400> */ ) {
+        return _ctail_2693;
       });
   }
 }
@@ -1246,7 +1467,7 @@ export function zipWithIndexed(xs, ys, f) /* forall<a,b,c,e> (xs : list<a>, ys :
 // Zip two lists together by pairing the corresponding elements.
 // The returned list is only as long as the smallest input list.
 export function zip(xs, ys) /* forall<a,b> (xs : list<a>, ys : list<b>) -> list<(a, b)> */  {
-  return zipWithIter(function(i /* int */ , x /* 2058 */ , y /* 2059 */ ) {
+  return zipWithIter(function(i /* int */ , x /* 2510 */ , y /* 2511 */ ) {
       return $std_core_types._Tuple2_(x, y);
     }, 0, xs, ys);
 }
@@ -1255,7 +1476,7 @@ export function zip(xs, ys) /* forall<a,b> (xs : list<a>, ys : list<b>) -> list<
 // Zip two lists together by apply a pub fun "f" to all corresponding elements.
 // The returned list is only as long as the smallest input list.
 export function zipWith(xs, ys, f) /* forall<a,b,c,e> (xs : list<a>, ys : list<b>, f : (a, b) -> e c) -> e list<c> */  {
-  return zipWithIter(function(i /* int */ , x /* 2084 */ , y /* 2085 */ ) {
+  return zipWithIter(function(i /* int */ , x /* 2536 */ , y /* 2537 */ ) {
       return f(x, y);
     }, 0, xs, ys);
 }

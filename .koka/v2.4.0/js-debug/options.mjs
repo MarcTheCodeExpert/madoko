@@ -18,11 +18,11 @@ import * as $std_os_env from './std_os_env.mjs';
 import * as $std_os_flags from './std_os_flags.mjs';
 import * as $compat_path from './compat_path.mjs';
 import * as $compat_env from './compat_env.mjs';
+import * as $compat_array from './compat_array.mjs';
 import * as $std_num_int64 from './std_num_int64.mjs';
 import * as $std_num_float64 from './std_num_float64.mjs';
 import * as $std_num_decimal from './std_num_decimal.mjs';
 import * as $std_num_ddouble from './std_num_ddouble.mjs';
-import * as $compat_array from './compat_array.mjs';
 import * as $compat_string from './compat_string.mjs';
 import * as $compat_flags from './compat_flags.mjs';
  
@@ -654,7 +654,7 @@ export function cflag(f) /* (f : (commandOptions, bool) -> commandOptions) -> st
  
  
 // monadic lift
-export function _mlift6871_check(_c_6696, cmdOptions, _c_6697) /* (string, cmdOptions : commandOptions, string) -> commandOptions */  {
+export function _mlift6876_check(_c_6701, cmdOptions, _c_6702) /* (string, cmdOptions : commandOptions, string) -> commandOptions */  {
   return $std_core_hnd._open_none0(function() {
     var _x51 = undefined;
     if (_x51 !== undefined) {
@@ -691,25 +691,25 @@ export function _mlift6871_check(_c_6696, cmdOptions, _c_6697) /* (string, cmdOp
     else {
       var _x58 = cmdOptions.options;
     }
-    return CommandOptions(_x50, _x52, _x54, _c_6696, _c_6697, _x56, _x58);
+    return CommandOptions(_x50, _x52, _x54, _c_6701, _c_6702, _x56, _x58);
   });
 }
  
  
 // monadic lift
-export function _mlift6872_check(_y_6695) /* (std/os/path/path) -> io string */  {
-  return $std_core_hnd._open_none1($std_os_path.dirname, _y_6695);
+export function _mlift6877_check(_y_6700) /* (std/os/path/path) -> io string */  {
+  return $std_core_hnd._open_none1($std_os_path.dirname, _y_6700);
 }
  
  
 // monadic lift
-export function _mlift6873_check(cmdOptions, _c_6696) /* (cmdOptions : commandOptions, string) -> commandOptions */  {
+export function _mlift6878_check(cmdOptions, _c_6701) /* (cmdOptions : commandOptions, string) -> commandOptions */  {
    
   var _x60 = (($std_core_hnd._open_none1(function(commandOptions1 /* commandOptions */ ) {
       return commandOptions1.stylesDir;
     }, cmdOptions)) === (""));
   if (_x60) {
-    var x = $std_core._lp__plus__plus__1_rp_(_c_6696, "/../styles");
+    var x = $std_core._lp__plus__plus__1_rp_(_c_6701, "/../styles");
   }
   else {
     var x = $std_core_hnd._open_none1(function(commandOptions2 /* commandOptions */ ) {
@@ -717,12 +717,12 @@ export function _mlift6873_check(cmdOptions, _c_6696) /* (cmdOptions : commandOp
       }, cmdOptions);
   }
   if ($std_core_hnd._yielding()) {
-    return $std_core_hnd.yield_extend(function(_c_6697 /* string */ ) {
-      return _mlift6871_check(_c_6696, cmdOptions, _c_6697);
+    return $std_core_hnd.yield_extend(function(_c_6702 /* string */ ) {
+      return _mlift6876_check(_c_6701, cmdOptions, _c_6702);
     });
   }
   else {
-    return _mlift6871_check(_c_6696, cmdOptions, x);
+    return _mlift6876_check(_c_6701, cmdOptions, x);
   }
 }
  
@@ -735,12 +735,12 @@ export function check(cmdOptions) /* (cmdOptions : commandOptions) -> io command
     }, cmdOptions)) === (""));
   if (_x60) {
      
-    var x0_6877 = $std_os_path.appdir();
+    var x0_6882 = $std_os_path.appdir();
     if ($std_core_hnd._yielding()) {
-      var x = $std_core_hnd.yield_extend(_mlift6872_check);
+      var x = $std_core_hnd.yield_extend(_mlift6877_check);
     }
     else {
-      var x = $std_core_hnd._open_none1($std_os_path.dirname, x0_6877);
+      var x = $std_core_hnd._open_none1($std_os_path.dirname, x0_6882);
     }
   }
   else {
@@ -749,8 +749,8 @@ export function check(cmdOptions) /* (cmdOptions : commandOptions) -> io command
       }, cmdOptions);
   }
   if ($std_core_hnd._yielding()) {
-    return $std_core_hnd.yield_extend(function(_c_6696 /* string */ ) {
-      return _mlift6873_check(cmdOptions, _c_6696);
+    return $std_core_hnd.yield_extend(function(_c_6701 /* string */ ) {
+      return _mlift6878_check(cmdOptions, _c_6701);
     });
   }
   else {
@@ -767,8 +767,8 @@ export function check(cmdOptions) /* (cmdOptions : commandOptions) -> io command
         }, cmdOptions);
     }
     if ($std_core_hnd._yielding()) {
-      return $std_core_hnd.yield_extend(function(_c_6697 /* string */ ) {
-        return _mlift6871_check(x, cmdOptions, _c_6697);
+      return $std_core_hnd.yield_extend(function(_c_6702 /* string */ ) {
+        return _mlift6876_check(x, cmdOptions, _c_6702);
       });
     }
     else {
@@ -826,33 +826,33 @@ export function cutoff(s, n) /* (s : string, n : int) -> string */  {
      
     var v_17126 = ((s).split(("\n")));
      
-    var xs_6404 = $std_core.map_5($std_core.vlist(v_17126), function(line /* string */ ) {
+    var xs_6409 = $std_core.map_5($std_core.vlist(v_17126), function(line /* string */ ) {
         var _x70 = $std_core._int_ge(($std_core.count_1(line)),n);
         if (_x70) {
            
-          var len_6413 = $std_core._int_sub(n,1);
+          var len_6418 = $std_core._int_sub(n,1);
            
-          if ($std_core._int_le(len_6413,0)) {
-            var left0_6409 = "";
+          if ($std_core._int_le(len_6418,0)) {
+            var left0_6414 = "";
           }
           else {
-            var left0_6409 = $compat.substr2(line, 0, len_6413);
+            var left0_6414 = $compat.substr2(line, 0, len_6418);
           }
            
-          var left_6407 = $std_core._lp__plus__plus__1_rp_(left0_6409, "\n");
+          var left_6412 = $std_core._lp__plus__plus__1_rp_(left0_6414, "\n");
            
-          var right_6408 = $compat.substr(line, $std_core._int_sub(n,1));
-          return $std_core._lp__plus__plus__1_rp_(left_6407, right_6408);
+          var right_6413 = $compat.substr(line, $std_core._int_sub(n,1));
+          return $std_core._lp__plus__plus__1_rp_(left_6412, right_6413);
         }
         else {
           return line;
         }
       });
-    if (xs_6404 === null) {
+    if (xs_6409 === null) {
       return "";
     }
     else {
-      return $std_core._lift17203_unlines(xs_6404.tail, xs_6404.head);
+      return $std_core._lift17203_unlines(xs_6409.tail, xs_6409.head);
     }
   }
 }
@@ -991,29 +991,29 @@ export function setMeta(opts0, value) /* (opts0 : options, value : string) -> op
       if ($std_core._int_gt(i,0)) {
          
         if ($std_core._int_le(i,0)) {
-          var s0_6422 = "";
+          var s0_6427 = "";
         }
         else {
-          var s0_6422 = $compat.substr2(keyval, 0, i);
+          var s0_6427 = $compat.substr2(keyval, 0, i);
         }
          
-        var key = (((((s0_6422).replace(/^\s\s*/,'')))).replace(/\s+$/,''));
+        var key = (((((s0_6427).replace(/^\s\s*/,'')))).replace(/\s+$/,''));
          
-        var s2_6426 = $compat.substr(keyval, $std_core._int_add(i,1));
+        var s2_6431 = $compat.substr(keyval, $std_core._int_add(i,1));
          
-        var s3 = (((((s2_6426).replace(/^\s\s*/,'')))).replace(/\s+$/,''));
+        var s3 = (((((s2_6431).replace(/^\s\s*/,'')))).replace(/\s+$/,''));
          
         var _x96 = opts.metadata;
-        var _arg_2195 = $std_core.append(_x96, $std_core.Cons($std_core_types._Tuple2_(key, s3), $std_core.Nil));
-        return _copy(opts, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, _arg_2195);
+        var _arg_2200 = $std_core.append(_x96, $std_core.Cons($std_core_types._Tuple2_(key, s3), $std_core.Nil));
+        return _copy(opts, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, _arg_2200);
       }
       else {
          
-        var message_6432 = $std_core._lp__plus__plus__1_rp_("illegal --meta option: ", value);
+        var message_6437 = $std_core._lp__plus__plus__1_rp_("illegal --meta option: ", value);
          
         var _x97 = undefined;
         var _x96 = (_x97 !== undefined) ? _x97 : "warning";
-        $compat_log.log(_x96, $std_core._lp__plus__plus__1_rp_("  warning: ", message_6432));
+        $compat_log.log(_x96, $std_core._lp__plus__plus__1_rp_("  warning: ", message_6437));
         return opts;
       }
     });
@@ -1039,13 +1039,13 @@ export function getDocName(opts) /* (opts : options) -> string */  {
 export function _create_Options(version0, bench0, verbose0, verboseMaxLine0, pedantic0, sanitize0, xmp0, full0, tex0, rebuild0, sandbox0, prelude0, title0, texHeader0, texHeaderx0, texDocHeader0, texDocHeaderx0, texFooter0, texSectionNum0, bib0, packages0, packagesx0, docClass0, citeAll0, tocDepth0, headingDepth0, headingBase0, sectionMax0, sectionBase0, starBold0, prettyAlign0, logo0, highlight0, hilitelang0, metadata0, embedinfos0, embedLimit0, lineNo0, lineNoWeb0, copyStyles0, lineMap0, extractStart0, extractEnd0) /* (version : optional<string>, bench : optional<bool>, verbose : optional<int>, verboseMaxLine : optional<int>, pedantic : optional<bool>, sanitize : optional<bool>, xmp : optional<bool>, full : optional<maybe<bool>>, tex : optional<bool>, rebuild : optional<bool>, sandbox : optional<bool>, prelude : optional<string>, title : optional<string>, texHeader : optional<string>, texHeaderx : optional<string>, texDocHeader : optional<string>, texDocHeaderx : optional<string>, texFooter : optional<string>, texSectionNum : optional<bool>, bib : optional<string>, packages : optional<string>, packagesx : optional<string>, docClass : optional<string>, citeAll : optional<bool>, tocDepth : optional<int>, headingDepth : optional<int>, headingBase : optional<int>, sectionMax : optional<int>, sectionBase : optional<int>, starBold : optional<bool>, prettyAlign : optional<int>, logo : optional<bool>, highlight : optional<bool>, hilitelang : optional<string>, metadata : optional<metadata>, embedinfos : optional<compat/dict/dict<common/embedinfo>>, embedLimit : optional<int>, lineNo : optional<int>, lineNoWeb : optional<bool>, copyStyles : optional<bool>, lineMap : optional<common/lineMap>, extractStart : optional<string>, extractEnd : optional<string>) -> options */  {
    
   if (embedinfos0 !== undefined) {
-    var _embedinfos_2709 = embedinfos0;
+    var _embedinfos_2714 = embedinfos0;
   }
   else {
-    var _embedinfos_2709 = $compat_dict.dict();
+    var _embedinfos_2714 = $compat_dict.dict();
   }
    
-  var _embedLimit_2721 = (embedLimit0 !== undefined) ? embedLimit0 : $std_core._int_mul(512,1024);
+  var _embedLimit_2726 = (embedLimit0 !== undefined) ? embedLimit0 : $std_core._int_mul(512,1024);
   var _x100 = (version0 !== undefined) ? version0 : "";
   var _x101 = (bench0 !== undefined) ? bench0 : false;
   var _x102 = (verbose0 !== undefined) ? verbose0 : 0;
@@ -1087,26 +1087,26 @@ export function _create_Options(version0, bench0, verbose0, verboseMaxLine0, ped
   var _x138 = (lineMap0 !== undefined) ? lineMap0 : $common.End;
   var _x139 = (extractStart0 !== undefined) ? extractStart0 : "^(?:\\/\\/|--|[#%]|[<]!--|\\(\\*) *BEGIN *: *(\\w+) *(?:--[>]|\\*\\))?$";
   var _x140 = (extractEnd0 !== undefined) ? extractEnd0 : "^(?:\\/\\/|--|[#%]|[<]!--|\\(\\*) *END *(?:[:] *(\\w+) *)?(?:--[>]|\\*\\))?$";
-  return Options(_x100, _x101, _x102, _x103, _x104, _x105, _x106, _x107, _x108, _x109, _x110, _x111, _x112, _x113, _x114, _x115, _x116, _x117, _x118, _x119, _x120, _x121, _x122, _x123, _x124, _x125, _x126, _x127, _x128, _x129, _x130, _x131, _x132, _x133, _x134, _embedinfos_2709, _embedLimit_2721, _x135, _x136, _x137, _x138, _x139, _x140);
+  return Options(_x100, _x101, _x102, _x103, _x104, _x105, _x106, _x107, _x108, _x109, _x110, _x111, _x112, _x113, _x114, _x115, _x116, _x117, _x118, _x119, _x120, _x121, _x122, _x123, _x124, _x125, _x126, _x127, _x128, _x129, _x130, _x131, _x132, _x133, _x134, _embedinfos_2714, _embedLimit_2726, _x135, _x136, _x137, _x138, _x139, _x140);
 }
  
 export function _create_CommandOptions(showVersion0, convertTex0, outputDir0, installDir0, stylesDir0, inputs0, options0) /* (showVersion : optional<bool>, convertTex : optional<bool>, outputDir : optional<string>, installDir : optional<string>, stylesDir : optional<string>, inputs : optional<list<string>>, options : optional<options>) -> commandOptions */  {
    
   if (options0 !== undefined) {
-    var _options_2908 = options0;
+    var _options_2913 = options0;
   }
   else {
      
     var _x141 = undefined;
     if (_x141 !== undefined) {
-      var _embedinfos_2709 = _x141;
+      var _embedinfos_2714 = _x141;
     }
     else {
-      var _embedinfos_2709 = $compat_dict.dict();
+      var _embedinfos_2714 = $compat_dict.dict();
     }
      
     var _x142 = undefined;
-    var _embedLimit_2721 = (_x142 !== undefined) ? _x142 : $std_core._int_mul(512,1024);
+    var _embedLimit_2726 = (_x142 !== undefined) ? _x142 : $std_core._int_mul(512,1024);
     var _x142 = undefined;
     var _x141 = (_x142 !== undefined) ? _x142 : "";
     var _x144 = undefined;
@@ -1189,7 +1189,7 @@ export function _create_CommandOptions(showVersion0, convertTex0, outputDir0, in
     var _x219 = (_x220 !== undefined) ? _x220 : "^(?:\\/\\/|--|[#%]|[<]!--|\\(\\*) *BEGIN *: *(\\w+) *(?:--[>]|\\*\\))?$";
     var _x222 = undefined;
     var _x221 = (_x222 !== undefined) ? _x222 : "^(?:\\/\\/|--|[#%]|[<]!--|\\(\\*) *END *(?:[:] *(\\w+) *)?(?:--[>]|\\*\\))?$";
-    var _options_2908 = Options(_x141, _x143, _x145, _x147, _x149, _x151, _x153, _x155, _x157, _x159, _x161, _x163, _x165, _x167, _x169, _x171, _x173, _x175, _x177, _x179, _x181, _x183, _x185, _x187, _x189, _x191, _x193, _x195, _x197, _x199, _x201, _x203, _x205, _x207, _x209, _embedinfos_2709, _embedLimit_2721, _x211, _x213, _x215, _x217, _x219, _x221);
+    var _options_2913 = Options(_x141, _x143, _x145, _x147, _x149, _x151, _x153, _x155, _x157, _x159, _x161, _x163, _x165, _x167, _x169, _x171, _x173, _x175, _x177, _x179, _x181, _x183, _x185, _x187, _x189, _x191, _x193, _x195, _x197, _x199, _x201, _x203, _x205, _x207, _x209, _embedinfos_2714, _embedLimit_2726, _x211, _x213, _x215, _x217, _x219, _x221);
   }
   var _x141 = (showVersion0 !== undefined) ? showVersion0 : false;
   var _x142 = (convertTex0 !== undefined) ? convertTex0 : false;
@@ -1197,7 +1197,7 @@ export function _create_CommandOptions(showVersion0, convertTex0, outputDir0, in
   var _x144 = (installDir0 !== undefined) ? installDir0 : "";
   var _x145 = (stylesDir0 !== undefined) ? stylesDir0 : "";
   var _x146 = (inputs0 !== undefined) ? inputs0 : $std_core.Nil;
-  return CommandOptions(_x141, _x142, _x143, _x144, _x145, _x146, _options_2908);
+  return CommandOptions(_x141, _x142, _x143, _x144, _x145, _x146, _options_2913);
 }
  
 export var optionsDesc;
@@ -1254,10 +1254,10 @@ var optionsDesc = $std_core.vlist([$std_os_flags.Flag("", $std_core.Cons("versio
         else {
           var _x159 = 0;
         }
-        var _arg_5045 = _x159;
+        var _arg_5050 = _x159;
          
         var _x161 = co0.options;
-        var _arg_1518 = _copy(_x161, undefined, undefined, _arg_5045);
+        var _arg_1518 = _copy(_x161, undefined, undefined, _arg_5050);
         var _x160 = undefined;
         if (_x160 !== undefined) {
           var _x159 = _x160;
@@ -1866,10 +1866,10 @@ var optionsDesc = $std_core.vlist([$std_os_flags.Flag("", $std_core.Cons("versio
           return CommandOptions(_x299, _x301, _x303, _x305, _x307, _x309, _x311);
         }, "FILE"), "Include <FILE> at start of the document"), $std_os_flags.Flag("", $std_core.Cons("verbose-max", $std_core.Nil), $std_os_flags.Req(function(co9 /* commandOptions */ , v9 /* string */ ) {
            
-          var _arg_3166 = $std_core.parse_int_default(v9, 78);
+          var _arg_3171 = $std_core.parse_int_default(v9, 78);
            
           var _x312 = co9.options;
-          var _arg_16030 = _copy(_x312, undefined, undefined, undefined, _arg_3166);
+          var _arg_16030 = _copy(_x312, undefined, undefined, undefined, _arg_3171);
           var _x313 = undefined;
           if (_x313 !== undefined) {
             var _x312 = _x313;
@@ -1976,43 +1976,43 @@ var optionsDesc = $std_core.vlist([$std_os_flags.Flag("", $std_core.Cons("versio
  
 export function fullUsageInfo() /* () -> string */  {
    
-  var left_6520 = $std_os_flags.usage(optionsDesc, "usage:\n madoko [options] files\n\noptions:");
-  return $std_core._lp__plus__plus__1_rp_(left_6520, "\n\nPrefix a flag with \'no-\' to negate it. For example \'--no-logo\'.");
+  var left_6525 = $std_os_flags.usage(optionsDesc, "usage:\n madoko [options] files\n\noptions:");
+  return $std_core._lp__plus__plus__1_rp_(left_6525, "\n\nPrefix a flag with \'no-\' to negate it. For example \'--no-logo\'.");
 }
  
 export function indent(opts, s, maxLine) /* (opts : options, s : string, maxLine : optional<int>) -> string */  {
    
   var _x338 = (maxLine !== undefined) ? maxLine : 78;
-  var s0_6523 = cutoff(s, _x338);
+  var s0_6528 = cutoff(s, _x338);
    
-  var v_17126 = ((s0_6523).split(("\n")));
+  var v_17126 = ((s0_6528).split(("\n")));
    
-  var xs_6522 = $std_core.map_5($std_core.vlist(v_17126), function(line /* string */ ) {
+  var xs_6527 = $std_core.map_5($std_core.vlist(v_17126), function(line /* string */ ) {
       return $std_core._lp__plus__plus__1_rp_("  ", line);
     });
-  if (xs_6522 === null) {
+  if (xs_6527 === null) {
     return "";
   }
   else {
-    return $std_core._lift17203_unlines(xs_6522.tail, xs_6522.head);
+    return $std_core._lift17203_unlines(xs_6527.tail, xs_6527.head);
   }
 }
  
  
 // monadic lift
-export function _mlift6874_parseOptionList(_y_6699) /* (commandOptions) -> io maybe<commandOptions> */  {
-  return $std_core_types.Just(_y_6699);
+export function _mlift6879_parseOptionList(_y_6704) /* (commandOptions) -> io maybe<commandOptions> */  {
+  return $std_core_types.Just(_y_6704);
 }
  
  
 // monadic lift
-export function _mlift6875_parseOptionList(cmdargs, version0, _y_6698) /* (cmdargs : list<string>, version0 : string, commandOptions) -> <alloc<global>,console,div,exn,fsys,ndet,net,read<global>,ui,write<global>> maybe<commandOptions> */  {
-  var _x338 = $std_core_hnd._open_none4($std_os_flags.parse, _y_6698, optionsDesc, cmdargs);
+export function _mlift6880_parseOptionList(cmdargs, version0, _y_6703) /* (cmdargs : list<string>, version0 : string, commandOptions) -> <alloc<global>,console,div,exn,fsys,ndet,net,read<global>,ui,write<global>> maybe<commandOptions> */  {
+  var _x338 = $std_core_hnd._open_none4($std_os_flags.parse, _y_6703, optionsDesc, cmdargs);
    
-  var _x111_6796 = $std_core.is_nil(_x338.thd);
+  var _x111_6801 = $std_core.is_nil(_x338.thd);
   var _x339 = $std_core_hnd._open_none1(function(b /* bool */ ) {
       return (b) ? false : true;
-    }, _x111_6796);
+    }, _x111_6801);
   if (_x339) {
      
     $std_core.printsln($std_core._lp__plus__plus__1_rp_($std_core._lp__plus__plus__1_rp_($std_core_hnd._open_none2(function(xs /* list<string> */ , sep /* string */ ) {
@@ -2024,8 +2024,8 @@ export function _mlift6875_parseOptionList(cmdargs, version0, _y_6698) /* (cmdar
             }
           }, _x338.thd, "\n"), "\n"), $std_core_hnd._open_none0(function() {
          
-        var left1_6526 = $std_os_flags.usage(optionsDesc, "usage:\n madoko [options] files\n\noptions:");
-        return $std_core._lp__plus__plus__1_rp_(left1_6526, "\n\nPrefix a flag with \'no-\' to negate it. For example \'--no-logo\'.");
+        var left1_6531 = $std_os_flags.usage(optionsDesc, "usage:\n madoko [options] files\n\noptions:");
+        return $std_core._lp__plus__plus__1_rp_(left1_6531, "\n\nPrefix a flag with \'no-\' to negate it. For example \'--no-logo\'.");
       })));
     return $std_core_types.Nothing;
   }
@@ -2044,14 +2044,14 @@ export function _mlift6875_parseOptionList(cmdargs, version0, _y_6698) /* (cmdar
          
         $std_core.printsln($std_core_hnd._open_none0(function() {
            
-          var left4_6528 = $std_os_flags.usage(optionsDesc, "usage:\n madoko [options] files\n\noptions:");
-          return $std_core._lp__plus__plus__1_rp_(left4_6528, "\n\nPrefix a flag with \'no-\' to negate it. For example \'--no-logo\'.");
+          var left4_6533 = $std_os_flags.usage(optionsDesc, "usage:\n madoko [options] files\n\noptions:");
+          return $std_core._lp__plus__plus__1_rp_(left4_6533, "\n\nPrefix a flag with \'no-\' to negate it. For example \'--no-logo\'.");
         }));
         return $std_core_types.Nothing;
       }
       else {
          
-        var x0_6879 = check($std_core_hnd._open_none0(function() {
+        var x0_6884 = check($std_core_hnd._open_none0(function() {
           var _x343 = undefined;
           if (_x343 !== undefined) {
             var _x342 = _x343;
@@ -2097,10 +2097,10 @@ export function _mlift6875_parseOptionList(cmdargs, version0, _y_6698) /* (cmdar
           return CommandOptions(_x342, _x344, _x346, _x348, _x350, _x338.snd, _x352);
         }));
         if ($std_core_hnd._yielding()) {
-          return $std_core_hnd.yield_extend(_mlift6874_parseOptionList);
+          return $std_core_hnd.yield_extend(_mlift6879_parseOptionList);
         }
         else {
-          return $std_core_types.Just(x0_6879);
+          return $std_core_types.Just(x0_6884);
         }
       }
     }
@@ -2109,18 +2109,18 @@ export function _mlift6875_parseOptionList(cmdargs, version0, _y_6698) /* (cmdar
  
 export function parseOptionList(version0, cmdargs) /* (version : string, cmdargs : list<string>) -> io maybe<commandOptions> */  {
    
-  var _arg_5621 = $std_core_hnd._open_none0(function() {
+  var _arg_5626 = $std_core_hnd._open_none0(function() {
      
     var _x342 = undefined;
     if (_x342 !== undefined) {
-      var _embedinfos_2709 = _x342;
+      var _embedinfos_2714 = _x342;
     }
     else {
-      var _embedinfos_2709 = $compat_dict.dict();
+      var _embedinfos_2714 = $compat_dict.dict();
     }
      
     var _x343 = undefined;
-    var _embedLimit_2721 = (_x343 !== undefined) ? _x343 : $std_core._int_mul(512,1024);
+    var _embedLimit_2726 = (_x343 !== undefined) ? _x343 : $std_core._int_mul(512,1024);
     var _x343 = undefined;
     var _x342 = (_x343 !== undefined) ? _x343 : false;
     var _x345 = undefined;
@@ -2201,26 +2201,26 @@ export function parseOptionList(version0, cmdargs) /* (version : string, cmdargs
     var _x418 = (_x419 !== undefined) ? _x419 : "^(?:\\/\\/|--|[#%]|[<]!--|\\(\\*) *BEGIN *: *(\\w+) *(?:--[>]|\\*\\))?$";
     var _x421 = undefined;
     var _x420 = (_x421 !== undefined) ? _x421 : "^(?:\\/\\/|--|[#%]|[<]!--|\\(\\*) *END *(?:[:] *(\\w+) *)?(?:--[>]|\\*\\))?$";
-    return Options(version0, _x342, _x344, _x346, _x348, _x350, _x352, _x354, _x356, _x358, _x360, _x362, _x364, _x366, _x368, _x370, _x372, _x374, _x376, _x378, _x380, _x382, _x384, _x386, _x388, _x390, _x392, _x394, _x396, _x398, _x400, _x402, _x404, _x406, _x408, _embedinfos_2709, _embedLimit_2721, _x410, _x412, _x414, _x416, _x418, _x420);
+    return Options(version0, _x342, _x344, _x346, _x348, _x350, _x352, _x354, _x356, _x358, _x360, _x362, _x364, _x366, _x368, _x370, _x372, _x374, _x376, _x378, _x380, _x382, _x384, _x386, _x388, _x390, _x392, _x394, _x396, _x398, _x400, _x402, _x404, _x406, _x408, _embedinfos_2714, _embedLimit_2726, _x410, _x412, _x414, _x416, _x418, _x420);
   });
    
-  var x_6881 = $std_core_hnd._open_none0(function() {
+  var x_6886 = $std_core_hnd._open_none0(function() {
      
-    if (_arg_5621 !== undefined) {
-      var _options_2908 = _arg_5621;
+    if (_arg_5626 !== undefined) {
+      var _options_2913 = _arg_5626;
     }
     else {
        
       var _x422 = undefined;
       if (_x422 !== undefined) {
-        var _embedinfos_27090 = _x422;
+        var _embedinfos_27140 = _x422;
       }
       else {
-        var _embedinfos_27090 = $compat_dict.dict();
+        var _embedinfos_27140 = $compat_dict.dict();
       }
        
       var _x423 = undefined;
-      var _embedLimit_27210 = (_x423 !== undefined) ? _x423 : $std_core._int_mul(512,1024);
+      var _embedLimit_27260 = (_x423 !== undefined) ? _x423 : $std_core._int_mul(512,1024);
       var _x423 = undefined;
       var _x422 = (_x423 !== undefined) ? _x423 : "";
       var _x425 = undefined;
@@ -2303,7 +2303,7 @@ export function parseOptionList(version0, cmdargs) /* (version : string, cmdargs
       var _x500 = (_x501 !== undefined) ? _x501 : "^(?:\\/\\/|--|[#%]|[<]!--|\\(\\*) *BEGIN *: *(\\w+) *(?:--[>]|\\*\\))?$";
       var _x503 = undefined;
       var _x502 = (_x503 !== undefined) ? _x503 : "^(?:\\/\\/|--|[#%]|[<]!--|\\(\\*) *END *(?:[:] *(\\w+) *)?(?:--[>]|\\*\\))?$";
-      var _options_2908 = Options(_x422, _x424, _x426, _x428, _x430, _x432, _x434, _x436, _x438, _x440, _x442, _x444, _x446, _x448, _x450, _x452, _x454, _x456, _x458, _x460, _x462, _x464, _x466, _x468, _x470, _x472, _x474, _x476, _x478, _x480, _x482, _x484, _x486, _x488, _x490, _embedinfos_27090, _embedLimit_27210, _x492, _x494, _x496, _x498, _x500, _x502);
+      var _options_2913 = Options(_x422, _x424, _x426, _x428, _x430, _x432, _x434, _x436, _x438, _x440, _x442, _x444, _x446, _x448, _x450, _x452, _x454, _x456, _x458, _x460, _x462, _x464, _x466, _x468, _x470, _x472, _x474, _x476, _x478, _x480, _x482, _x484, _x486, _x488, _x490, _embedinfos_27140, _embedLimit_27260, _x492, _x494, _x496, _x498, _x500, _x502);
     }
     var _x423 = undefined;
     var _x422 = (_x423 !== undefined) ? _x423 : false;
@@ -2317,20 +2317,20 @@ export function parseOptionList(version0, cmdargs) /* (version : string, cmdargs
     var _x430 = (_x431 !== undefined) ? _x431 : "";
     var _x433 = undefined;
     var _x432 = (_x433 !== undefined) ? _x433 : $std_core.Nil;
-    return CommandOptions(_x422, _x424, _x426, _x428, _x430, _x432, _options_2908);
+    return CommandOptions(_x422, _x424, _x426, _x428, _x430, _x432, _options_2913);
   });
   if ($std_core_hnd._yielding()) {
-    return $std_core_hnd.yield_extend(function(_y_6698 /* commandOptions */ ) {
-      return _mlift6875_parseOptionList(cmdargs, version0, _y_6698);
+    return $std_core_hnd.yield_extend(function(_y_6703 /* commandOptions */ ) {
+      return _mlift6880_parseOptionList(cmdargs, version0, _y_6703);
     });
   }
   else {
-    var _x342 = $std_core_hnd._open_none4($std_os_flags.parse, x_6881, optionsDesc, cmdargs);
+    var _x342 = $std_core_hnd._open_none4($std_os_flags.parse, x_6886, optionsDesc, cmdargs);
      
-    var _x111_6796 = $std_core.is_nil(_x342.thd);
+    var _x111_6801 = $std_core.is_nil(_x342.thd);
     var _x343 = $std_core_hnd._open_none1(function(b /* bool */ ) {
         return (b) ? false : true;
-      }, _x111_6796);
+      }, _x111_6801);
     if (_x343) {
        
       $std_core.printsln($std_core._lp__plus__plus__1_rp_($std_core._lp__plus__plus__1_rp_($std_core_hnd._open_none2(function(xs /* list<string> */ , sep /* string */ ) {
@@ -2342,8 +2342,8 @@ export function parseOptionList(version0, cmdargs) /* (version : string, cmdargs
               }
             }, _x342.thd, "\n"), "\n"), $std_core_hnd._open_none0(function() {
            
-          var left1_6526 = $std_os_flags.usage(optionsDesc, "usage:\n madoko [options] files\n\noptions:");
-          return $std_core._lp__plus__plus__1_rp_(left1_6526, "\n\nPrefix a flag with \'no-\' to negate it. For example \'--no-logo\'.");
+          var left1_6531 = $std_os_flags.usage(optionsDesc, "usage:\n madoko [options] files\n\noptions:");
+          return $std_core._lp__plus__plus__1_rp_(left1_6531, "\n\nPrefix a flag with \'no-\' to negate it. For example \'--no-logo\'.");
         })));
       return $std_core_types.Nothing;
     }
@@ -2362,14 +2362,14 @@ export function parseOptionList(version0, cmdargs) /* (version : string, cmdargs
            
           $std_core.printsln($std_core_hnd._open_none0(function() {
              
-            var left4_6528 = $std_os_flags.usage(optionsDesc, "usage:\n madoko [options] files\n\noptions:");
-            return $std_core._lp__plus__plus__1_rp_(left4_6528, "\n\nPrefix a flag with \'no-\' to negate it. For example \'--no-logo\'.");
+            var left4_6533 = $std_os_flags.usage(optionsDesc, "usage:\n madoko [options] files\n\noptions:");
+            return $std_core._lp__plus__plus__1_rp_(left4_6533, "\n\nPrefix a flag with \'no-\' to negate it. For example \'--no-logo\'.");
           }));
           return $std_core_types.Nothing;
         }
         else {
            
-          var x1_6891 = check($std_core_hnd._open_none0(function() {
+          var x1_6896 = check($std_core_hnd._open_none0(function() {
             var _x347 = undefined;
             if (_x347 !== undefined) {
               var _x346 = _x347;
@@ -2415,10 +2415,10 @@ export function parseOptionList(version0, cmdargs) /* (version : string, cmdargs
             return CommandOptions(_x346, _x348, _x350, _x352, _x354, _x342.snd, _x356);
           }));
           if ($std_core_hnd._yielding()) {
-            return $std_core_hnd.yield_extend(_mlift6874_parseOptionList);
+            return $std_core_hnd.yield_extend(_mlift6879_parseOptionList);
           }
           else {
-            return $std_core_types.Just(x1_6891);
+            return $std_core_types.Just(x1_6896);
           }
         }
       }
@@ -2428,8 +2428,8 @@ export function parseOptionList(version0, cmdargs) /* (version : string, cmdargs
  
  
 // monadic lift
-export function _mlift6876_parseOptions(version0, _y_6704) /* (version0 : string, list<string>) -> <alloc<global>,console,div,exn,fsys,ndet,net,read<global>,ui,write<global>> maybe<commandOptions> */  {
-  return parseOptionList(version0, $std_core_hnd._open_none2($compat._lp__plus__1_rp_, $compat_env.$arguments, _y_6704));
+export function _mlift6881_parseOptions(version0, _y_6709) /* (version0 : string, list<string>) -> <alloc<global>,console,div,exn,fsys,ndet,net,read<global>,ui,write<global>> maybe<commandOptions> */  {
+  return parseOptionList(version0, $std_core_hnd._open_none2($compat._lp__plus__1_rp_, $compat_env.$arguments, _y_6709));
 }
  
  
@@ -2437,7 +2437,7 @@ export function _mlift6876_parseOptions(version0, _y_6704) /* (version0 : string
 export function parseOptions(version0, extra) /* (version : string, extra : optional<string>) -> io maybe<commandOptions> */  {
    
   var _x346 = (extra !== undefined) ? extra : "";
-  var x_6894 = $std_core.filter($std_core_hnd._open_none2(function(s /* string */ , sep /* string */ ) {
+  var x_6899 = $std_core.filter($std_core_hnd._open_none2(function(s /* string */ , sep /* string */ ) {
          
         var v_17122 = ((s).split(sep));
         return $std_core.vlist(v_17122);
@@ -2445,12 +2445,12 @@ export function parseOptions(version0, extra) /* (version : string, extra : opti
       return (s0 !== (""));
     });
   if ($std_core_hnd._yielding()) {
-    return $std_core_hnd.yield_extend(function(_y_6704 /* list<string> */ ) {
-      return parseOptionList(version0, $std_core_hnd._open_none2($compat._lp__plus__1_rp_, $compat_env.$arguments, _y_6704));
+    return $std_core_hnd.yield_extend(function(_y_6709 /* list<string> */ ) {
+      return parseOptionList(version0, $std_core_hnd._open_none2($compat._lp__plus__1_rp_, $compat_env.$arguments, _y_6709));
     });
   }
   else {
-    return parseOptionList(version0, $std_core_hnd._open_none2($compat._lp__plus__1_rp_, $compat_env.$arguments, x_6894));
+    return parseOptionList(version0, $std_core_hnd._open_none2($compat._lp__plus__1_rp_, $compat_env.$arguments, x_6899));
   }
 }
  
@@ -2467,30 +2467,30 @@ export function print(opts, msg, level) /* (opts : options, msg : string, level 
       });
     if (_x349 !== null) {
       var _x352 = _x349.value.snd;
-      var left_6532 = $std_core._lp__plus__plus__1_rp_(_x352, ": ");
+      var left_6537 = $std_core._lp__plus__plus__1_rp_(_x352, ": ");
     }
     else {
-      var left_6532 = "";
+      var left_6537 = "";
     }
      
-    var s_6690 = $std_core._lp__plus__plus__1_rp_(left_6532, msg);
+    var s_6695 = $std_core._lp__plus__plus__1_rp_(left_6537, msg);
      
     var _x353 = opts.verboseMaxLine;
-    var s0_6523 = cutoff(s_6690, _x353);
+    var s0_6528 = cutoff(s_6695, _x353);
      
-    var v_17126 = ((s0_6523).split(("\n")));
+    var v_17126 = ((s0_6528).split(("\n")));
      
-    var xs_6522 = $std_core.map_5($std_core.vlist(v_17126), function(line /* string */ ) {
+    var xs_6527 = $std_core.map_5($std_core.vlist(v_17126), function(line /* string */ ) {
         return $std_core._lp__plus__plus__1_rp_("  ", line);
       });
      
-    if (xs_6522 === null) {
-      var s_6531 = "";
+    if (xs_6527 === null) {
+      var s_6536 = "";
     }
     else {
-      var s_6531 = $std_core._lift17203_unlines(xs_6522.tail, xs_6522.head);
+      var s_6536 = $std_core._lift17203_unlines(xs_6527.tail, xs_6527.head);
     }
-    return $std_core.printsln(s_6531);
+    return $std_core.printsln(s_6536);
   }
   else {
     return $std_core_types._Unit_;
@@ -2504,21 +2504,21 @@ export function printErr(opts, msg, level) /* (opts : options, msg : string, lev
   if (_x349) {
      
     var _x352 = opts.verboseMaxLine;
-    var s0_6523 = cutoff(msg, _x352);
+    var s0_6528 = cutoff(msg, _x352);
      
-    var v_17126 = ((s0_6523).split(("\n")));
+    var v_17126 = ((s0_6528).split(("\n")));
      
-    var xs_6522 = $std_core.map_5($std_core.vlist(v_17126), function(line /* string */ ) {
+    var xs_6527 = $std_core.map_5($std_core.vlist(v_17126), function(line /* string */ ) {
         return $std_core._lp__plus__plus__1_rp_("  ", line);
       });
      
-    if (xs_6522 === null) {
-      var s_6536 = "";
+    if (xs_6527 === null) {
+      var s_6541 = "";
     }
     else {
-      var s_6536 = $std_core._lift17203_unlines(xs_6522.tail, xs_6522.head);
+      var s_6541 = $std_core._lift17203_unlines(xs_6527.tail, xs_6527.head);
     }
-    return $std_core.printsln(s_6536);
+    return $std_core.printsln(s_6541);
   }
   else {
     return $std_core_types._Unit_;

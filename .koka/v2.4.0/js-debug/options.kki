@@ -150,11 +150,11 @@ pub fun options : (^ commandOptions : commandOptions) -> options;
 pub fun .copy.1 : (.this : commandOptions, showVersion : (std/core/types/optional :: V -> V)<std/core/types/bool>, convertTex : (std/core/types/optional :: V -> V)<std/core/types/bool>, outputDir : (std/core/types/optional :: V -> V)<std/core/types/string>, installDir : (std/core/types/optional :: V -> V)<std/core/types/string>, stylesDir : (std/core/types/optional :: V -> V)<std/core/types/string>, inputs : (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>>, options : (std/core/types/optional :: V -> V)<options>) -> commandOptions;
 fun cflag : (f : (commandOptions, std/core/types/bool) -> commandOptions) -> (std/os/flags/flag-parser :: V -> V)<commandOptions>;
 // monadic lift
-fun .mlift6871-check : (.c.6696 : std/core/types/string, cmdOptions : commandOptions, .c.6697 : std/core/types/string) -> commandOptions;
+fun .mlift6876-check : (.c.6701 : std/core/types/string, cmdOptions : commandOptions, .c.6702 : std/core/types/string) -> commandOptions;
 // monadic lift
-fun .mlift6872-check : (.y.6695 : std/os/path/path) -> <(std/core/io :: E)> std/core/types/string;
+fun .mlift6877-check : (.y.6700 : std/os/path/path) -> <(std/core/io :: E)> std/core/types/string;
 // monadic lift
-fun .mlift6873-check : (cmdOptions : commandOptions, .c.6696 : std/core/types/string) -> commandOptions;
+fun .mlift6878-check : (cmdOptions : commandOptions, .c.6701 : std/core/types/string) -> commandOptions;
 // sanitize options
 fun check : (cmdOptions : commandOptions) -> <(std/core/io :: E)> commandOptions;
 fun creq : (f : (commandOptions, std/core/types/string) -> commandOptions, help : std/core/types/string) -> (std/os/flags/flag-parser :: V -> V)<commandOptions>;
@@ -171,12 +171,12 @@ val optionsDesc : (std/core/list :: V -> V)<(std/os/flags/flag :: V -> V)<comman
 fun fullUsageInfo : () -> std/core/types/string;
 pub fun indent : (opts : options, s : std/core/types/string, maxLine : (std/core/types/optional :: V -> V)<std/core/types/int>) -> std/core/types/string;
 // monadic lift
-fun .mlift6874-parseOptionList : (.y.6699 : commandOptions) -> <(std/core/io :: E)> (std/core/types/maybe :: V -> V)<commandOptions>;
+fun .mlift6879-parseOptionList : (.y.6704 : commandOptions) -> <(std/core/io :: E)> (std/core/types/maybe :: V -> V)<commandOptions>;
 // monadic lift
-fun .mlift6875-parseOptionList : (cmdargs : (std/core/list :: V -> V)<std/core/types/string>, version0 : std/core/types/string, .y.6698 : commandOptions) -> <(std/core/types/alloc :: H -> X)<(std/core/types/global :: H)>,(std/core/console :: X),(std/core/types/div :: X),(std/core/types/handled :: HX -> X)<(std/core/exn :: HX)>,(std/core/fsys :: X),(std/core/types/ndet :: X),(std/core/net :: X),(std/core/types/read :: H -> X)<(std/core/types/global :: H)>,(std/core/ui :: X),(std/core/types/write :: H -> X)<(std/core/types/global :: H)>> (std/core/types/maybe :: V -> V)<commandOptions>;
+fun .mlift6880-parseOptionList : (cmdargs : (std/core/list :: V -> V)<std/core/types/string>, version0 : std/core/types/string, .y.6703 : commandOptions) -> <(std/core/types/alloc :: H -> X)<(std/core/types/global :: H)>,(std/core/console :: X),(std/core/types/div :: X),(std/core/types/handled :: HX -> X)<(std/core/exn :: HX)>,(std/core/fsys :: X),(std/core/types/ndet :: X),(std/core/net :: X),(std/core/types/read :: H -> X)<(std/core/types/global :: H)>,(std/core/ui :: X),(std/core/types/write :: H -> X)<(std/core/types/global :: H)>> (std/core/types/maybe :: V -> V)<commandOptions>;
 pub fun parseOptionList : (version : std/core/types/string, cmdargs : (std/core/list :: V -> V)<std/core/types/string>) -> <(std/core/io :: E)> (std/core/types/maybe :: V -> V)<commandOptions>;
 // monadic lift
-fun .mlift6876-parseOptions : (version0 : std/core/types/string, .y.6704 : (std/core/list :: V -> V)<std/core/types/string>) -> <(std/core/types/alloc :: H -> X)<(std/core/types/global :: H)>,(std/core/console :: X),(std/core/types/div :: X),(std/core/types/handled :: HX -> X)<(std/core/exn :: HX)>,(std/core/fsys :: X),(std/core/types/ndet :: X),(std/core/net :: X),(std/core/types/read :: H -> X)<(std/core/types/global :: H)>,(std/core/ui :: X),(std/core/types/write :: H -> X)<(std/core/types/global :: H)>> (std/core/types/maybe :: V -> V)<commandOptions>;
+fun .mlift6881-parseOptions : (version0 : std/core/types/string, .y.6709 : (std/core/list :: V -> V)<std/core/types/string>) -> <(std/core/types/alloc :: H -> X)<(std/core/types/global :: H)>,(std/core/console :: X),(std/core/types/div :: X),(std/core/types/handled :: HX -> X)<(std/core/exn :: HX)>,(std/core/fsys :: X),(std/core/types/ndet :: X),(std/core/net :: X),(std/core/types/read :: H -> X)<(std/core/types/global :: H)>,(std/core/ui :: X),(std/core/types/write :: H -> X)<(std/core/types/global :: H)>> (std/core/types/maybe :: V -> V)<commandOptions>;
 // Parse the options from the command line given some extra arguments (default `""`).
 pub fun parseOptions : (version : std/core/types/string, extra : (std/core/types/optional :: V -> V)<std/core/types/string>) -> <(std/core/io :: E)> (std/core/types/maybe :: V -> V)<commandOptions>;
 pub fun print : (opts : options, msg : std/core/types/string, level : (std/core/types/optional :: V -> V)<std/core/types/int>) -> <(std/core/console :: X)> ();
@@ -198,29 +198,29 @@ specialize "_*" fun cutoff // inline size: 1
       ((.skip std/core/types/False() : std/core/types/bool ) as .pat0: std/core/types/bool)
          -> val v.17126 : (std/core/types/vector :: V -> V)<std/core/types/string>
               = std/core/splitv(s, "\x0A");
-            val xs.6404 : (std/core/list :: V -> V)<std/core/types/string>
+            val xs.6409 : (std/core/list :: V -> V)<std/core/types/string>
               = std/core/map.5<std/core/types/string,std/core/types/string,(std/core/types/(<>) :: E)>((std/core/vlist<std/core/types/string>(v.17126, (std/core/types/None<(std/core/list :: V -> V)<std/core/types/string>>))), (fn(line: std/core/types/string){
                   (match ((std/core/(>=.1)((std/core/count.1(line)), n))) {
                     ((std/core/types/True() : std/core/types/bool ) as .pat10: std/core/types/bool)
-                       -> val len.6413 : std/core/types/int
+                       -> val len.6418 : std/core/types/int
                             = std/core/int-sub(n, 1);
-                          val left0.6409 : std/core/types/string
-                            = (match ((std/core/(<=.1)(len.6413, 0))) {
+                          val left0.6414 : std/core/types/string
+                            = (match ((std/core/(<=.1)(len.6418, 0))) {
                               ((std/core/types/True() : std/core/types/bool ) as .pat3: std/core/types/bool)
                                  -> "";
                               ((.skip std/core/types/False() : std/core/types/bool ) as .pat00: std/core/types/bool)
-                                 -> compat/substr2(line, 0, len.6413);
+                                 -> compat/substr2(line, 0, len.6418);
                             });
-                          val left.6407 : std/core/types/string
-                            = std/core/(++.1)(left0.6409, "\x0A");
-                          val right.6408 : std/core/types/string
+                          val left.6412 : std/core/types/string
+                            = std/core/(++.1)(left0.6414, "\x0A");
+                          val right.6413 : std/core/types/string
                             = compat/substr(line, (std/core/int-sub(n, 1)));
-                      std/core/(++.1)(left.6407, right.6408);
+                      std/core/(++.1)(left.6412, right.6413);
                     ((.skip std/core/types/False() : std/core/types/bool ) as .pat20: std/core/types/bool)
                        -> line;
                   });
                 }));
-        (match (xs.6404) {
+        (match (xs.6409) {
           ((std/core/Nil() : (std/core/list :: V -> V)<std/core/types/string> ) as .pat1: ((std/core/list :: V -> V)<std/core/types/string>))
              -> "";
           ((.skip std/core/Cons((x: std/core/types/string) : std/core/types/string, (xx: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string> ) as .pat2: ((std/core/list :: V -> V)<std/core/types/string>))
@@ -230,20 +230,20 @@ specialize "_*" fun cutoff // inline size: 1
   };
 specialize "__*" fun indent // inline size: 1
   = fn(opts: options, s: std/core/types/string, maxLine: (std/core/types/optional :: V -> V)<std/core/types/int>){
-    val s0.6523 : std/core/types/string
+    val s0.6528 : std/core/types/string
       = options/cutoff(s, (match (maxLine) {
-          ((std/core/types/Optional((.maxLine.5218: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat: ((std/core/types/optional :: V -> V)<std/core/types/int>))
-             -> .maxLine.5218;
+          ((std/core/types/Optional((.maxLine.5223: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+             -> .maxLine.5223;
           ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat0: ((std/core/types/optional :: V -> V)<std/core/types/int>))
              -> 78;
         }));
     val v.17126 : (std/core/types/vector :: V -> V)<std/core/types/string>
-      = std/core/splitv(s0.6523, "\x0A");
-    val xs.6522 : (std/core/list :: V -> V)<std/core/types/string>
+      = std/core/splitv(s0.6528, "\x0A");
+    val xs.6527 : (std/core/list :: V -> V)<std/core/types/string>
       = std/core/map.5<std/core/types/string,std/core/types/string,(std/core/types/(<>) :: E)>((std/core/vlist<std/core/types/string>(v.17126, (std/core/types/None<(std/core/list :: V -> V)<std/core/types/string>>))), (fn(line: std/core/types/string){
           (std/core/(++.1)("  ", line));
         }));
-    match (xs.6522) {
+    match (xs.6527) {
       ((std/core/Nil() : (std/core/list :: V -> V)<std/core/types/string> ) as .pat1: ((std/core/list :: V -> V)<std/core/types/string>))
          -> "";
       ((.skip std/core/Cons((x: std/core/types/string) : std/core/types/string, (xx: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string> ) as .pat2: ((std/core/list :: V -> V)<std/core/types/string>))
@@ -256,13 +256,13 @@ specialize "*__" fun print // inline size: 1
         ((.skip options/Options((.pat0: std/core/types/string) : std/core/types/string, (.pat1: std/core/types/bool) : std/core/types/bool, (.x: std/core/types/int) : std/core/types/int, (.pat2: std/core/types/int) : std/core/types/int, (.pat3: std/core/types/bool) : std/core/types/bool, (.pat4: std/core/types/bool) : std/core/types/bool, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: (std/core/types/maybe :: V -> V)<std/core/types/bool>) : (std/core/types/maybe :: V -> V)<std/core/types/bool>, (.pat7: std/core/types/bool) : std/core/types/bool, (.pat8: std/core/types/bool) : std/core/types/bool, (.pat9: std/core/types/bool) : std/core/types/bool, (.pat10: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/string) : std/core/types/string, (.pat14: std/core/types/string) : std/core/types/string, (.pat15: std/core/types/string) : std/core/types/string, (.pat16: std/core/types/string) : std/core/types/string, (.pat17: std/core/types/bool) : std/core/types/bool, (.pat18: std/core/types/string) : std/core/types/string, (.pat19: std/core/types/string) : std/core/types/string, (.pat20: std/core/types/string) : std/core/types/string, (.pat21: std/core/types/string) : std/core/types/string, (.pat22: std/core/types/bool) : std/core/types/bool, (.pat23: std/core/types/int) : std/core/types/int, (.pat24: std/core/types/int) : std/core/types/int, (.pat25: std/core/types/int) : std/core/types/int, (.pat26: std/core/types/int) : std/core/types/int, (.pat27: std/core/types/int) : std/core/types/int, (.pat28: std/core/types/bool) : std/core/types/bool, (.pat29: std/core/types/int) : std/core/types/int, (.pat30: std/core/types/bool) : std/core/types/bool, (.pat31: std/core/types/bool) : std/core/types/bool, (.pat32: std/core/types/string) : std/core/types/string, (.pat33: metadata) : metadata, (.pat34: (compat/dict/dict :: V -> V)<common/embedinfo>) : (compat/dict/dict :: V -> V)<common/embedinfo>, (.pat35: std/core/types/int) : std/core/types/int, (.pat36: std/core/types/int) : std/core/types/int, (.pat37: std/core/types/bool) : std/core/types/bool, (.pat38: std/core/types/bool) : std/core/types/bool, (.pat39: common/lineMap) : common/lineMap, (.pat40: std/core/types/string) : std/core/types/string, (.pat41: std/core/types/string) : std/core/types/string) : options ) as .pat: options)
            -> .x;
       }), (match (level) {
-        ((std/core/types/Optional((.level.6171: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat42: ((std/core/types/optional :: V -> V)<std/core/types/int>))
-           -> .level.6171;
+        ((std/core/types/Optional((.level.6176: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat42: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+           -> .level.6176;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat00: ((std/core/types/optional :: V -> V)<std/core/types/int>))
            -> 1;
       })))) {
       ((std/core/types/True() : std/core/types/bool ) as .pat110: std/core/types/bool)
-         -> val left.6532 : std/core/types/string
+         -> val left.6537 : std/core/types/string
               = (match ((std/core/find<(std/core/types/string, std/core/types/string)>((match (opts) {
                   ((.skip options/Options((.pat01: std/core/types/string) : std/core/types/string, (.pat111: std/core/types/bool) : std/core/types/bool, (.pat210: std/core/types/int) : std/core/types/int, (.pat310: std/core/types/int) : std/core/types/int, (.pat44: std/core/types/bool) : std/core/types/bool, (.pat50: std/core/types/bool) : std/core/types/bool, (.pat60: std/core/types/bool) : std/core/types/bool, (.pat70: (std/core/types/maybe :: V -> V)<std/core/types/bool>) : (std/core/types/maybe :: V -> V)<std/core/types/bool>, (.pat80: std/core/types/bool) : std/core/types/bool, (.pat90: std/core/types/bool) : std/core/types/bool, (.pat100: std/core/types/bool) : std/core/types/bool, (.pat112: std/core/types/string) : std/core/types/string, (.pat120: std/core/types/string) : std/core/types/string, (.pat130: std/core/types/string) : std/core/types/string, (.pat140: std/core/types/string) : std/core/types/string, (.pat150: std/core/types/string) : std/core/types/string, (.pat160: std/core/types/string) : std/core/types/string, (.pat170: std/core/types/string) : std/core/types/string, (.pat180: std/core/types/bool) : std/core/types/bool, (.pat190: std/core/types/string) : std/core/types/string, (.pat200: std/core/types/string) : std/core/types/string, (.pat211: std/core/types/string) : std/core/types/string, (.pat220: std/core/types/string) : std/core/types/string, (.pat230: std/core/types/bool) : std/core/types/bool, (.pat240: std/core/types/int) : std/core/types/int, (.pat250: std/core/types/int) : std/core/types/int, (.pat260: std/core/types/int) : std/core/types/int, (.pat270: std/core/types/int) : std/core/types/int, (.pat280: std/core/types/int) : std/core/types/int, (.pat290: std/core/types/bool) : std/core/types/bool, (.pat300: std/core/types/int) : std/core/types/int, (.pat311: std/core/types/bool) : std/core/types/bool, (.pat320: std/core/types/bool) : std/core/types/bool, (.pat330: std/core/types/string) : std/core/types/string, (.x0: metadata) : metadata, (.pat340: (compat/dict/dict :: V -> V)<common/embedinfo>) : (compat/dict/dict :: V -> V)<common/embedinfo>, (.pat350: std/core/types/int) : std/core/types/int, (.pat360: std/core/types/int) : std/core/types/int, (.pat370: std/core/types/bool) : std/core/types/bool, (.pat380: std/core/types/bool) : std/core/types/bool, (.pat390: common/lineMap) : common/lineMap, (.pat400: std/core/types/string) : std/core/types/string, (.pat410: std/core/types/string) : std/core/types/string) : options ) as .pat43: options)
                      -> .x0;
@@ -280,27 +280,27 @@ specialize "*__" fun print // inline size: 1
                 ((.skip std/core/types/Nothing() : (std/core/types/maybe :: V -> V)<(std/core/types/string, std/core/types/string)> ) as .pat02: ((std/core/types/maybe :: V -> V)<(std/core/types/string, std/core/types/string)>))
                    -> "";
               });
-            val s.6690 : std/core/types/string
-              = std/core/(++.1)(left.6532, msg);
-            val s0.6523 : std/core/types/string
-              = options/cutoff(s.6690, (match (opts) {
+            val s.6695 : std/core/types/string
+              = std/core/(++.1)(left.6537, msg);
+            val s0.6528 : std/core/types/string
+              = options/cutoff(s.6695, (match (opts) {
                   ((.skip options/Options((.pat011: std/core/types/string) : std/core/types/string, (.pat1110: std/core/types/bool) : std/core/types/bool, (.pat2100: std/core/types/int) : std/core/types/int, (.x01: std/core/types/int) : std/core/types/int, (.pat3100: std/core/types/bool) : std/core/types/bool, (.pat441: std/core/types/bool) : std/core/types/bool, (.pat500: std/core/types/bool) : std/core/types/bool, (.pat600: (std/core/types/maybe :: V -> V)<std/core/types/bool>) : (std/core/types/maybe :: V -> V)<std/core/types/bool>, (.pat700: std/core/types/bool) : std/core/types/bool, (.pat800: std/core/types/bool) : std/core/types/bool, (.pat900: std/core/types/bool) : std/core/types/bool, (.pat1000: std/core/types/string) : std/core/types/string, (.pat1120: std/core/types/string) : std/core/types/string, (.pat1200: std/core/types/string) : std/core/types/string, (.pat1300: std/core/types/string) : std/core/types/string, (.pat1400: std/core/types/string) : std/core/types/string, (.pat1500: std/core/types/string) : std/core/types/string, (.pat1600: std/core/types/string) : std/core/types/string, (.pat1700: std/core/types/bool) : std/core/types/bool, (.pat1800: std/core/types/string) : std/core/types/string, (.pat1900: std/core/types/string) : std/core/types/string, (.pat2000: std/core/types/string) : std/core/types/string, (.pat2110: std/core/types/string) : std/core/types/string, (.pat2200: std/core/types/bool) : std/core/types/bool, (.pat2300: std/core/types/int) : std/core/types/int, (.pat2400: std/core/types/int) : std/core/types/int, (.pat2500: std/core/types/int) : std/core/types/int, (.pat2600: std/core/types/int) : std/core/types/int, (.pat2700: std/core/types/int) : std/core/types/int, (.pat2800: std/core/types/bool) : std/core/types/bool, (.pat2900: std/core/types/int) : std/core/types/int, (.pat3000: std/core/types/bool) : std/core/types/bool, (.pat3110: std/core/types/bool) : std/core/types/bool, (.pat3200: std/core/types/string) : std/core/types/string, (.pat3300: metadata) : metadata, (.pat3400: (compat/dict/dict :: V -> V)<common/embedinfo>) : (compat/dict/dict :: V -> V)<common/embedinfo>, (.pat3500: std/core/types/int) : std/core/types/int, (.pat3600: std/core/types/int) : std/core/types/int, (.pat3700: std/core/types/bool) : std/core/types/bool, (.pat3800: std/core/types/bool) : std/core/types/bool, (.pat3900: common/lineMap) : common/lineMap, (.pat4000: std/core/types/string) : std/core/types/string, (.pat4100: std/core/types/string) : std/core/types/string) : options ) as .pat431: options)
                      -> .x01;
                 }));
             val v.17126 : (std/core/types/vector :: V -> V)<std/core/types/string>
-              = std/core/splitv(s0.6523, "\x0A");
-            val xs.6522 : (std/core/list :: V -> V)<std/core/types/string>
+              = std/core/splitv(s0.6528, "\x0A");
+            val xs.6527 : (std/core/list :: V -> V)<std/core/types/string>
               = std/core/map.5<std/core/types/string,std/core/types/string,(std/core/types/(<>) :: E)>((std/core/vlist<std/core/types/string>(v.17126, (std/core/types/None<(std/core/list :: V -> V)<std/core/types/string>>))), (fn(line: std/core/types/string){
                   (std/core/(++.1)("  ", line));
                 }));
-            val s.6531 : std/core/types/string
-              = (match (xs.6522) {
+            val s.6536 : std/core/types/string
+              = (match (xs.6527) {
                 ((std/core/Nil() : (std/core/list :: V -> V)<std/core/types/string> ) as .pat113: ((std/core/list :: V -> V)<std/core/types/string>))
                    -> "";
                 ((.skip std/core/Cons((x: std/core/types/string) : std/core/types/string, (xx: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string> ) as .pat212: ((std/core/list :: V -> V)<std/core/types/string>))
                    -> std/core/.lift17203-unlines(xx, x);
               });
-        std/core/printsln(s.6531);
+        std/core/printsln(s.6536);
       ((.skip std/core/types/False() : std/core/types/bool ) as .pat2120: std/core/types/bool)
          -> std/core/types/();
     };
@@ -311,31 +311,31 @@ specialize "*__" fun printErr // inline size: 1
         ((.skip options/Options((.pat0: std/core/types/string) : std/core/types/string, (.pat1: std/core/types/bool) : std/core/types/bool, (.x: std/core/types/int) : std/core/types/int, (.pat2: std/core/types/int) : std/core/types/int, (.pat3: std/core/types/bool) : std/core/types/bool, (.pat4: std/core/types/bool) : std/core/types/bool, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: (std/core/types/maybe :: V -> V)<std/core/types/bool>) : (std/core/types/maybe :: V -> V)<std/core/types/bool>, (.pat7: std/core/types/bool) : std/core/types/bool, (.pat8: std/core/types/bool) : std/core/types/bool, (.pat9: std/core/types/bool) : std/core/types/bool, (.pat10: std/core/types/string) : std/core/types/string, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/string) : std/core/types/string, (.pat14: std/core/types/string) : std/core/types/string, (.pat15: std/core/types/string) : std/core/types/string, (.pat16: std/core/types/string) : std/core/types/string, (.pat17: std/core/types/bool) : std/core/types/bool, (.pat18: std/core/types/string) : std/core/types/string, (.pat19: std/core/types/string) : std/core/types/string, (.pat20: std/core/types/string) : std/core/types/string, (.pat21: std/core/types/string) : std/core/types/string, (.pat22: std/core/types/bool) : std/core/types/bool, (.pat23: std/core/types/int) : std/core/types/int, (.pat24: std/core/types/int) : std/core/types/int, (.pat25: std/core/types/int) : std/core/types/int, (.pat26: std/core/types/int) : std/core/types/int, (.pat27: std/core/types/int) : std/core/types/int, (.pat28: std/core/types/bool) : std/core/types/bool, (.pat29: std/core/types/int) : std/core/types/int, (.pat30: std/core/types/bool) : std/core/types/bool, (.pat31: std/core/types/bool) : std/core/types/bool, (.pat32: std/core/types/string) : std/core/types/string, (.pat33: metadata) : metadata, (.pat34: (compat/dict/dict :: V -> V)<common/embedinfo>) : (compat/dict/dict :: V -> V)<common/embedinfo>, (.pat35: std/core/types/int) : std/core/types/int, (.pat36: std/core/types/int) : std/core/types/int, (.pat37: std/core/types/bool) : std/core/types/bool, (.pat38: std/core/types/bool) : std/core/types/bool, (.pat39: common/lineMap) : common/lineMap, (.pat40: std/core/types/string) : std/core/types/string, (.pat41: std/core/types/string) : std/core/types/string) : options ) as .pat: options)
            -> .x;
       }), (match (level) {
-        ((std/core/types/Optional((.level.6286: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat42: ((std/core/types/optional :: V -> V)<std/core/types/int>))
-           -> .level.6286;
+        ((std/core/types/Optional((.level.6291: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat42: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+           -> .level.6291;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat00: ((std/core/types/optional :: V -> V)<std/core/types/int>))
            -> 0;
       })))) {
       ((std/core/types/True() : std/core/types/bool ) as .pat110: std/core/types/bool)
-         -> val s0.6523 : std/core/types/string
+         -> val s0.6528 : std/core/types/string
               = options/cutoff(msg, (match (opts) {
                   ((.skip options/Options((.pat010: std/core/types/string) : std/core/types/string, (.pat1110: std/core/types/bool) : std/core/types/bool, (.pat2100: std/core/types/int) : std/core/types/int, (.x0: std/core/types/int) : std/core/types/int, (.pat310: std/core/types/bool) : std/core/types/bool, (.pat44: std/core/types/bool) : std/core/types/bool, (.pat50: std/core/types/bool) : std/core/types/bool, (.pat60: (std/core/types/maybe :: V -> V)<std/core/types/bool>) : (std/core/types/maybe :: V -> V)<std/core/types/bool>, (.pat70: std/core/types/bool) : std/core/types/bool, (.pat80: std/core/types/bool) : std/core/types/bool, (.pat90: std/core/types/bool) : std/core/types/bool, (.pat100: std/core/types/string) : std/core/types/string, (.pat112: std/core/types/string) : std/core/types/string, (.pat120: std/core/types/string) : std/core/types/string, (.pat130: std/core/types/string) : std/core/types/string, (.pat140: std/core/types/string) : std/core/types/string, (.pat150: std/core/types/string) : std/core/types/string, (.pat160: std/core/types/string) : std/core/types/string, (.pat170: std/core/types/bool) : std/core/types/bool, (.pat180: std/core/types/string) : std/core/types/string, (.pat190: std/core/types/string) : std/core/types/string, (.pat200: std/core/types/string) : std/core/types/string, (.pat211: std/core/types/string) : std/core/types/string, (.pat220: std/core/types/bool) : std/core/types/bool, (.pat230: std/core/types/int) : std/core/types/int, (.pat240: std/core/types/int) : std/core/types/int, (.pat250: std/core/types/int) : std/core/types/int, (.pat260: std/core/types/int) : std/core/types/int, (.pat270: std/core/types/int) : std/core/types/int, (.pat280: std/core/types/bool) : std/core/types/bool, (.pat290: std/core/types/int) : std/core/types/int, (.pat300: std/core/types/bool) : std/core/types/bool, (.pat311: std/core/types/bool) : std/core/types/bool, (.pat320: std/core/types/string) : std/core/types/string, (.pat330: metadata) : metadata, (.pat340: (compat/dict/dict :: V -> V)<common/embedinfo>) : (compat/dict/dict :: V -> V)<common/embedinfo>, (.pat350: std/core/types/int) : std/core/types/int, (.pat360: std/core/types/int) : std/core/types/int, (.pat370: std/core/types/bool) : std/core/types/bool, (.pat380: std/core/types/bool) : std/core/types/bool, (.pat390: common/lineMap) : common/lineMap, (.pat400: std/core/types/string) : std/core/types/string, (.pat410: std/core/types/string) : std/core/types/string) : options ) as .pat430: options)
                      -> .x0;
                 }));
             val v.17126 : (std/core/types/vector :: V -> V)<std/core/types/string>
-              = std/core/splitv(s0.6523, "\x0A");
-            val xs.6522 : (std/core/list :: V -> V)<std/core/types/string>
+              = std/core/splitv(s0.6528, "\x0A");
+            val xs.6527 : (std/core/list :: V -> V)<std/core/types/string>
               = std/core/map.5<std/core/types/string,std/core/types/string,(std/core/types/(<>) :: E)>((std/core/vlist<std/core/types/string>(v.17126, (std/core/types/None<(std/core/list :: V -> V)<std/core/types/string>>))), (fn(line: std/core/types/string){
                   (std/core/(++.1)("  ", line));
                 }));
-            val s.6536 : std/core/types/string
-              = (match (xs.6522) {
+            val s.6541 : std/core/types/string
+              = (match (xs.6527) {
                 ((std/core/Nil() : (std/core/list :: V -> V)<std/core/types/string> ) as .pat111: ((std/core/list :: V -> V)<std/core/types/string>))
                    -> "";
                 ((.skip std/core/Cons((x: std/core/types/string) : std/core/types/string, (xx: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string> ) as .pat210: ((std/core/list :: V -> V)<std/core/types/string>))
                    -> std/core/.lift17203-unlines(xx, x);
               });
-        std/core/printsln(s.6536);
+        std/core/printsln(s.6541);
       ((.skip std/core/types/False() : std/core/types/bool ) as .pat212: std/core/types/bool)
          -> std/core/types/();
     };
@@ -351,7 +351,7 @@ specialize "_*" fun setMeta // inline size: 1
               = (compat/indexOf.1(keyval, ":"));
         (match ((std/core/(>.1)(i, 0))) {
           ((std/core/types/True() : std/core/types/bool ) as .pat: std/core/types/bool)
-             -> val s0.6422 : std/core/types/string
+             -> val s0.6427 : std/core/types/string
                   = (match ((std/core/(<=.1)(i, 0))) {
                     ((std/core/types/True() : std/core/types/bool ) as .pat0: std/core/types/bool)
                        -> "";
@@ -359,27 +359,27 @@ specialize "_*" fun setMeta // inline size: 1
                        -> compat/substr2(keyval, 0, i);
                   });
                 val key : std/core/types/string
-                  = std/core/trim-right((std/core/trim-left(s0.6422)));
-                val s2.6426 : std/core/types/string
+                  = std/core/trim-right((std/core/trim-left(s0.6427)));
+                val s2.6431 : std/core/types/string
                   = compat/substr(keyval, (std/core/int-add(i, 1)));
                 val s3 : std/core/types/string
-                  = std/core/trim-right((std/core/trim-left(s2.6426)));
-                val .arg.2195 : (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>>
+                  = std/core/trim-right((std/core/trim-left(s2.6431)));
+                val .arg.2200 : (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>>
                   = std/core/types/Optional<(std/core/list :: V -> V)<(std/core/types/string, std/core/types/string)>>((std/core/append<(std/core/types/string, std/core/types/string)>((match (opts) {
                       ((.skip options/Options((.pat01: std/core/types/string) : std/core/types/string, (.pat10: std/core/types/bool) : std/core/types/bool, (.pat2: std/core/types/int) : std/core/types/int, (.pat3: std/core/types/int) : std/core/types/int, (.pat4: std/core/types/bool) : std/core/types/bool, (.pat5: std/core/types/bool) : std/core/types/bool, (.pat6: std/core/types/bool) : std/core/types/bool, (.pat7: (std/core/types/maybe :: V -> V)<std/core/types/bool>) : (std/core/types/maybe :: V -> V)<std/core/types/bool>, (.pat8: std/core/types/bool) : std/core/types/bool, (.pat9: std/core/types/bool) : std/core/types/bool, (.pat100: std/core/types/bool) : std/core/types/bool, (.pat11: std/core/types/string) : std/core/types/string, (.pat12: std/core/types/string) : std/core/types/string, (.pat13: std/core/types/string) : std/core/types/string, (.pat14: std/core/types/string) : std/core/types/string, (.pat15: std/core/types/string) : std/core/types/string, (.pat16: std/core/types/string) : std/core/types/string, (.pat17: std/core/types/string) : std/core/types/string, (.pat18: std/core/types/bool) : std/core/types/bool, (.pat19: std/core/types/string) : std/core/types/string, (.pat20: std/core/types/string) : std/core/types/string, (.pat21: std/core/types/string) : std/core/types/string, (.pat22: std/core/types/string) : std/core/types/string, (.pat23: std/core/types/bool) : std/core/types/bool, (.pat24: std/core/types/int) : std/core/types/int, (.pat25: std/core/types/int) : std/core/types/int, (.pat26: std/core/types/int) : std/core/types/int, (.pat27: std/core/types/int) : std/core/types/int, (.pat28: std/core/types/int) : std/core/types/int, (.pat29: std/core/types/bool) : std/core/types/bool, (.pat30: std/core/types/int) : std/core/types/int, (.pat31: std/core/types/bool) : std/core/types/bool, (.pat32: std/core/types/bool) : std/core/types/bool, (.pat33: std/core/types/string) : std/core/types/string, (.x: metadata) : metadata, (.pat34: (compat/dict/dict :: V -> V)<common/embedinfo>) : (compat/dict/dict :: V -> V)<common/embedinfo>, (.pat35: std/core/types/int) : std/core/types/int, (.pat36: std/core/types/int) : std/core/types/int, (.pat37: std/core/types/bool) : std/core/types/bool, (.pat38: std/core/types/bool) : std/core/types/bool, (.pat39: common/lineMap) : common/lineMap, (.pat40: std/core/types/string) : std/core/types/string, (.pat41: std/core/types/string) : std/core/types/string) : options ) as .pat1: options)
                          -> .x;
                     }), (std/core/Cons<(std/core/types/string, std/core/types/string)>((std/core/types/(,)<std/core/types/string,std/core/types/string>(key, s3)), (std/core/Nil<(std/core/types/string, std/core/types/string)>))))));
-            options/.copy(opts, (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/bool>), (std/core/types/None<std/core/types/int>), (std/core/types/None<std/core/types/int>), (std/core/types/None<std/core/types/bool>), (std/core/types/None<std/core/types/bool>), (std/core/types/None<std/core/types/bool>), (std/core/types/None<(std/core/types/maybe :: V -> V)<std/core/types/bool>>), (std/core/types/None<std/core/types/bool>), (std/core/types/None<std/core/types/bool>), (std/core/types/None<std/core/types/bool>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/bool>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/bool>), (std/core/types/None<std/core/types/int>), (std/core/types/None<std/core/types/int>), (std/core/types/None<std/core/types/int>), (std/core/types/None<std/core/types/int>), (std/core/types/None<std/core/types/int>), (std/core/types/None<std/core/types/bool>), (std/core/types/None<std/core/types/int>), (std/core/types/None<std/core/types/bool>), (std/core/types/None<std/core/types/bool>), (std/core/types/None<std/core/types/string>), .arg.2195, (std/core/types/None<(compat/dict/dict :: V -> V)<common/embedinfo>>), (std/core/types/None<std/core/types/int>), (std/core/types/None<std/core/types/int>), (std/core/types/None<std/core/types/bool>), (std/core/types/None<std/core/types/bool>), (std/core/types/None<common/lineMap>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/string>));
+            options/.copy(opts, (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/bool>), (std/core/types/None<std/core/types/int>), (std/core/types/None<std/core/types/int>), (std/core/types/None<std/core/types/bool>), (std/core/types/None<std/core/types/bool>), (std/core/types/None<std/core/types/bool>), (std/core/types/None<(std/core/types/maybe :: V -> V)<std/core/types/bool>>), (std/core/types/None<std/core/types/bool>), (std/core/types/None<std/core/types/bool>), (std/core/types/None<std/core/types/bool>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/bool>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/bool>), (std/core/types/None<std/core/types/int>), (std/core/types/None<std/core/types/int>), (std/core/types/None<std/core/types/int>), (std/core/types/None<std/core/types/int>), (std/core/types/None<std/core/types/int>), (std/core/types/None<std/core/types/bool>), (std/core/types/None<std/core/types/int>), (std/core/types/None<std/core/types/bool>), (std/core/types/None<std/core/types/bool>), (std/core/types/None<std/core/types/string>), .arg.2200, (std/core/types/None<(compat/dict/dict :: V -> V)<common/embedinfo>>), (std/core/types/None<std/core/types/int>), (std/core/types/None<std/core/types/int>), (std/core/types/None<std/core/types/bool>), (std/core/types/None<std/core/types/bool>), (std/core/types/None<common/lineMap>), (std/core/types/None<std/core/types/string>), (std/core/types/None<std/core/types/string>));
           ((.skip std/core/types/False() : std/core/types/bool ) as .pat02: std/core/types/bool)
-             -> val message.6432 : std/core/types/string
+             -> val message.6437 : std/core/types/string
                   = std/core/(++.1)("illegal --meta option: ", value);
                 val _ : ()
                   = compat/log/log((match ((std/core/types/None<std/core/types/string>)) {
-                      ((std/core/types/Optional((.logname.3098: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat42: ((std/core/types/optional :: V -> V)<std/core/types/string>))
-                         -> .logname.3098;
+                      ((std/core/types/Optional((.logname.3126: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat42: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+                         -> .logname.3126;
                       ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat03: ((std/core/types/optional :: V -> V)<std/core/types/string>))
                          -> "warning";
-                    }), (std/core/(++.1)("  warning: ", message.6432)));
+                    }), (std/core/(++.1)("  warning: ", message.6437)));
             opts;
         });
       }));
@@ -764,490 +764,490 @@ fun getDocName // inline size: 4
   };
 inline fun .create-Options // inline size: 46
   = fn(version0: (std/core/types/optional :: V -> V)<std/core/types/string>, bench0: (std/core/types/optional :: V -> V)<std/core/types/bool>, verbose0: (std/core/types/optional :: V -> V)<std/core/types/int>, verboseMaxLine0: (std/core/types/optional :: V -> V)<std/core/types/int>, pedantic0: (std/core/types/optional :: V -> V)<std/core/types/bool>, sanitize0: (std/core/types/optional :: V -> V)<std/core/types/bool>, xmp0: (std/core/types/optional :: V -> V)<std/core/types/bool>, full0: (std/core/types/optional :: V -> V)<(std/core/types/maybe :: V -> V)<std/core/types/bool>>, tex0: (std/core/types/optional :: V -> V)<std/core/types/bool>, rebuild0: (std/core/types/optional :: V -> V)<std/core/types/bool>, sandbox0: (std/core/types/optional :: V -> V)<std/core/types/bool>, prelude0: (std/core/types/optional :: V -> V)<std/core/types/string>, title0: (std/core/types/optional :: V -> V)<std/core/types/string>, texHeader0: (std/core/types/optional :: V -> V)<std/core/types/string>, texHeaderx0: (std/core/types/optional :: V -> V)<std/core/types/string>, texDocHeader0: (std/core/types/optional :: V -> V)<std/core/types/string>, texDocHeaderx0: (std/core/types/optional :: V -> V)<std/core/types/string>, texFooter0: (std/core/types/optional :: V -> V)<std/core/types/string>, texSectionNum0: (std/core/types/optional :: V -> V)<std/core/types/bool>, bib0: (std/core/types/optional :: V -> V)<std/core/types/string>, packages0: (std/core/types/optional :: V -> V)<std/core/types/string>, packagesx0: (std/core/types/optional :: V -> V)<std/core/types/string>, docClass0: (std/core/types/optional :: V -> V)<std/core/types/string>, citeAll0: (std/core/types/optional :: V -> V)<std/core/types/bool>, tocDepth0: (std/core/types/optional :: V -> V)<std/core/types/int>, headingDepth0: (std/core/types/optional :: V -> V)<std/core/types/int>, headingBase0: (std/core/types/optional :: V -> V)<std/core/types/int>, sectionMax0: (std/core/types/optional :: V -> V)<std/core/types/int>, sectionBase0: (std/core/types/optional :: V -> V)<std/core/types/int>, starBold0: (std/core/types/optional :: V -> V)<std/core/types/bool>, prettyAlign0: (std/core/types/optional :: V -> V)<std/core/types/int>, logo0: (std/core/types/optional :: V -> V)<std/core/types/bool>, highlight0: (std/core/types/optional :: V -> V)<std/core/types/bool>, hilitelang0: (std/core/types/optional :: V -> V)<std/core/types/string>, metadata0: (std/core/types/optional :: V -> V)<metadata>, embedinfos0: (std/core/types/optional :: V -> V)<(compat/dict/dict :: V -> V)<common/embedinfo>>, embedLimit0: (std/core/types/optional :: V -> V)<std/core/types/int>, lineNo0: (std/core/types/optional :: V -> V)<std/core/types/int>, lineNoWeb0: (std/core/types/optional :: V -> V)<std/core/types/bool>, copyStyles0: (std/core/types/optional :: V -> V)<std/core/types/bool>, lineMap0: (std/core/types/optional :: V -> V)<common/lineMap>, extractStart0: (std/core/types/optional :: V -> V)<std/core/types/string>, extractEnd0: (std/core/types/optional :: V -> V)<std/core/types/string>){
-    val .embedinfos.2709 : (compat/dict/dict :: V -> V)<common/embedinfo>
+    val .embedinfos.2714 : (compat/dict/dict :: V -> V)<common/embedinfo>
       = match (embedinfos0) {
-        ((std/core/types/Optional((.embedinfos.2710: (compat/dict/dict :: V -> V)<common/embedinfo>) : (compat/dict/dict :: V -> V)<common/embedinfo>) : (std/core/types/optional :: V -> V)<(compat/dict/dict :: V -> V)<common/embedinfo>> ) as .pat69: ((std/core/types/optional :: V -> V)<(compat/dict/dict :: V -> V)<common/embedinfo>>))
-           -> .embedinfos.2710;
+        ((std/core/types/Optional((.embedinfos.2715: (compat/dict/dict :: V -> V)<common/embedinfo>) : (compat/dict/dict :: V -> V)<common/embedinfo>) : (std/core/types/optional :: V -> V)<(compat/dict/dict :: V -> V)<common/embedinfo>> ) as .pat69: ((std/core/types/optional :: V -> V)<(compat/dict/dict :: V -> V)<common/embedinfo>>))
+           -> .embedinfos.2715;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<(compat/dict/dict :: V -> V)<common/embedinfo>> ) as .pat70: ((std/core/types/optional :: V -> V)<(compat/dict/dict :: V -> V)<common/embedinfo>>))
            -> compat/dict/dict<common/embedinfo>();
       };
-    val .embedLimit.2721 : std/core/types/int
+    val .embedLimit.2726 : std/core/types/int
       = match (embedLimit0) {
-        ((std/core/types/Optional((.embedLimit.2722: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat71: ((std/core/types/optional :: V -> V)<std/core/types/int>))
-           -> .embedLimit.2722;
+        ((std/core/types/Optional((.embedLimit.2727: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat71: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+           -> .embedLimit.2727;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat72: ((std/core/types/optional :: V -> V)<std/core/types/int>))
            -> std/core/(*)(512, 1024);
       };
     options/Options((match (version0) {
-        ((std/core/types/Optional((.version.2553: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat: ((std/core/types/optional :: V -> V)<std/core/types/string>))
-           -> .version.2553;
+        ((std/core/types/Optional((.version.2558: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> .version.2558;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat0: ((std/core/types/optional :: V -> V)<std/core/types/string>))
            -> "";
       }), (match (bench0) {
-        ((std/core/types/Optional((.bench.2557: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat1: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
-           -> .bench.2557;
+        ((std/core/types/Optional((.bench.2562: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat1: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+           -> .bench.2562;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat2: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
            -> std/core/types/False;
       }), (match (verbose0) {
-        ((std/core/types/Optional((.verbose.2561: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat3: ((std/core/types/optional :: V -> V)<std/core/types/int>))
-           -> .verbose.2561;
+        ((std/core/types/Optional((.verbose.2566: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat3: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+           -> .verbose.2566;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat4: ((std/core/types/optional :: V -> V)<std/core/types/int>))
            -> 0;
       }), (match (verboseMaxLine0) {
-        ((std/core/types/Optional((.verboseMaxLine.2565: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat5: ((std/core/types/optional :: V -> V)<std/core/types/int>))
-           -> .verboseMaxLine.2565;
+        ((std/core/types/Optional((.verboseMaxLine.2570: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat5: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+           -> .verboseMaxLine.2570;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat6: ((std/core/types/optional :: V -> V)<std/core/types/int>))
            -> 78;
       }), (match (pedantic0) {
-        ((std/core/types/Optional((.pedantic.2569: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat7: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
-           -> .pedantic.2569;
+        ((std/core/types/Optional((.pedantic.2574: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat7: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+           -> .pedantic.2574;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat8: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
            -> std/core/types/False;
       }), (match (sanitize0) {
-        ((std/core/types/Optional((.sanitize.2573: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat9: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
-           -> .sanitize.2573;
+        ((std/core/types/Optional((.sanitize.2578: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat9: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+           -> .sanitize.2578;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat10: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
            -> std/core/types/False;
       }), (match (xmp0) {
-        ((std/core/types/Optional((.xmp.2577: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat11: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
-           -> .xmp.2577;
+        ((std/core/types/Optional((.xmp.2582: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat11: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+           -> .xmp.2582;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat12: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
            -> std/core/types/False;
       }), (match (full0) {
-        ((std/core/types/Optional((.full.2582: (std/core/types/maybe :: V -> V)<std/core/types/bool>) : (std/core/types/maybe :: V -> V)<std/core/types/bool>) : (std/core/types/optional :: V -> V)<(std/core/types/maybe :: V -> V)<std/core/types/bool>> ) as .pat13: ((std/core/types/optional :: V -> V)<(std/core/types/maybe :: V -> V)<std/core/types/bool>>))
-           -> .full.2582;
+        ((std/core/types/Optional((.full.2587: (std/core/types/maybe :: V -> V)<std/core/types/bool>) : (std/core/types/maybe :: V -> V)<std/core/types/bool>) : (std/core/types/optional :: V -> V)<(std/core/types/maybe :: V -> V)<std/core/types/bool>> ) as .pat13: ((std/core/types/optional :: V -> V)<(std/core/types/maybe :: V -> V)<std/core/types/bool>>))
+           -> .full.2587;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<(std/core/types/maybe :: V -> V)<std/core/types/bool>> ) as .pat14: ((std/core/types/optional :: V -> V)<(std/core/types/maybe :: V -> V)<std/core/types/bool>>))
            -> std/core/types/Nothing<std/core/types/bool>;
       }), (match (tex0) {
-        ((std/core/types/Optional((.tex.2586: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat15: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
-           -> .tex.2586;
+        ((std/core/types/Optional((.tex.2591: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat15: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+           -> .tex.2591;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat16: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
            -> std/core/types/True;
       }), (match (rebuild0) {
-        ((std/core/types/Optional((.rebuild.2590: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat17: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
-           -> .rebuild.2590;
+        ((std/core/types/Optional((.rebuild.2595: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat17: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+           -> .rebuild.2595;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat18: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
            -> std/core/types/False;
       }), (match (sandbox0) {
-        ((std/core/types/Optional((.sandbox.2594: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat19: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
-           -> .sandbox.2594;
+        ((std/core/types/Optional((.sandbox.2599: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat19: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+           -> .sandbox.2599;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat20: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
            -> std/core/types/False;
       }), (match (prelude0) {
-        ((std/core/types/Optional((.prelude.2598: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat21: ((std/core/types/optional :: V -> V)<std/core/types/string>))
-           -> .prelude.2598;
+        ((std/core/types/Optional((.prelude.2603: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat21: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> .prelude.2603;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat22: ((std/core/types/optional :: V -> V)<std/core/types/string>))
            -> "prelude";
       }), (match (title0) {
-        ((std/core/types/Optional((.title.2602: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat23: ((std/core/types/optional :: V -> V)<std/core/types/string>))
-           -> .title.2602;
+        ((std/core/types/Optional((.title.2607: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat23: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> .title.2607;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat24: ((std/core/types/optional :: V -> V)<std/core/types/string>))
            -> "";
       }), (match (texHeader0) {
-        ((std/core/types/Optional((.texHeader.2606: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat25: ((std/core/types/optional :: V -> V)<std/core/types/string>))
-           -> .texHeader.2606;
+        ((std/core/types/Optional((.texHeader.2611: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat25: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> .texHeader.2611;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat26: ((std/core/types/optional :: V -> V)<std/core/types/string>))
            -> "";
       }), (match (texHeaderx0) {
-        ((std/core/types/Optional((.texHeaderx.2610: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat27: ((std/core/types/optional :: V -> V)<std/core/types/string>))
-           -> .texHeaderx.2610;
+        ((std/core/types/Optional((.texHeaderx.2615: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat27: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> .texHeaderx.2615;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat28: ((std/core/types/optional :: V -> V)<std/core/types/string>))
            -> "";
       }), (match (texDocHeader0) {
-        ((std/core/types/Optional((.texDocHeader.2614: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat29: ((std/core/types/optional :: V -> V)<std/core/types/string>))
-           -> .texDocHeader.2614;
+        ((std/core/types/Optional((.texDocHeader.2619: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat29: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> .texDocHeader.2619;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat30: ((std/core/types/optional :: V -> V)<std/core/types/string>))
            -> "";
       }), (match (texDocHeaderx0) {
-        ((std/core/types/Optional((.texDocHeaderx.2618: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat31: ((std/core/types/optional :: V -> V)<std/core/types/string>))
-           -> .texDocHeaderx.2618;
+        ((std/core/types/Optional((.texDocHeaderx.2623: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat31: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> .texDocHeaderx.2623;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat32: ((std/core/types/optional :: V -> V)<std/core/types/string>))
            -> "";
       }), (match (texFooter0) {
-        ((std/core/types/Optional((.texFooter.2622: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat33: ((std/core/types/optional :: V -> V)<std/core/types/string>))
-           -> .texFooter.2622;
+        ((std/core/types/Optional((.texFooter.2627: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat33: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> .texFooter.2627;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat34: ((std/core/types/optional :: V -> V)<std/core/types/string>))
            -> "";
       }), (match (texSectionNum0) {
-        ((std/core/types/Optional((.texSectionNum.2626: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat35: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
-           -> .texSectionNum.2626;
+        ((std/core/types/Optional((.texSectionNum.2631: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat35: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+           -> .texSectionNum.2631;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat36: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
            -> std/core/types/True;
       }), (match (bib0) {
-        ((std/core/types/Optional((.bib.2630: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat37: ((std/core/types/optional :: V -> V)<std/core/types/string>))
-           -> .bib.2630;
+        ((std/core/types/Optional((.bib.2635: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat37: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> .bib.2635;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat38: ((std/core/types/optional :: V -> V)<std/core/types/string>))
            -> "";
       }), (match (packages0) {
-        ((std/core/types/Optional((.packages.2634: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat39: ((std/core/types/optional :: V -> V)<std/core/types/string>))
-           -> .packages.2634;
+        ((std/core/types/Optional((.packages.2639: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat39: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> .packages.2639;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat40: ((std/core/types/optional :: V -> V)<std/core/types/string>))
            -> "";
       }), (match (packagesx0) {
-        ((std/core/types/Optional((.packagesx.2638: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat41: ((std/core/types/optional :: V -> V)<std/core/types/string>))
-           -> .packagesx.2638;
+        ((std/core/types/Optional((.packagesx.2643: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat41: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> .packagesx.2643;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat42: ((std/core/types/optional :: V -> V)<std/core/types/string>))
            -> "";
       }), (match (docClass0) {
-        ((std/core/types/Optional((.docClass.2642: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat43: ((std/core/types/optional :: V -> V)<std/core/types/string>))
-           -> .docClass.2642;
+        ((std/core/types/Optional((.docClass.2647: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat43: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> .docClass.2647;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat44: ((std/core/types/optional :: V -> V)<std/core/types/string>))
            -> "";
       }), (match (citeAll0) {
-        ((std/core/types/Optional((.citeAll.2646: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat45: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
-           -> .citeAll.2646;
+        ((std/core/types/Optional((.citeAll.2651: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat45: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+           -> .citeAll.2651;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat46: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
            -> std/core/types/False;
       }), (match (tocDepth0) {
-        ((std/core/types/Optional((.tocDepth.2650: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat47: ((std/core/types/optional :: V -> V)<std/core/types/int>))
-           -> .tocDepth.2650;
+        ((std/core/types/Optional((.tocDepth.2655: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat47: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+           -> .tocDepth.2655;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat48: ((std/core/types/optional :: V -> V)<std/core/types/int>))
            -> 3;
       }), (match (headingDepth0) {
-        ((std/core/types/Optional((.headingDepth.2654: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat49: ((std/core/types/optional :: V -> V)<std/core/types/int>))
-           -> .headingDepth.2654;
+        ((std/core/types/Optional((.headingDepth.2659: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat49: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+           -> .headingDepth.2659;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat50: ((std/core/types/optional :: V -> V)<std/core/types/int>))
            -> 3;
       }), (match (headingBase0) {
-        ((std/core/types/Optional((.headingBase.2658: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat51: ((std/core/types/optional :: V -> V)<std/core/types/int>))
-           -> .headingBase.2658;
+        ((std/core/types/Optional((.headingBase.2663: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat51: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+           -> .headingBase.2663;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat52: ((std/core/types/optional :: V -> V)<std/core/types/int>))
            -> 2;
       }), (match (sectionMax0) {
-        ((std/core/types/Optional((.sectionMax.2662: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat53: ((std/core/types/optional :: V -> V)<std/core/types/int>))
-           -> .sectionMax.2662;
+        ((std/core/types/Optional((.sectionMax.2667: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat53: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+           -> .sectionMax.2667;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat54: ((std/core/types/optional :: V -> V)<std/core/types/int>))
            -> 0;
       }), (match (sectionBase0) {
-        ((std/core/types/Optional((.sectionBase.2666: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat55: ((std/core/types/optional :: V -> V)<std/core/types/int>))
-           -> .sectionBase.2666;
+        ((std/core/types/Optional((.sectionBase.2671: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat55: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+           -> .sectionBase.2671;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat56: ((std/core/types/optional :: V -> V)<std/core/types/int>))
            -> 1;
       }), (match (starBold0) {
-        ((std/core/types/Optional((.starBold.2670: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat57: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
-           -> .starBold.2670;
+        ((std/core/types/Optional((.starBold.2675: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat57: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+           -> .starBold.2675;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat58: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
            -> std/core/types/False;
       }), (match (prettyAlign0) {
-        ((std/core/types/Optional((.prettyAlign.2674: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat59: ((std/core/types/optional :: V -> V)<std/core/types/int>))
-           -> .prettyAlign.2674;
+        ((std/core/types/Optional((.prettyAlign.2679: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat59: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+           -> .prettyAlign.2679;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat60: ((std/core/types/optional :: V -> V)<std/core/types/int>))
            -> 2;
       }), (match (logo0) {
-        ((std/core/types/Optional((.logo.2678: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat61: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
-           -> .logo.2678;
+        ((std/core/types/Optional((.logo.2683: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat61: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+           -> .logo.2683;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat62: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
            -> std/core/types/False;
       }), (match (highlight0) {
-        ((std/core/types/Optional((.highlight.2682: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat63: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
-           -> .highlight.2682;
+        ((std/core/types/Optional((.highlight.2687: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat63: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+           -> .highlight.2687;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat64: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
            -> std/core/types/True;
       }), (match (hilitelang0) {
-        ((std/core/types/Optional((.hilitelang.2686: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat65: ((std/core/types/optional :: V -> V)<std/core/types/string>))
-           -> .hilitelang.2686;
+        ((std/core/types/Optional((.hilitelang.2691: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat65: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> .hilitelang.2691;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat66: ((std/core/types/optional :: V -> V)<std/core/types/string>))
            -> "";
       }), (match (metadata0) {
-        ((std/core/types/Optional((.metadata.2691: metadata) : metadata) : (std/core/types/optional :: V -> V)<metadata> ) as .pat67: ((std/core/types/optional :: V -> V)<metadata>))
-           -> .metadata.2691;
+        ((std/core/types/Optional((.metadata.2696: metadata) : metadata) : (std/core/types/optional :: V -> V)<metadata> ) as .pat67: ((std/core/types/optional :: V -> V)<metadata>))
+           -> .metadata.2696;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<metadata> ) as .pat68: ((std/core/types/optional :: V -> V)<metadata>))
            -> std/core/Nil<(std/core/types/string, std/core/types/string)>;
-      }), .embedinfos.2709, .embedLimit.2721, (match (lineNo0) {
-        ((std/core/types/Optional((.lineNo.2726: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat73: ((std/core/types/optional :: V -> V)<std/core/types/int>))
-           -> .lineNo.2726;
+      }), .embedinfos.2714, .embedLimit.2726, (match (lineNo0) {
+        ((std/core/types/Optional((.lineNo.2731: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat73: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+           -> .lineNo.2731;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat74: ((std/core/types/optional :: V -> V)<std/core/types/int>))
            -> 1;
       }), (match (lineNoWeb0) {
-        ((std/core/types/Optional((.lineNoWeb.2730: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat75: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
-           -> .lineNoWeb.2730;
+        ((std/core/types/Optional((.lineNoWeb.2735: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat75: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+           -> .lineNoWeb.2735;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat76: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
            -> std/core/types/False;
       }), (match (copyStyles0) {
-        ((std/core/types/Optional((.copyStyles.2734: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat77: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
-           -> .copyStyles.2734;
+        ((std/core/types/Optional((.copyStyles.2739: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat77: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+           -> .copyStyles.2739;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat78: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
            -> std/core/types/True;
       }), (match (lineMap0) {
-        ((std/core/types/Optional((.lineMap.2738: common/lineMap) : common/lineMap) : (std/core/types/optional :: V -> V)<common/lineMap> ) as .pat79: ((std/core/types/optional :: V -> V)<common/lineMap>))
-           -> .lineMap.2738;
+        ((std/core/types/Optional((.lineMap.2743: common/lineMap) : common/lineMap) : (std/core/types/optional :: V -> V)<common/lineMap> ) as .pat79: ((std/core/types/optional :: V -> V)<common/lineMap>))
+           -> .lineMap.2743;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<common/lineMap> ) as .pat80: ((std/core/types/optional :: V -> V)<common/lineMap>))
            -> common/End;
       }), (match (extractStart0) {
-        ((std/core/types/Optional((.extractStart.2742: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat81: ((std/core/types/optional :: V -> V)<std/core/types/string>))
-           -> .extractStart.2742;
+        ((std/core/types/Optional((.extractStart.2747: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat81: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> .extractStart.2747;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat82: ((std/core/types/optional :: V -> V)<std/core/types/string>))
            -> "^(?:\x5C/\x5C/|--|[#%]|[<]!--|\x5C(\x5C*) *BEGIN *: *(\x5Cw+) *(?:--[>]|\x5C*\x5C))?$";
       }), (match (extractEnd0) {
-        ((std/core/types/Optional((.extractEnd.2746: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat83: ((std/core/types/optional :: V -> V)<std/core/types/string>))
-           -> .extractEnd.2746;
+        ((std/core/types/Optional((.extractEnd.2751: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat83: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> .extractEnd.2751;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat84: ((std/core/types/optional :: V -> V)<std/core/types/string>))
            -> "^(?:\x5C/\x5C/|--|[#%]|[<]!--|\x5C(\x5C*) *END *(?:[:] *(\x5Cw+) *)?(?:--[>]|\x5C*\x5C))?$";
       }));
   };
 inline fun .create-CommandOptions // inline size: 54
   = fn(showVersion0: (std/core/types/optional :: V -> V)<std/core/types/bool>, convertTex0: (std/core/types/optional :: V -> V)<std/core/types/bool>, outputDir0: (std/core/types/optional :: V -> V)<std/core/types/string>, installDir0: (std/core/types/optional :: V -> V)<std/core/types/string>, stylesDir0: (std/core/types/optional :: V -> V)<std/core/types/string>, inputs0: (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>>, options0: (std/core/types/optional :: V -> V)<options>){
-    val .options.2908 : options
+    val .options.2913 : options
           = match (options0) {
-            ((std/core/types/Optional((.options.2909: options) : options) : (std/core/types/optional :: V -> V)<options> ) as .pat11: ((std/core/types/optional :: V -> V)<options>))
-               -> .options.2909;
+            ((std/core/types/Optional((.options.2914: options) : options) : (std/core/types/optional :: V -> V)<options> ) as .pat11: ((std/core/types/optional :: V -> V)<options>))
+               -> .options.2914;
             ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<options> ) as .pat12: ((std/core/types/optional :: V -> V)<options>))
-               -> val .embedinfos.2709 : (compat/dict/dict :: V -> V)<common/embedinfo>
+               -> val .embedinfos.2714 : (compat/dict/dict :: V -> V)<common/embedinfo>
                     = (match ((std/core/types/None<(compat/dict/dict :: V -> V)<common/embedinfo>>)) {
-                      ((std/core/types/Optional((.embedinfos.2710: (compat/dict/dict :: V -> V)<common/embedinfo>) : (compat/dict/dict :: V -> V)<common/embedinfo>) : (std/core/types/optional :: V -> V)<(compat/dict/dict :: V -> V)<common/embedinfo>> ) as .pat69: ((std/core/types/optional :: V -> V)<(compat/dict/dict :: V -> V)<common/embedinfo>>))
-                         -> .embedinfos.2710;
+                      ((std/core/types/Optional((.embedinfos.2715: (compat/dict/dict :: V -> V)<common/embedinfo>) : (compat/dict/dict :: V -> V)<common/embedinfo>) : (std/core/types/optional :: V -> V)<(compat/dict/dict :: V -> V)<common/embedinfo>> ) as .pat69: ((std/core/types/optional :: V -> V)<(compat/dict/dict :: V -> V)<common/embedinfo>>))
+                         -> .embedinfos.2715;
                       ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<(compat/dict/dict :: V -> V)<common/embedinfo>> ) as .pat70: ((std/core/types/optional :: V -> V)<(compat/dict/dict :: V -> V)<common/embedinfo>>))
                          -> compat/dict/dict<common/embedinfo>();
                     });
-                  val .embedLimit.2721 : std/core/types/int
+                  val .embedLimit.2726 : std/core/types/int
                     = (match ((std/core/types/None<std/core/types/int>)) {
-                      ((std/core/types/Optional((.embedLimit.2722: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat71: ((std/core/types/optional :: V -> V)<std/core/types/int>))
-                         -> .embedLimit.2722;
+                      ((std/core/types/Optional((.embedLimit.2727: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat71: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+                         -> .embedLimit.2727;
                       ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat72: ((std/core/types/optional :: V -> V)<std/core/types/int>))
                          -> std/core/(*)(512, 1024);
                     });
               options/Options((match ((std/core/types/None<std/core/types/string>)) {
-                  ((std/core/types/Optional((.version.2553: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat: ((std/core/types/optional :: V -> V)<std/core/types/string>))
-                     -> .version.2553;
+                  ((std/core/types/Optional((.version.2558: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+                     -> .version.2558;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat0: ((std/core/types/optional :: V -> V)<std/core/types/string>))
                      -> "";
                 }), (match ((std/core/types/None<std/core/types/bool>)) {
-                  ((std/core/types/Optional((.bench.2557: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat1: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
-                     -> .bench.2557;
+                  ((std/core/types/Optional((.bench.2562: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat1: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+                     -> .bench.2562;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat2: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
                      -> std/core/types/False;
                 }), (match ((std/core/types/None<std/core/types/int>)) {
-                  ((std/core/types/Optional((.verbose.2561: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat3: ((std/core/types/optional :: V -> V)<std/core/types/int>))
-                     -> .verbose.2561;
+                  ((std/core/types/Optional((.verbose.2566: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat3: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+                     -> .verbose.2566;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat4: ((std/core/types/optional :: V -> V)<std/core/types/int>))
                      -> 0;
                 }), (match ((std/core/types/None<std/core/types/int>)) {
-                  ((std/core/types/Optional((.verboseMaxLine.2565: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat5: ((std/core/types/optional :: V -> V)<std/core/types/int>))
-                     -> .verboseMaxLine.2565;
+                  ((std/core/types/Optional((.verboseMaxLine.2570: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat5: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+                     -> .verboseMaxLine.2570;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat6: ((std/core/types/optional :: V -> V)<std/core/types/int>))
                      -> 78;
                 }), (match ((std/core/types/None<std/core/types/bool>)) {
-                  ((std/core/types/Optional((.pedantic.2569: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat7: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
-                     -> .pedantic.2569;
+                  ((std/core/types/Optional((.pedantic.2574: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat7: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+                     -> .pedantic.2574;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat8: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
                      -> std/core/types/False;
                 }), (match ((std/core/types/None<std/core/types/bool>)) {
-                  ((std/core/types/Optional((.sanitize.2573: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat9: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
-                     -> .sanitize.2573;
+                  ((std/core/types/Optional((.sanitize.2578: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat9: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+                     -> .sanitize.2578;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat10: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
                      -> std/core/types/False;
                 }), (match ((std/core/types/None<std/core/types/bool>)) {
-                  ((std/core/types/Optional((.xmp.2577: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat110: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
-                     -> .xmp.2577;
+                  ((std/core/types/Optional((.xmp.2582: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat110: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+                     -> .xmp.2582;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat120: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
                      -> std/core/types/False;
                 }), (match ((std/core/types/None<(std/core/types/maybe :: V -> V)<std/core/types/bool>>)) {
-                  ((std/core/types/Optional((.full.2582: (std/core/types/maybe :: V -> V)<std/core/types/bool>) : (std/core/types/maybe :: V -> V)<std/core/types/bool>) : (std/core/types/optional :: V -> V)<(std/core/types/maybe :: V -> V)<std/core/types/bool>> ) as .pat13: ((std/core/types/optional :: V -> V)<(std/core/types/maybe :: V -> V)<std/core/types/bool>>))
-                     -> .full.2582;
+                  ((std/core/types/Optional((.full.2587: (std/core/types/maybe :: V -> V)<std/core/types/bool>) : (std/core/types/maybe :: V -> V)<std/core/types/bool>) : (std/core/types/optional :: V -> V)<(std/core/types/maybe :: V -> V)<std/core/types/bool>> ) as .pat13: ((std/core/types/optional :: V -> V)<(std/core/types/maybe :: V -> V)<std/core/types/bool>>))
+                     -> .full.2587;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<(std/core/types/maybe :: V -> V)<std/core/types/bool>> ) as .pat14: ((std/core/types/optional :: V -> V)<(std/core/types/maybe :: V -> V)<std/core/types/bool>>))
                      -> std/core/types/Nothing<std/core/types/bool>;
                 }), (match ((std/core/types/None<std/core/types/bool>)) {
-                  ((std/core/types/Optional((.tex.2586: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat15: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
-                     -> .tex.2586;
+                  ((std/core/types/Optional((.tex.2591: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat15: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+                     -> .tex.2591;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat16: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
                      -> std/core/types/True;
                 }), (match ((std/core/types/None<std/core/types/bool>)) {
-                  ((std/core/types/Optional((.rebuild.2590: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat17: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
-                     -> .rebuild.2590;
+                  ((std/core/types/Optional((.rebuild.2595: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat17: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+                     -> .rebuild.2595;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat18: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
                      -> std/core/types/False;
                 }), (match ((std/core/types/None<std/core/types/bool>)) {
-                  ((std/core/types/Optional((.sandbox.2594: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat19: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
-                     -> .sandbox.2594;
+                  ((std/core/types/Optional((.sandbox.2599: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat19: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+                     -> .sandbox.2599;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat20: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
                      -> std/core/types/False;
                 }), (match ((std/core/types/None<std/core/types/string>)) {
-                  ((std/core/types/Optional((.prelude.2598: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat21: ((std/core/types/optional :: V -> V)<std/core/types/string>))
-                     -> .prelude.2598;
+                  ((std/core/types/Optional((.prelude.2603: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat21: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+                     -> .prelude.2603;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat22: ((std/core/types/optional :: V -> V)<std/core/types/string>))
                      -> "prelude";
                 }), (match ((std/core/types/None<std/core/types/string>)) {
-                  ((std/core/types/Optional((.title.2602: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat23: ((std/core/types/optional :: V -> V)<std/core/types/string>))
-                     -> .title.2602;
+                  ((std/core/types/Optional((.title.2607: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat23: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+                     -> .title.2607;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat24: ((std/core/types/optional :: V -> V)<std/core/types/string>))
                      -> "";
                 }), (match ((std/core/types/None<std/core/types/string>)) {
-                  ((std/core/types/Optional((.texHeader.2606: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat25: ((std/core/types/optional :: V -> V)<std/core/types/string>))
-                     -> .texHeader.2606;
+                  ((std/core/types/Optional((.texHeader.2611: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat25: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+                     -> .texHeader.2611;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat26: ((std/core/types/optional :: V -> V)<std/core/types/string>))
                      -> "";
                 }), (match ((std/core/types/None<std/core/types/string>)) {
-                  ((std/core/types/Optional((.texHeaderx.2610: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat27: ((std/core/types/optional :: V -> V)<std/core/types/string>))
-                     -> .texHeaderx.2610;
+                  ((std/core/types/Optional((.texHeaderx.2615: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat27: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+                     -> .texHeaderx.2615;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat28: ((std/core/types/optional :: V -> V)<std/core/types/string>))
                      -> "";
                 }), (match ((std/core/types/None<std/core/types/string>)) {
-                  ((std/core/types/Optional((.texDocHeader.2614: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat29: ((std/core/types/optional :: V -> V)<std/core/types/string>))
-                     -> .texDocHeader.2614;
+                  ((std/core/types/Optional((.texDocHeader.2619: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat29: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+                     -> .texDocHeader.2619;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat30: ((std/core/types/optional :: V -> V)<std/core/types/string>))
                      -> "";
                 }), (match ((std/core/types/None<std/core/types/string>)) {
-                  ((std/core/types/Optional((.texDocHeaderx.2618: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat31: ((std/core/types/optional :: V -> V)<std/core/types/string>))
-                     -> .texDocHeaderx.2618;
+                  ((std/core/types/Optional((.texDocHeaderx.2623: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat31: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+                     -> .texDocHeaderx.2623;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat32: ((std/core/types/optional :: V -> V)<std/core/types/string>))
                      -> "";
                 }), (match ((std/core/types/None<std/core/types/string>)) {
-                  ((std/core/types/Optional((.texFooter.2622: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat33: ((std/core/types/optional :: V -> V)<std/core/types/string>))
-                     -> .texFooter.2622;
+                  ((std/core/types/Optional((.texFooter.2627: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat33: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+                     -> .texFooter.2627;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat34: ((std/core/types/optional :: V -> V)<std/core/types/string>))
                      -> "";
                 }), (match ((std/core/types/None<std/core/types/bool>)) {
-                  ((std/core/types/Optional((.texSectionNum.2626: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat35: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
-                     -> .texSectionNum.2626;
+                  ((std/core/types/Optional((.texSectionNum.2631: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat35: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+                     -> .texSectionNum.2631;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat36: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
                      -> std/core/types/True;
                 }), (match ((std/core/types/None<std/core/types/string>)) {
-                  ((std/core/types/Optional((.bib.2630: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat37: ((std/core/types/optional :: V -> V)<std/core/types/string>))
-                     -> .bib.2630;
+                  ((std/core/types/Optional((.bib.2635: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat37: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+                     -> .bib.2635;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat38: ((std/core/types/optional :: V -> V)<std/core/types/string>))
                      -> "";
                 }), (match ((std/core/types/None<std/core/types/string>)) {
-                  ((std/core/types/Optional((.packages.2634: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat39: ((std/core/types/optional :: V -> V)<std/core/types/string>))
-                     -> .packages.2634;
+                  ((std/core/types/Optional((.packages.2639: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat39: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+                     -> .packages.2639;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat40: ((std/core/types/optional :: V -> V)<std/core/types/string>))
                      -> "";
                 }), (match ((std/core/types/None<std/core/types/string>)) {
-                  ((std/core/types/Optional((.packagesx.2638: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat41: ((std/core/types/optional :: V -> V)<std/core/types/string>))
-                     -> .packagesx.2638;
+                  ((std/core/types/Optional((.packagesx.2643: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat41: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+                     -> .packagesx.2643;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat42: ((std/core/types/optional :: V -> V)<std/core/types/string>))
                      -> "";
                 }), (match ((std/core/types/None<std/core/types/string>)) {
-                  ((std/core/types/Optional((.docClass.2642: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat43: ((std/core/types/optional :: V -> V)<std/core/types/string>))
-                     -> .docClass.2642;
+                  ((std/core/types/Optional((.docClass.2647: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat43: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+                     -> .docClass.2647;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat44: ((std/core/types/optional :: V -> V)<std/core/types/string>))
                      -> "";
                 }), (match ((std/core/types/None<std/core/types/bool>)) {
-                  ((std/core/types/Optional((.citeAll.2646: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat45: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
-                     -> .citeAll.2646;
+                  ((std/core/types/Optional((.citeAll.2651: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat45: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+                     -> .citeAll.2651;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat46: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
                      -> std/core/types/False;
                 }), (match ((std/core/types/None<std/core/types/int>)) {
-                  ((std/core/types/Optional((.tocDepth.2650: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat47: ((std/core/types/optional :: V -> V)<std/core/types/int>))
-                     -> .tocDepth.2650;
+                  ((std/core/types/Optional((.tocDepth.2655: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat47: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+                     -> .tocDepth.2655;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat48: ((std/core/types/optional :: V -> V)<std/core/types/int>))
                      -> 3;
                 }), (match ((std/core/types/None<std/core/types/int>)) {
-                  ((std/core/types/Optional((.headingDepth.2654: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat49: ((std/core/types/optional :: V -> V)<std/core/types/int>))
-                     -> .headingDepth.2654;
+                  ((std/core/types/Optional((.headingDepth.2659: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat49: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+                     -> .headingDepth.2659;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat50: ((std/core/types/optional :: V -> V)<std/core/types/int>))
                      -> 3;
                 }), (match ((std/core/types/None<std/core/types/int>)) {
-                  ((std/core/types/Optional((.headingBase.2658: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat51: ((std/core/types/optional :: V -> V)<std/core/types/int>))
-                     -> .headingBase.2658;
+                  ((std/core/types/Optional((.headingBase.2663: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat51: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+                     -> .headingBase.2663;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat52: ((std/core/types/optional :: V -> V)<std/core/types/int>))
                      -> 2;
                 }), (match ((std/core/types/None<std/core/types/int>)) {
-                  ((std/core/types/Optional((.sectionMax.2662: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat53: ((std/core/types/optional :: V -> V)<std/core/types/int>))
-                     -> .sectionMax.2662;
+                  ((std/core/types/Optional((.sectionMax.2667: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat53: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+                     -> .sectionMax.2667;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat54: ((std/core/types/optional :: V -> V)<std/core/types/int>))
                      -> 0;
                 }), (match ((std/core/types/None<std/core/types/int>)) {
-                  ((std/core/types/Optional((.sectionBase.2666: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat55: ((std/core/types/optional :: V -> V)<std/core/types/int>))
-                     -> .sectionBase.2666;
+                  ((std/core/types/Optional((.sectionBase.2671: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat55: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+                     -> .sectionBase.2671;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat56: ((std/core/types/optional :: V -> V)<std/core/types/int>))
                      -> 1;
                 }), (match ((std/core/types/None<std/core/types/bool>)) {
-                  ((std/core/types/Optional((.starBold.2670: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat57: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
-                     -> .starBold.2670;
+                  ((std/core/types/Optional((.starBold.2675: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat57: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+                     -> .starBold.2675;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat58: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
                      -> std/core/types/False;
                 }), (match ((std/core/types/None<std/core/types/int>)) {
-                  ((std/core/types/Optional((.prettyAlign.2674: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat59: ((std/core/types/optional :: V -> V)<std/core/types/int>))
-                     -> .prettyAlign.2674;
+                  ((std/core/types/Optional((.prettyAlign.2679: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat59: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+                     -> .prettyAlign.2679;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat60: ((std/core/types/optional :: V -> V)<std/core/types/int>))
                      -> 2;
                 }), (match ((std/core/types/None<std/core/types/bool>)) {
-                  ((std/core/types/Optional((.logo.2678: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat61: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
-                     -> .logo.2678;
+                  ((std/core/types/Optional((.logo.2683: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat61: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+                     -> .logo.2683;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat62: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
                      -> std/core/types/False;
                 }), (match ((std/core/types/None<std/core/types/bool>)) {
-                  ((std/core/types/Optional((.highlight.2682: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat63: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
-                     -> .highlight.2682;
+                  ((std/core/types/Optional((.highlight.2687: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat63: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+                     -> .highlight.2687;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat64: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
                      -> std/core/types/True;
                 }), (match ((std/core/types/None<std/core/types/string>)) {
-                  ((std/core/types/Optional((.hilitelang.2686: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat65: ((std/core/types/optional :: V -> V)<std/core/types/string>))
-                     -> .hilitelang.2686;
+                  ((std/core/types/Optional((.hilitelang.2691: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat65: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+                     -> .hilitelang.2691;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat66: ((std/core/types/optional :: V -> V)<std/core/types/string>))
                      -> "";
                 }), (match ((std/core/types/None<metadata>)) {
-                  ((std/core/types/Optional((.metadata.2691: metadata) : metadata) : (std/core/types/optional :: V -> V)<metadata> ) as .pat67: ((std/core/types/optional :: V -> V)<metadata>))
-                     -> .metadata.2691;
+                  ((std/core/types/Optional((.metadata.2696: metadata) : metadata) : (std/core/types/optional :: V -> V)<metadata> ) as .pat67: ((std/core/types/optional :: V -> V)<metadata>))
+                     -> .metadata.2696;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<metadata> ) as .pat68: ((std/core/types/optional :: V -> V)<metadata>))
                      -> std/core/Nil<(std/core/types/string, std/core/types/string)>;
-                }), .embedinfos.2709, .embedLimit.2721, (match ((std/core/types/None<std/core/types/int>)) {
-                  ((std/core/types/Optional((.lineNo.2726: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat73: ((std/core/types/optional :: V -> V)<std/core/types/int>))
-                     -> .lineNo.2726;
+                }), .embedinfos.2714, .embedLimit.2726, (match ((std/core/types/None<std/core/types/int>)) {
+                  ((std/core/types/Optional((.lineNo.2731: std/core/types/int) : std/core/types/int) : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat73: ((std/core/types/optional :: V -> V)<std/core/types/int>))
+                     -> .lineNo.2731;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/int> ) as .pat74: ((std/core/types/optional :: V -> V)<std/core/types/int>))
                      -> 1;
                 }), (match ((std/core/types/None<std/core/types/bool>)) {
-                  ((std/core/types/Optional((.lineNoWeb.2730: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat75: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
-                     -> .lineNoWeb.2730;
+                  ((std/core/types/Optional((.lineNoWeb.2735: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat75: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+                     -> .lineNoWeb.2735;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat76: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
                      -> std/core/types/False;
                 }), (match ((std/core/types/None<std/core/types/bool>)) {
-                  ((std/core/types/Optional((.copyStyles.2734: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat77: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
-                     -> .copyStyles.2734;
+                  ((std/core/types/Optional((.copyStyles.2739: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat77: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+                     -> .copyStyles.2739;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat78: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
                      -> std/core/types/True;
                 }), (match ((std/core/types/None<common/lineMap>)) {
-                  ((std/core/types/Optional((.lineMap.2738: common/lineMap) : common/lineMap) : (std/core/types/optional :: V -> V)<common/lineMap> ) as .pat79: ((std/core/types/optional :: V -> V)<common/lineMap>))
-                     -> .lineMap.2738;
+                  ((std/core/types/Optional((.lineMap.2743: common/lineMap) : common/lineMap) : (std/core/types/optional :: V -> V)<common/lineMap> ) as .pat79: ((std/core/types/optional :: V -> V)<common/lineMap>))
+                     -> .lineMap.2743;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<common/lineMap> ) as .pat80: ((std/core/types/optional :: V -> V)<common/lineMap>))
                      -> common/End;
                 }), (match ((std/core/types/None<std/core/types/string>)) {
-                  ((std/core/types/Optional((.extractStart.2742: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat81: ((std/core/types/optional :: V -> V)<std/core/types/string>))
-                     -> .extractStart.2742;
+                  ((std/core/types/Optional((.extractStart.2747: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat81: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+                     -> .extractStart.2747;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat82: ((std/core/types/optional :: V -> V)<std/core/types/string>))
                      -> "^(?:\x5C/\x5C/|--|[#%]|[<]!--|\x5C(\x5C*) *BEGIN *: *(\x5Cw+) *(?:--[>]|\x5C*\x5C))?$";
                 }), (match ((std/core/types/None<std/core/types/string>)) {
-                  ((std/core/types/Optional((.extractEnd.2746: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat83: ((std/core/types/optional :: V -> V)<std/core/types/string>))
-                     -> .extractEnd.2746;
+                  ((std/core/types/Optional((.extractEnd.2751: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat83: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+                     -> .extractEnd.2751;
                   ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat84: ((std/core/types/optional :: V -> V)<std/core/types/string>))
                      -> "^(?:\x5C/\x5C/|--|[#%]|[<]!--|\x5C(\x5C*) *END *(?:[:] *(\x5Cw+) *)?(?:--[>]|\x5C*\x5C))?$";
                 }));
           };
     options/CommandOptions((match (showVersion0) {
-        ((std/core/types/Optional((.showVersion.2797: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat85: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
-           -> .showVersion.2797;
+        ((std/core/types/Optional((.showVersion.2802: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat85: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+           -> .showVersion.2802;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat00: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
            -> std/core/types/False;
       }), (match (convertTex0) {
-        ((std/core/types/Optional((.convertTex.2801: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat111: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
-           -> .convertTex.2801;
+        ((std/core/types/Optional((.convertTex.2806: std/core/types/bool) : std/core/types/bool) : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat111: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
+           -> .convertTex.2806;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/bool> ) as .pat210: ((std/core/types/optional :: V -> V)<std/core/types/bool>))
            -> std/core/types/False;
       }), (match (outputDir0) {
-        ((std/core/types/Optional((.outputDir.2805: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat310: ((std/core/types/optional :: V -> V)<std/core/types/string>))
-           -> .outputDir.2805;
+        ((std/core/types/Optional((.outputDir.2810: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat310: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> .outputDir.2810;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat410: ((std/core/types/optional :: V -> V)<std/core/types/string>))
            -> "out";
       }), (match (installDir0) {
-        ((std/core/types/Optional((.installDir.2809: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat510: ((std/core/types/optional :: V -> V)<std/core/types/string>))
-           -> .installDir.2809;
+        ((std/core/types/Optional((.installDir.2814: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat510: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> .installDir.2814;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat610: ((std/core/types/optional :: V -> V)<std/core/types/string>))
            -> "";
       }), (match (stylesDir0) {
-        ((std/core/types/Optional((.stylesDir.2813: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat710: ((std/core/types/optional :: V -> V)<std/core/types/string>))
-           -> .stylesDir.2813;
+        ((std/core/types/Optional((.stylesDir.2818: std/core/types/string) : std/core/types/string) : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat710: ((std/core/types/optional :: V -> V)<std/core/types/string>))
+           -> .stylesDir.2818;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/string> ) as .pat86: ((std/core/types/optional :: V -> V)<std/core/types/string>))
            -> "";
       }), (match (inputs0) {
-        ((std/core/types/Optional((.inputs.2818: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>) : (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>> ) as .pat90: ((std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>>))
-           -> .inputs.2818;
+        ((std/core/types/Optional((.inputs.2823: (std/core/list :: V -> V)<std/core/types/string>) : (std/core/list :: V -> V)<std/core/types/string>) : (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>> ) as .pat90: ((std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>>))
+           -> .inputs.2823;
         ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>> ) as .pat100: ((std/core/types/optional :: V -> V)<(std/core/list :: V -> V)<std/core/types/string>>))
            -> std/core/Nil<std/core/types/string>;
-      }), .options.2908);
+      }), .options.2913);
   };
 fun fullUsageInfo // inline size: 3
   = fn(){
-    val left.6520 : std/core/types/string
+    val left.6525 : std/core/types/string
           = std/os/flags/usage<commandOptions>(options/optionsDesc, (std/core/types/Optional<std/core/types/string>("usage:\x0A madoko [options] files\x0A\x0Aoptions:")));
-    std/core/(++.1)(left.6520, "\x0A\x0APrefix a flag with \x27no-\x27 to negate it. For example \x27--no-logo\x27.");
+    std/core/(++.1)(left.6525, "\x0A\x0APrefix a flag with \x27no-\x27 to negate it. For example \x27--no-logo\x27.");
   };

@@ -275,24 +275,6 @@ fun parsePosInt( s : list<char>, base : int = 10 ) : maybe<int> {
   }
 }
 
-fun parseDigits( cs : list<char>, base : int = 10, acc : int = 0 ) : maybe<int> {
-  match(cs) {
-    Nil -> Just(acc)
-    Cons(c,cc) -> {
-      val d = if (c >= '0' && c <= (if (base >= 10) then '9' else ('0' + (base - 1).char))) then {
-                (c - '0').int
-              }
-              elif (base > 10 && base <= 36 && c >= 'a' && c <= ('a' + (base - 11).char)) then { 
-                (c - 'a').int + 10
-              }
-              elif (base > 10 && base <= 36 && c >= 'A' && c <= ('A' + (base - 11).char)) then { 
-                (c - 'A').int + 10
-              }
-              else return Nothing   
-      parseDigits(cc, base, base*acc + d)
-    }
-  }
-}
 
 fun dropWhile( xs : list<a>, predicate : a -> e bool ) : e list<a>
 {
@@ -373,6 +355,113 @@ fun zipWithAcc( f, i, acc, xs, ys )
   }
 }
 
+// Returns "true" if the integer `i`  is an odd number.
+pub fun odd( i ) {
+  return (i % 2 != 0);
+}
 
+// Returns "true" if the integer `i`  is an even number.
+pub fun even( i ) {
+  return (i % 2 == 0);
+}
+
+pub fun filterMap( xs : list<a>, pred : a -> e maybe<b> ) : e list<b>
+{
+  match(xs) {
+    Nil -> Nil
+    Cons(x,xx) -> match(pred(x)) {
+      Nothing -> xx.filterMap(pred)
+      Just(y) -> Cons(y,xx.filterMap(pred))
+    }
+  }
+}
+
+pub fun mbstring( ms : maybe<string> ) : string {
+  match(ms) {
+    Nothing -> ""
+    Just(s) -> s
+  }
+}
+
+
+
+// Parse digits in a "base" between 2 and 36 (default 10) given an initial value "acc" (default 0)
+// Returns "acc" on the empty string, and "Nothing" if an invalid digit is encountered.
+fun parseDigits( cs : list<char>, base : int = 10, acc : int = 0 ) : maybe<int> {
+  match(cs) {
+    Nil -> Just(acc)
+    Cons(c,cc) -> {
+      val d = if (c >= '0' && c <= (if (base >= 10) then '9' else ('0' + (base - 1).char))) then {
+                (c - '0').int
+              }
+              elif (base > 10 && base <= 36 && c >= 'a' && c <= ('a' + (base - 11).char)) then { 
+                (c - 'a').int + 10
+              }
+              elif (base > 10 && base <= 36 && c >= 'A' && c <= ('A' + (base - 11).char)) then { 
+                (c - 'A').int + 10
+              }
+              else return Nothing   
+      parseDigits(cc, base, base*acc + d)
+    }
+  }
+}
+
+
+pub fun parseFixed( s : string ) : maybe<float64> {
+  match(s.split(".",2)) {
+    Cons(pre,Cons(post,Nil)) -> {
+      match(pre.parseInt) {
+        Nothing -> Nothing
+        Just(d) -> match(post.parseInt) {
+          Nothing -> Nothing
+          Just(f) -> {
+            if (f < 0) then Nothing
+            elif (f == 0) then Just(d.float64)
+            else Just( d.float64 + (10.0^(post.length.float64) / f.float64) )
+          }
+        }
+      }
+    }
+    _ -> match(s.parseInt) {
+      Nothing -> Nothing
+      Just(i) -> Just(i.float64)
+    }
+  }
+}
+
+pub fun parseFixedDefault( s : string, default : float64 = 0.0 ) : float64 {
+  match(s.parseFixed) {
+    Nothing -> default
+    Just(d) -> d
+  }
+}
+
+pub extern floor : (d: float64) -> float64 {
+  cs "Math.Floor"
+  js "Math.floor"
+}
+
+
+fun indexOfAcc( xs : list<a>, pred : a -> bool, idx : int ) : int
+{
+  match(xs) {
+    Nil -> 0 - 1
+    Cons(x,xx) -> if (pred(x)) then idx else indexOfAcc(xx,pred,idx+1)
+  }
+}
+
+// Returns the index of the first element where "pred" holds, or "-1" if no such element exists.
+pub fun indexOf( xs : list<a>, pred : a -> bool ) : int
+{
+  indexOfAcc( xs, pred, 0 )
+}
+
+pub fun isNothing(x: maybe<a>): bool {
+  match(x) {
+    Nothing -> True
+    _ -> False
+  }
+
+}
 
 pub val maxInt = 0x7FFFFFFF

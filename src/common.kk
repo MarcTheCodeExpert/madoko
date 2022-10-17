@@ -16,6 +16,7 @@ import compat/regex
 import compat
 
 
+
 // Warning messages get logged
 pub fun warning( message : string, logname : string = "warning" ) : () {
   log(logname,"  warning: " + message)
@@ -291,6 +292,28 @@ pub type input {
   Tex         // TeX code that should be parsed (i.e for the bibliography)
   Raw( only: maybe<formatter> = Nothing ) // Raw content for some backend (or all)
   Markdown( only: maybe<formatter> = Nothing )  // Markdown -- perhaps only for some backend
+}
+
+
+pub fun isPre(x: input): bool {
+  match(x) {
+    Pre -> True
+    _ -> False
+  }
+}
+
+pub fun isMathDefs(x: input): bool {
+  match(x) {
+    MathDefs -> True
+    _ -> False
+  }
+}
+
+pub fun isRaw(x: input): bool {
+  match(x) {
+    Raw -> True
+    _ -> False
+  }
 }
 
 pub fun isMarkdown(x: input): bool {

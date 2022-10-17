@@ -185,48 +185,48 @@ fun getTableEnv( attrs : attrs ) : string {
    then attrs.lookupKey("tex-longtable","longtable")
    else "tabular"
 }
-
-pub fun fmtLatexCodeTable( ctx : inlineContext, ct : codeTable, attrs : attrs ) : string {
-  val table = attrs.getTableEnv
-  val content =
-      r"\\begin{mdcodetabular}" + ct.columns.show.braced +  r"\\begin" + table.braced + "{" + list(1,ct.columns).map(fn(_) {"l"}).join("") + r"}\n" + ct.rows.map( fn(row) { row.map(fmtLatexCodeCell).join("&") }).join(r"\\\\\n") +     r"\n\\end" + table.braced + r"\\end{mdcodetabular}%mdk\n"
-  texEnv("",content,attrs.addClass("para-block"))
-}
-
-fun fmtLatexCodeCell( ccell : ccell ) : string {
-  val align = if (ccell.center) then "c" else "l"
-  if (ccell.span <= 1) then ccell.content else "\\multicolumn{" + ccell.span.show + "}{" + align + "}{" + ccell.content + "}"
-}
-
-pub fun fmtLatexTable( ctx : inlineContext, head : list<row>, body : list<row>, colattrs : list<attrs>, attrs : attrs ) : string {
-  val rows = head + body
-  val td = if (attrs.hasClass("columns")) then "column" else "td"
-  val breakable = attrs.hasBoolKey("breakable") || attrs.hasClass("long") /* legacy */
-  val table = if (breakable) then "longtable" else "tabular"
-  val columns = max(1,rows.map(fn(r:row){ r.cells.length }).maximum)
-  val colattrsx = (colattrs + list(colattrs.length,columns).map(fn(i){ attrsNone })).take(columns)
-  val colfmts   = colattrsx.map(fn(ca) { fmtColumn(attrs,ca) })
-  val defcolwidth  = colattrsx.fmtDefaultColumnWidth
-  val tabcolsep    = attrs.lookupKey("tex-tabcolsep","1ex").cssWidth
-  val tbody = "\\begin{mdtabular}" + columns.show.braced  + defcolwidth.braced + tabcolsep.braced +
-                "%mdk\n\\begin{" + table + "}" +
-                "{" + colfmts.join + "}" +
-              head.fmtRows("th",colfmts,defcolwidth) + "\n" +
-              body.fmtRows(td,colfmts,defcolwidth) +
-              "\\end{" + table + "}\\end{mdtabular}\n"
-  attrs.cssAttrs(tbody, if (breakable) then [("display","block")] else [])
-}
-
-// pub fun fmtLatexPolyTable( ctx : inlineContext, ct : codeTable, attrs : attrs ) : string {
+pub fun fmtLatexCodeTable( ctx : inlineContext, ct : codeTable, attrs : attrs ) : string {""}
+// pub fun fmtLatexCodeTable( ctx : inlineContext, ct : codeTable, attrs : attrs ) : string {
 //   val table = attrs.getTableEnv
-//   val cols = list(1, ct.columns)
-//   val colDefs = cols.map(fn(col) { "\\column{C" + col.show + "}{l}%mdk\n" })
-//   val rowss = ct.rows.map(fn(row) { fmtLatexPolyRow(row, 1) })
 //   val content =
-//       "\\begin{mdmathpre}\\begin{pmboxed}%mdk\n" + colDefs.join("") + rowss.join("\\\\%mdk-2281\n") + "%mdk-2282\n\\end{pmboxed}\\end{mdmathpre}%mdk"
+//       r"\\begin{mdcodetabular}" + ct.columns.show.braced +  r"\\begin" + table.braced + "{" + list(1,ct.columns).map(fn(_) {"l"}).join("") + r"}\n" + ct.rows.map( fn(row) { row.map(fmtLatexCodeCell).join("&") }).join(r"\\\\\n") +     r"\n\\end" + table.braced + r"\\end{mdcodetabular}%mdk\n"
 //   texEnv("",content,attrs.addClass("para-block"))
 // }
+fun fmtLatexCodeCell( ccell : ccell ) : string {""}
+// fun fmtLatexCodeCell( ccell : ccell ) : string {
+//   val align = if (ccell.center) then "c" else "l"
+//   if (ccell.span <= 1) then ccell.content else "\\multicolumn{" + ccell.span.show + "}{" + align + "}{" + ccell.content + "}"
+// }
 
+// pub fun fmtLatexTable( ctx : inlineContext, head : list<row>, body : list<row>, colattrs : list<attrs>, attrs : attrs ) : string {
+//   val rows = head + body
+//   val td = if (attrs.hasClass("columns")) then "column" else "td"
+//   val breakable = attrs.hasBoolKey("breakable") || attrs.hasClass("long") /* legacy */
+//   val table = if (breakable) then "longtable" else "tabular"
+//   val columns = max(1,rows.map(fn(r:row){ r.cells.length }).maximum)
+//   val colattrsx = (colattrs + list(colattrs.length,columns).map(fn(i){ attrsNone })).take(columns)
+//   val colfmts   = colattrsx.map(fn(ca) { fmtColumn(attrs,ca) })
+//   val defcolwidth  = colattrsx.fmtDefaultColumnWidth
+//   val tabcolsep    = attrs.lookupKey("tex-tabcolsep","1ex").cssWidth
+//   val tbody = "\\begin{mdtabular}" + columns.show.braced  + defcolwidth.braced + tabcolsep.braced +
+//                 "%mdk\n\\begin{" + table + "}" +
+//                 "{" + colfmts.join + "}" +
+//               head.fmtRows("th",colfmts,defcolwidth) + "\n" +
+//               body.fmtRows(td,colfmts,defcolwidth) +
+//               "\\end{" + table + "}\\end{mdtabular}\n"
+//   attrs.cssAttrs(tbody, if (breakable) then [("display","block")] else [])
+// }
+
+pub fun fmtLatexPolyTable( ctx : inlineContext, ct : codeTable, attrs : attrs ) : string {
+  val table = attrs.getTableEnv
+  val cols = list(1, ct.columns)
+  val colDefs = cols.map(fn(col) { "\\column{C" + col.show + "}{l}%mdk\n" })
+  val rowss = ct.rows.map(fn(row) { fmtLatexPolyRow(row, 1) })
+  val content =
+      "\\begin{mdmathpre}\\begin{pmboxed}%mdk\n" + colDefs.join("") + rowss.join("\\\\%mdk-2281\n") + "%mdk-2282\n\\end{pmboxed}\\end{mdmathpre}%mdk"
+  texEnv("",content,attrs.addClass("para-block"))
+}
+fun fmtLatexPolyRow(cells: list<ccell>, col: int) : string {""}
 // fun fmtLatexPolyRow(cells: list<ccell>, col: int) : string {
 //   match(cells) {
 //     Nil -> ""
@@ -237,25 +237,25 @@ pub fun fmtLatexTable( ctx : inlineContext, head : list<row>, body : list<row>, 
 //   }
 // }
 
-// type line {
-//   Single
-//   Double
-//   NoLine
-// }
+type line {
+  Single
+  Double
+  NoLine
+}
 
-// pub fun isDouble(x: line): bool {
-//   match(x) {
-//     Double -> True
-//     _ -> False
-//   }
-// }
+pub fun isDouble(x: line): bool {
+  match(x) {
+    Double -> True
+    _ -> False
+  }
+}
 
-// pub fun isNoLine(x: line): bool {
-//   match(x) {
-//     NoLine -> True
-//     _ -> False
-//   }
-// }
+pub fun isNoLine(x: line): bool {
+  match(x) {
+    NoLine -> True
+    _ -> False
+  }
+}
 
 // val fmtRowLineBreak = "\\morecmidrules\n" // \\\\[-\\mdTablelineskip]\n"
 fun fmtColumn( attrs : attrs, colattr : attrs ) : string {""}

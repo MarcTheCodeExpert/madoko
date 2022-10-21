@@ -190,7 +190,7 @@ pub fun logDataLine( attrs ) : () {
 }
 
 // Parse _inline_ markdown elements and return formatted html
-pub fun formatInline( ctx : inlineContext, txt : string, attrs : attrs = attrsNone ) : <div> string
+pub fun formatInline( ctx : inlineContext, txt : string, attrs : attrs = attrsNone ) : string
 {
   formatInlineAcc(ctx,builder(), txt)
 }
@@ -203,18 +203,12 @@ pub fun parseLineInfo( lineInfo : string ) : (string,int) {
 }
 val rxDataLine = regex( r"^(.*:)?(\d+)$")
 
-// changed effect st<_h> --> <div,alloc<_h>, read<_h>,write<_h>|e>
-fun formatInlineAcc( ctx : inlineContext, acc : builder<h>, txt : string) : <div,st<h>> string
+fun formatInlineAcc( ctx : inlineContext, acc : builder<h>, txt : string) : st<h> string
 {
-  unsafe-total (fn() {
-    if (txt=="") return acc.build
-    val (s,next,_) = matchRules(ctx.grammar,ctx,txt,id)
-    formatInlineAcc(ctx, acc.append(s), txt.substr1(next))
-    }
-  )
+  if (txt=="") return acc.build
+  val (s,next,_) = matchRules(ctx.grammar,ctx,txt,id)
+  formatInlineAcc(ctx, acc.append(s), unsafe-decreasing(txt.substr1(next)))
 }
-
-
 
 pub fun mathPreX( txt : string ) : string
 {

@@ -29,7 +29,7 @@ pub fun parseBody( fcontext : formatContext,
                            metadata : metadata,
                            tocDepth : int,
                            secBase : int,
-                           secDepth : int) :  div (list<block>,formatContext)
+                           secDepth : int) :  (list<block>,formatContext)
 {
   parseDefinitions(fcontext, [Div([],(".madoko; line-adjust:0; line:" + lineNo.show).parseAttrs("body",src))],
                    metadata,tocDepth,secBase,secDepth)
@@ -43,7 +43,7 @@ pub fun parseDefinitions(
                      metadata : metadata,
                      tocDepth : int = 0,
                      secBase : int = 1,
-                     secDepth : int = 6 ) :  div (list<block>,formatContext)
+                     secDepth : int = 6 ) :  (list<block>,formatContext)
 {
   if (fcontext.inlineContext.bench)
     then parseDefinitionsBench(fcontext,blocks)
@@ -53,7 +53,7 @@ pub fun parseDefinitions(
 // Fast version for benchmarking
 fun parseDefinitionsBench(
                      fcontext : formatContext,
-                     blocks : list<block> ) :  div (list<block>,formatContext)
+                     blocks : list<block> ) :  (list<block>,formatContext)
 {
   val links  = mdict()
 
@@ -77,7 +77,7 @@ fun parseDefinitionsFull(
                      mdata : metadata,
                      tocDepth : int = 0,
                      secBase : int,
-                     secDepth : int ) :  div (list<block>,formatContext)
+                     secDepth : int ) : (list<block>,formatContext)
 {
   val counters = mdict()
   val nested   = mdict()
@@ -95,7 +95,7 @@ fun parseDefinitionsFull(
   val defaultAttrs : rules = rulesFromMeta(mdata)
 
   // process attributes
-  fun process( attrs : attrs, previousPar : parinfo, block : block ) : <div,st<_h>> block {
+  fun process( attrs : attrs, previousPar : parinfo, block : block ) : st<_h> block {
     val bname = block.blockName
 
     // merge and set default attributes
@@ -186,7 +186,7 @@ fun parseDefinitionsFull(
   }
 
   // process a block
-  fun parseDefBlock( previousPar : parinfo,  block : block ) : <st<_h>,div> block {
+  fun parseDefBlock( previousPar : parinfo,  block : block ) : st<_h> block {
     val attrs : attrs = match(block) {
       DefLink(id,link) -> {
         links[id] := link
@@ -276,7 +276,7 @@ type parinfo {
 }
 
 fun mapBlocks( blocks : list<block>,
-                    action : (parinfo,block) -> <st<h>,div|e> block  ) : <st<h>,div|e> list<block> {
+                    action : (parinfo,block) -> <st<h>|e> block  ) : <st<h>|e> list<block> {
   var previousPar := ParNone
   blocks.map fn(block) {
     val nblock = action(previousPar,block)
@@ -344,7 +344,7 @@ fun transformItem( blocks : list<block>, attrs: attrs ) : block {
   }
 }
 
-fun transformDiv( blocks : list<block>, attrs : attrs, fcontext : formatContext )  : block {
+fun transformDiv( blocks : list<block>, attrs : attrs, fcontext : formatContext ) : block {
   if (attrs.lookupKey("transform","") == "false") return Div(blocks,attrs)
   match(blocks) {                       // needed for internal divs like definition lists
     Nil              -> ()
@@ -413,7 +413,7 @@ fun extractCaption( blocks : list<block> ) : string
 // Divide into sections
 //--------------------------------------------------------
 
-fun sections( blocks : list<block>, secinfo : secinfo ) : div list<block>
+fun sections( blocks : list<block>, secinfo : secinfo ) : list<block>
 {
   if (secinfo.level > secinfo.secMax) return blocks
   match (blocks.findHeading(secinfo)) {
@@ -422,7 +422,7 @@ fun sections( blocks : list<block>, secinfo : secinfo ) : div list<block>
   }
 }
 
-fun sectionMap( blocks : list<block>, secinfo : secinfo ) : div list<block>
+fun sectionMap( blocks : list<block>, secinfo : secinfo ) : list<block>
 {
   if (secinfo.level > secinfo.secMax) return blocks
   blocks.map fn(block) {
@@ -435,7 +435,7 @@ fun sectionMap( blocks : list<block>, secinfo : secinfo ) : div list<block>
   }
 }
 
-fun sectionSpan( h : block, blocks : list<block>,  secinfo : secinfo  ) : div list<block>
+fun sectionSpan( h : block, blocks : list<block>,  secinfo : secinfo  ) : list<block>
 {
   fun createSection(content)
   {
@@ -497,7 +497,7 @@ fun headingLevel( block : block, default : int, defaultSection : int = default )
 
 
 // Create a table of contents
-fun createToc( tocName : string, headings : list<(int,attrs)>, labels : dict<label>, metadata : dict<string>, defaultAttrs : rules ) : div block
+fun createToc( tocName : string, headings : list<(int,attrs)>, labels : dict<label>, metadata : dict<string>, defaultAttrs : rules ) : block
 {
   val tocClass = if (tocName.isEmpty) then ".toc-contents" else ".toc-" + tocName
   val attrsText = ".toc; " + tocClass
@@ -516,7 +516,7 @@ fun tocList( items : string, depth: int, defaultAttrs : rules ) : string {
   }
 }
 
-fun tocItems( headings : list<(int,attrs)>, outerDepth : int, labels : dict<label>, metadata : dict<string>, defaultAttrs : rules ) : div string {
+fun tocItems( headings : list<(int,attrs)>, outerDepth : int, labels : dict<label>, metadata : dict<string>, defaultAttrs : rules ) : string {
   match(headings) {
     Nil -> ""
     Cons(hdr,hdrs) -> {

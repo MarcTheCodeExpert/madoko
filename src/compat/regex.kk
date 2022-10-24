@@ -3,7 +3,7 @@
 
    The regular expressions conform to the regular expressions of JavaScript
    as described at <https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions>
-*/  
+*/
 module compat/regex
 
 import compat
@@ -19,7 +19,7 @@ abstract struct regex( obj: any )
 // The result of a regular expression match, where "index" is the index in the
 // original source string where the match begins, "next" is the index just after
 // this match ("next == index + min(1,matched.length)"), "matched" is the content that
-// was matched, and "groups" is a vector that contains the content for each 
+// was matched, and "groups" is a vector that contains the content for each
 // capture group (where "groups[0] == matched").
 pub struct matched( index :int, next :int, matched :string, groups : groups )
 
@@ -31,11 +31,11 @@ extern regexSource( r : any ) : string {
 
 extern groupsIndex( groups : any, index : int ) : string {
   js inline "((#1)[#2] != null ? (#1)[#2] : '')"
-} 
+}
 
 extern groupsMatchedOn( groups : any, index : int ) : int {
   js inline "(#1[#2] ? 1 : 0)"  // mmm, doesn't catch empty group match.. but FireFox does not distinguish those :-(
-} 
+}
 
 // For alternative regular expressions, return the alternative that was matched.
 // If this was not an alternative regex, returns "-1"
@@ -78,13 +78,13 @@ pub fun source( r : regex ) : string {
 }
 
 // How many groups are captured by this regex?
-pub fun groupsCount( r : regex ) : int 
+pub fun groupsCount( r : regex ) : int
 {
   r.source.replaceAll(rxNonGroup,"").length;
 }
 val rxNonGroup = regex(r"[^\\\[(]+|\\[\s\S]?|\(\?|\[(?:[^\\\]]|\\.)*\]")
 
-// Return first group that was matched (or -1 if nothing was matched) 
+// Return first group that was matched (or -1 if nothing was matched)
 pub fun firstMatchedOn( groups : groups, start : int = 1, end : int = 10 ) : int
 {
   match (list(start,end).find(fn(i) { groups.matchedOn(i) })) {
@@ -120,13 +120,13 @@ pub fun regex( regex :string, ignorecase :bool = False, multiline : bool = False
   Regex(regexCreate(regex,if (ignorecase) then 1 else 0, if (multiline) then 1 else 0));
 }
 
-// Create a new _alternative_ regular expression. 
+// Create a new _alternative_ regular expression.
 // Matches any of the given patterns but the groups are local to each alternative.
 // See "alternative" to find out which alternative was matched. Contains an optimization
 // where a common prefix of all patterns is lifted out of the alternative to increase efficiency.
 // Takes two optional parameters. Set "ignoreCase" to "True"
 // to ignore uppercase/lowercase distinction. If  "multiline" is set to "True", then "^" and "$"
-// match also the beginning and end of every line (instead of the entire input).  
+// match also the beginning and end of every line (instead of the entire input).
 // Note: currently only supported in the javascript backend.
 pub fun regexAlt( regexs :list<string>, ignorecase :bool = False, multiline : bool = False ) : regex
 {
@@ -137,7 +137,7 @@ pub fun regexAlt( regexs :list<string>, ignorecase :bool = False, multiline : bo
 // See also "contains"
 // (note: this fun is called |exec| in JavaScript).
 pub fun find( s :string,  regex :regex, start :int = 0 ) : maybe<matched>
-{  
+{
   //if (start >= s.length) return Nothing
   regexExec(regex.obj,s,max(start,0))
   //return (if (matched.index < 0) then Nothing else Just(matched))
@@ -146,7 +146,7 @@ pub fun find( s :string,  regex :regex, start :int = 0 ) : maybe<matched>
 // Find all matches for a regular expression in a string.
 pub fun findAll( s :string,  regex :regex, start :int = 0 ) : vector<matched>
 {
-  if (start > s.length) return vector()  
+  if (start > s.length) return vector()
   return regexExecAll(regex.obj,s,max(start,0))
 }
 
@@ -194,16 +194,16 @@ pub fun replaceAll( s : string, regex: regex, repl :string, start : int = 0) : s
 
 // Does a regular expression pattern occur in a string "s"?
 // (note: called `test` in javascript)
-pub fun contains( s :string, r :regex, start :int = 0 ) : bool 
+pub fun contains( s :string, r :regex, start :int = 0 ) : bool
 {
   return s.find(r,start).bool
 }
 
 
-// Split a string "s" over separator "sep" where "sep" does not occur in 
+// Split a string "s" over separator "sep" where "sep" does not occur in
 // _tokens_ matching "exclude".
 // For example: `splitExclude("comma,'sep,arated',values", regex(","),regex("'[^']*'|[^',]"))`
-pub fun splitExclude( s : string, sep : regex, exclude : regex ) : <div> list<string>
+pub fun splitExclude( s : string, sep : regex, exclude : regex ) : list<string>
 {
   if (s=="") then [] else {
     val splitr = regex( r"^(?:((?:" + exclude.source + ")+)|(" + sep.source + "))")
@@ -211,19 +211,19 @@ pub fun splitExclude( s : string, sep : regex, exclude : regex ) : <div> list<st
   }
 }
 
-fun splitExcludeX( s : string, splitr : regex, acc : string ) : <div> list<string>
-{  
+fun splitExcludeX( s : string, splitr : regex, acc : string ) : list<string>
+{
 
     if (s=="") return [acc]
     match( s.find(splitr) ) {
-      Nothing -> s.substr1(1).splitExcludeX( splitr, acc + s.substr(0,1)) // todo: improve efficiency?
+      Nothing -> splitExcludeX(unsafe-decreasing(s.substr1(1)), splitr, acc + s.substr(0,1)) // todo: improve efficiency?
       Just(cap) -> {
         if (cap.groups.matchedOn(1)) {
-          s.substr1(cap.next).splitExcludeX( splitr, acc + s.substr(0,cap.next)) 
+          splitExcludeX(unsafe-decreasing(s.substr1(cap.next)), splitr, acc + s.substr(0,cap.next))
         }
         else {
-          Cons(acc, s.substr1(cap.next).splitExcludeX( splitr, "")) // todo: make tail recursive
+          Cons(acc, splitExcludeX(unsafe-decreasing(s.substr1(cap.next)), splitr, "")) // todo: make tail recursive
         }
       }
-    } 
+    }
 }

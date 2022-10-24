@@ -24,17 +24,19 @@ import texParser
 
 // // Parse source into blocks (see "parseBlocks") and
 // // process all definitions (see "parseDefinitions").
-// pub fun parseBody( fcontext : formatContext,
-//                            lineNo : int,
-//                            src : string,
-//                            metadata : metadata,
-//                            tocDepth : int,
-//                            secBase : int,
-//                            secDepth : int) :  div (list<block>,formatContext)
-// {
-//   parseDefinitions(fcontext, [Div([],(".madoko; line-adjust:0; line:" + lineNo.show).parseAttrs("body",src))],
-//                    metadata,tocDepth,secBase,secDepth)
-// }
+pub fun parseBody( fcontext : formatContext,
+                           lineNo : int,
+                           src : string,
+                           metadata : metadata,
+                           tocDepth : int,
+                           secBase : int,
+                           secDepth : int) : <div> (list<block>,formatContext)
+{
+  
+  ([Div([],(".madoko; line-adjust:0; line:" + lineNo.show).parseAttrs("body",src))], fcontext)
+  // parseDefinitions(fcontext, [Div([],(".madoko; line-adjust:0; line:" + lineNo.show).parseAttrs("body",src))],
+  //                  metadata,tocDepth,secBase,secDepth)
+}
 
 // Visits all blocks and returns a dictionary of links, labels, footnotes,
 // a footnote block, and a table-of-contents block.

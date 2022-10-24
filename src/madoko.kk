@@ -9,14 +9,11 @@
 // Parse Madoko markdown text.
 module madoko
 
-import std/data/dict
-import std/text/regex
-import std/os/path
-
 import compat
 import compat/dict
 import compat/regex
 import compat/path
+import compat/log
 
 //import backports
 //import version
@@ -33,6 +30,7 @@ import entity           // logEntities
 import latexFormatter
 import attributes       // expandKeys
 import includes
+import version
 
 
 /* --------------------------------------
@@ -229,7 +227,7 @@ pub fun inlineContext( fmt : formatter,
                                highlight : bool = True,
                                starBold : bool = False,
                                sandbox: bool = False,
-                               prettyAlign : int = 2 ) : inlineContext
+                               prettyAlign : int = 2 ) : <div> inlineContext
 {
   val isTex2  = match(metadata["tex2"]) {
                   Just(value) -> value.toLower == "true"
@@ -274,14 +272,18 @@ fun range(attr: attrs, inputName: string): maybe<range> {
 }
 
 fun extractPosition(locationString: string, inputName: string): exn (string, int) {
-  val locs = (inputName + ":" + locationString).split(";").list
-  val last = locs.last.split(":")
-  (last[0], last[1].parseInt.unJust)
+  ("",1)
+  /*
+  val locs = (inputName + ":" + locationString).split(";")
+  
+  val last = split(locs[locs.length - 1],":")
+  (last[0], last[1].parseInt)
+  */
 }
 
 // we need the inputName to normalize position information
 fun toBlockInfos(bs: list<block>, inputName: string): div vector<blockInfo> {
-  vector(bs.map(fn(b){ b.toBlockInfo(inputName) }).concatMaybe)
+  vector(bs.map(fn(b){ b.toBlockInfo(inputName) }).concat-maybe)
 }
 
 // TODO also include range information in extracted block structure
@@ -335,4 +337,4 @@ pub fun lastPathSegment( lineInfo : string ) : string {
     Just(cap) -> cap.groups[1]
   }
 }
-val rxLastPath = regex( r";([^:;]+):$")
+val rxLastPath = compat/regex/regex( r";([^:;]+):$")

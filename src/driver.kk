@@ -10,10 +10,9 @@
 module driver
 
 
-import std/text/regex
-import std/os/path
-import std/data/dict
+import std/time/time
 import std/time/date
+import std/time/chrono
 import common
 import options
 import metadata
@@ -48,14 +47,16 @@ pub fun processContent( inName : string, outName : string, content : string,
     val icontent = icontent0.removeMadokoComments
     // set up options
 
-    val date   = now()
+    val date   = time-now()
     val xopts  = opts0(lineMap=lmap,
                        metadata=opts0.metadata
+    
+                       
                        + [("docname",inName.stemname),("filename",inName)]
-                       + [("madoko-version",opts0.version)]
-                       + [("date",date.isoLocalDate),("time",date.isoLocalTime.substr(0,5)),
+                       + [("madoko-version",opts0.version)])
+                       /*+ [("date",date.isoLocalDate),("time",date.isoLocalTime.substr(0,5)),
                           ("year",date.year.show),("month",date.month.show2),("day",date.day.show2),
-                          ("hours",date.hours.show2),("minutes",date.minutes.show2),("seconds",date.seconds.show2)] )
+                          ("hours",date.hours.show2),("minutes",date.minutes.show2),("seconds",date.clock.seconds.show2)] )*/
 
     val mopts = if (xopts.xmp)
                   then xopts.parseMeta( FmtHtml, icontent.normalizeSource.extractFirstXmp ).fst
@@ -79,9 +80,10 @@ pub fun processContent( inName : string, outName : string, content : string,
         tryCopyTextFileFromNoSandboxTo(fname, styleDir, outName.dirname )
       }
     }
+    val html = ""
 
     process( inName, outName, searchDirs, content, icontent, xopts, mopts, firstTime)
-      fn(html) {
+      fn() {
         continue(html,inName,outName,mopts)
       }
   }
@@ -127,7 +129,7 @@ fun process( inName : string, outName : string, searchDirs : list<string>,
     mopts.printErr("error: unable to write: " + outTexName)
   }
 
-  texFiles.split("\n").list + texRefer.split("\n").list
+  texFiles.split("\n") + texRefer.split("\n")
 
   continue(tex)
 }
@@ -136,7 +138,7 @@ fun process( inName : string, outName : string, searchDirs : list<string>,
 fun fixWarnings(txt : string) : string {
   var location := "";
   val hist = mdict();
-  val ls = txt.lines.list.map fn(line) {
+  val ls = txt.lines.map fn(line) {
     match(line.find(rxLocation)) {
       Nothing -> {
         match(line.find(rxWarning)) {
@@ -158,7 +160,7 @@ fun fixWarnings(txt : string) : string {
       }
     }
   }
-  ls.concatMaybe.join
+  ls.concat-maybe.join
 }
 val rxLocation = regex(r"^\s*location:(.*)",ignoreCase=True)
 val rxWarning  = regex(r"^(\s*(?:error|warning):)(.*)",ignoreCase=True)
@@ -174,7 +176,7 @@ fun registerColorizers( opts : options, searchDirs : list<string>, content : str
 {
   val searchDirsEx = searchDirs.concat( fn(dir) { [dir,combine(dir,"lang")] } )
   val registered = mdict()
-  val langs1 = opts.hilitelang.split(";").list
+  val langs1 = opts.hilitelang.split(";")
   val langs2 = content.findAll(regex(r"(?:^ *```+ *|\blanguage\s*[:=])([\w\-\/]+)\b",multiline=True)).list.map(fn(cap) { cap.groups[1].basename })
   val langs  = (langs1 + langs2).map(toLower)
   langs.foreach fn(lang) {
@@ -209,14 +211,18 @@ pub fun outputName( inputName : string, options : commandOptions ) : string {
 }
 
 fun tryCopyTextFileFromNoSandboxTo( fname, srcDir, outDir ) {
+  
   val inName = combine(srcDir,fname)
   val outName = combine(outDir,fname)
+  /*
   catch {
     val txt = readTextFileNoSandbox( inName )
     tryWriteTextFile(outName,txt)
     ()
   }
   fn(exn) { () }
+  */
+  ()
 }
 
 

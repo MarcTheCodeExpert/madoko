@@ -197,7 +197,7 @@ fun fmtLatexCodeCell( ccell : ccell ) : string {""}
 //   val align = if (ccell.center) then "c" else "l"
 //   if (ccell.span <= 1) then ccell.content else "\\multicolumn{" + ccell.span.show + "}{" + align + "}{" + ccell.content + "}"
 // }
-
+pub fun fmtLatexTable( ctx : inlineContext, head : list<row>, body : list<row>, colattrs : list<attrs>, attrs : attrs ) : string {""}
 // pub fun fmtLatexTable( ctx : inlineContext, head : list<row>, body : list<row>, colattrs : list<attrs>, attrs : attrs ) : string {
 //   val rows = head + body
 //   val td = if (attrs.hasClass("columns")) then "column" else "td"
@@ -411,7 +411,9 @@ fun texCmdX( cmd : string, body : string, attrs : attrs = attrsNone, extra : lis
 //   attrs.cssAttrs(body,[("display","inline"),("tex-cmd",cmd)] + extra)
 // }
 
-fun texEnv( env : string, body : string, attrs : attrs = attrsNone ) : string {""}
+fun texEnv( env : string, body : string, attrs : attrs = attrsNone ) : string {
+  ""
+  }
 // fun texEnv( env : string, body : string, attrs : attrs = attrsNone ) : string {
 //   texEnvPlain(env,body,attrs)
 // }
@@ -448,6 +450,7 @@ fun texEnv( env : string, body : string, attrs : attrs = attrsNone ) : string {"
 // /* --------------------------------------
 //   Full header
 // ---------------------------------------- */
+pub fun fmtLatexFull(body : string, options : options, metadata : dict<string>) : string {""}
 // pub fun fmtLatexFull(body : string, options : options, metadata : dict<string>) : string {
 //   fmtLatexFullX(body,options,metadata)
 // }

@@ -18,6 +18,8 @@ import std/core = std/core = "";
 //------------------------------
 //#kki: local imported aliases
  
+// The `:io` effect is used for functions that perform arbitrary I/O operations.
+local alias std/core/io :: E = <(std/core/types/handled :: HX -> X)<(std/core/exn :: HX)>,((std/core/io-noexn :: E) == 3 <(std/core/types/div :: X),((std/core/io-total :: E) == 2 <(std/core/types/ndet :: X),(std/core/console :: X),(std/core/net :: X),(std/core/fsys :: X),(std/core/ui :: X),((std/core/types/st :: H -> E)<(std/core/types/global :: H)> == 1 <(std/core/types/read :: H -> X)<(std/core/types/global :: H)>,(std/core/types/write :: H -> X)<(std/core/types/global :: H)>,(std/core/types/alloc :: H -> X)<(std/core/types/global :: H)>>)>)>)> = 4;
  
 //------------------------------
 //#kki: type declarations
@@ -48,7 +50,7 @@ pub fun catch_old : forall<(e :: E),a> (action : () -> <(std/core/types/handled 
 // Does string `s`  contain the character `c`  ?
 pub fun contains : (s : std/core/types/string, c : std/core/types/char) -> std/core/types/bool;
 // monadic lift
-fun .mlift2748-dropWhile : forall<a,(e :: E)> (.y.2697 : ((std/core/list :: V -> V)<a>, (std/core/list :: V -> V)<a>)) -> (e :: E) (std/core/list :: V -> V)<a>;
+fun .mlift2812-dropWhile : forall<a,(e :: E)> (.y.2761 : ((std/core/list :: V -> V)<a>, (std/core/list :: V -> V)<a>)) -> (e :: E) (std/core/list :: V -> V)<a>;
 fun dropWhile : forall<a,(e :: E)> (xs : (std/core/list :: V -> V)<a>, predicate : (a) -> (e :: E) std/core/types/bool) -> (e :: E) (std/core/list :: V -> V)<a>;
 /*
   endsWith function from core.kk
@@ -87,6 +89,7 @@ pub fun md5 : (s : std/core/types/string) -> std/core/types/string;
 pub fun odd : (i : std/core/types/int) -> std/core/types/bool;
 // Return a default value when an exception is raised
 pub fun onExn : forall<a,(e :: E)> (value : a, action : () -> <(std/core/types/handled :: HX -> X)<(std/core/exn :: HX)>|(e :: E)> a) -> (e :: E) a;
+val redirect : (std/core/types/ref :: (H, V) -> V)<(std/core/types/global :: H),(std/core/types/maybe :: V -> V)<(std/core/types/string) -> <(std/core/console :: X)> ()>>;
 pub fun replaceAll : (s : std/core/types/string, pattern : std/core/types/string, repl : std/core/types/string) -> std/core/types/string;
 pub fun show : (exn : std/core/exception) -> std/core/types/string;
 /*
@@ -118,19 +121,19 @@ pub fun string : (n : std/core/types/int, c : std/core/types/char) -> std/core/t
 */
 pub fun align : (s : std/core/types/string, width : std/core/types/int, char : (std/core/types/optional :: V -> V)<std/core/types/char>) -> std/core/types/string;
 // monadic lift
-fun .mlift2749-concat : forall<a,(e :: E)> (.y.2702 : (std/core/list :: V -> V)<(std/core/list :: V -> V)<a>>) -> (e :: E) (std/core/list :: V -> V)<a>;
+fun .mlift2813-concat : forall<a,(e :: E)> (.y.2766 : (std/core/list :: V -> V)<(std/core/list :: V -> V)<a>>) -> (e :: E) (std/core/list :: V -> V)<a>;
 // Concatenate the result lists from applying a function to all elements
 pub fun concat : forall<a,b,(e :: E)> (xs : (std/core/list :: V -> V)<a>, f : (a) -> (e :: E) (std/core/list :: V -> V)<b>) -> (e :: E) (std/core/list :: V -> V)<b>;
 pub fun fill : (s : std/core/types/string, width : std/core/types/int, char : (std/core/types/optional :: V -> V)<std/core/types/char>) -> std/core/types/string;
 // monadic lift
-fun .mlift2750-op : forall<a,b,(e :: E)> (.acc : (std/core/types/ctail :: V -> V)<(std/core/list :: V -> V)<b>>, pred : (a) -> (e :: E) (std/core/types/maybe :: V -> V)<b>, xx : (std/core/list :: V -> V)<a>, .y.2703 : (std/core/types/maybe :: V -> V)<b>) -> (e :: E) (std/core/list :: V -> V)<b>;
+fun .mlift2814-op : forall<a,b,(e :: E)> (.acc : (std/core/types/ctail :: V -> V)<(std/core/list :: V -> V)<b>>, pred : (a) -> (e :: E) (std/core/types/maybe :: V -> V)<b>, xx : (std/core/list :: V -> V)<a>, .y.2767 : (std/core/types/maybe :: V -> V)<b>) -> (e :: E) (std/core/list :: V -> V)<b>;
 // monadic lift
-fun .mlift2751-op : forall<a,b,(e :: E)> (.accm : ((std/core/list :: V -> V)<b>) -> (std/core/list :: V -> V)<b>, pred : (a) -> (e :: E) (std/core/types/maybe :: V -> V)<b>, xx : (std/core/list :: V -> V)<a>, .y.2708 : (std/core/types/maybe :: V -> V)<b>) -> (e :: E) (std/core/list :: V -> V)<b>;
+fun .mlift2815-op : forall<a,b,(e :: E)> (.accm : ((std/core/list :: V -> V)<b>) -> (std/core/list :: V -> V)<b>, pred : (a) -> (e :: E) (std/core/types/maybe :: V -> V)<b>, xx : (std/core/list :: V -> V)<a>, .y.2772 : (std/core/types/maybe :: V -> V)<b>) -> (e :: E) (std/core/list :: V -> V)<b>;
 pub fun .ctail-filterMap : forall<a,b,(e :: E)> (xs : (std/core/list :: V -> V)<a>, pred : (a) -> (e :: E) (std/core/types/maybe :: V -> V)<b>, .acc : (std/core/types/ctail :: V -> V)<(std/core/list :: V -> V)<b>>) -> (e :: E) (std/core/list :: V -> V)<b>;
 pub fun .ctailm-filterMap : forall<a,b,(e :: E)> (xs : (std/core/list :: V -> V)<a>, pred : (a) -> (e :: E) (std/core/types/maybe :: V -> V)<b>, .accm : ((std/core/list :: V -> V)<b>) -> (std/core/list :: V -> V)<b>) -> (e :: E) (std/core/list :: V -> V)<b>;
 pub fun filterMap : forall<a,b,(e :: E)> (xs : (std/core/list :: V -> V)<a>, pred : (a) -> (e :: E) (std/core/types/maybe :: V -> V)<b>) -> (e :: E) (std/core/list :: V -> V)<b>;
 // monadic lift
-fun .mlift2752-foreachUntil : forall<a,b,(e :: E)> (action : (a) -> (e :: E) (std/core/types/maybe :: V -> V)<b>, xx : (std/core/list :: V -> V)<a>, .y.2716 : (std/core/types/maybe :: V -> V)<b>) -> (e :: E) (std/core/types/maybe :: V -> V)<b>;
+fun .mlift2816-foreachUntil : forall<a,b,(e :: E)> (action : (a) -> (e :: E) (std/core/types/maybe :: V -> V)<b>, xx : (std/core/list :: V -> V)<a>, .y.2780 : (std/core/types/maybe :: V -> V)<b>) -> (e :: E) (std/core/types/maybe :: V -> V)<b>;
 // Invoke "action" for each element of a list while "action" return "Nothing"
 pub fun foreachUntil : forall<a,b,(e :: E)> (xs : (std/core/list :: V -> V)<a>, action : (a) -> (e :: E) (std/core/types/maybe :: V -> V)<b>) -> (e :: E) (std/core/types/maybe :: V -> V)<b>;
 fun indexOfAcc : forall<a> (xs : (std/core/list :: V -> V)<a>, pred : (a) -> std/core/types/bool, idx : std/core/types/int) -> std/core/types/int;
@@ -148,6 +151,8 @@ pub fun parseInt : (s : std/core/types/string, hex : (std/core/types/optional ::
 pub fun parseFixed : (s : std/core/types/string) -> (std/core/types/maybe :: V -> V)<std/core/types/float64>;
 pub fun parseFixedDefault : (s : std/core/types/string, default : (std/core/types/optional :: V -> V)<std/core/types/float64>) -> std/core/types/float64;
 pub fun parseIntDefault : (s : std/core/types/string, default : (std/core/types/optional :: V -> V)<std/core/types/int>, hex : (std/core/types/optional :: V -> V)<std/core/types/bool>) -> std/core/types/int;
+pub fun printRedirect : (print : (msg : std/core/types/string) -> <(std/core/console :: X)> ()) -> <(std/core/io :: E)> ();
+pub fun show2 : (i : std/core/types/int) -> std/core/types/string;
 /*
   showHex function from core.kk
 */
@@ -155,14 +160,14 @@ pub fun showHex : (i : std/core/types/int, width : (std/core/types/optional :: V
 pub fun substr : (s : std/core/types/string, start : std/core/types/int) -> std/core/types/string;
 pub fun substr.1 : (s : std/core/types/string, start : std/core/types/int, len : std/core/types/int) -> std/core/types/string;
 // monadic lift
-fun .mlift2753-zipWithAcc : forall<(e :: E),a,b,c> (acc : (std/core/list :: V -> V)<b>, f : (std/core/types/int, a, c) -> (e :: E) b, i : std/core/types/int, xx : (std/core/list :: V -> V)<a>, yy : (std/core/list :: V -> V)<c>, .y.2720 : b) -> (e :: E) (std/core/list :: V -> V)<b>;
+fun .mlift2817-zipWithAcc : forall<(e :: E),a,b,c> (acc : (std/core/list :: V -> V)<b>, f : (std/core/types/int, a, c) -> (e :: E) b, i : std/core/types/int, xx : (std/core/list :: V -> V)<a>, yy : (std/core/list :: V -> V)<c>, .y.2784 : b) -> (e :: E) (std/core/list :: V -> V)<b>;
 fun zipWithAcc : forall<a,b,c,(e :: E)> ((std/core/types/int, a, b) -> (e :: E) c, std/core/types/int, (std/core/list :: V -> V)<c>, (std/core/list :: V -> V)<a>, (std/core/list :: V -> V)<b>) -> (e :: E) (std/core/list :: V -> V)<c>;
 // monadic lift
-fun .mlift2754-op : forall<(e :: E),a> (.acc : (std/core/types/ctail :: V -> V)<(std/core/list :: V -> V)<a>>, .y.2724 : (std/core/list :: V -> V)<a>) -> (e :: E) (std/core/list :: V -> V)<a>;
+fun .mlift2818-op : forall<(e :: E),a> (.acc : (std/core/types/ctail :: V -> V)<(std/core/list :: V -> V)<a>>, .y.2788 : (std/core/list :: V -> V)<a>) -> (e :: E) (std/core/list :: V -> V)<a>;
 // monadic lift
-fun .mlift2755-op : forall<(e :: E),a,b,c> (.acc : (std/core/types/ctail :: V -> V)<(std/core/list :: V -> V)<c>>, f : (std/core/types/int, a, b) -> (e :: E) c, i : std/core/types/int, xx : (std/core/list :: V -> V)<a>, yy : (std/core/list :: V -> V)<b>, .ctail.2690 : c) -> (e :: E) (std/core/list :: V -> V)<c>;
+fun .mlift2819-op : forall<(e :: E),a,b,c> (.acc : (std/core/types/ctail :: V -> V)<(std/core/list :: V -> V)<c>>, f : (std/core/types/int, a, b) -> (e :: E) c, i : std/core/types/int, xx : (std/core/list :: V -> V)<a>, yy : (std/core/list :: V -> V)<b>, .ctail.2754 : c) -> (e :: E) (std/core/list :: V -> V)<c>;
 // monadic lift
-fun .mlift2756-op : forall<(e :: E),a,b,c> (.accm : ((std/core/list :: V -> V)<c>) -> (std/core/list :: V -> V)<c>, f : (std/core/types/int, a, b) -> (e :: E) c, i : std/core/types/int, xx : (std/core/list :: V -> V)<a>, yy : (std/core/list :: V -> V)<b>, .ctail.2695 : c) -> (e :: E) (std/core/list :: V -> V)<c>;
+fun .mlift2820-op : forall<(e :: E),a,b,c> (.accm : ((std/core/list :: V -> V)<c>) -> (std/core/list :: V -> V)<c>, f : (std/core/types/int, a, b) -> (e :: E) c, i : std/core/types/int, xx : (std/core/list :: V -> V)<a>, yy : (std/core/list :: V -> V)<b>, .ctail.2759 : c) -> (e :: E) (std/core/list :: V -> V)<c>;
 pub fun .ctail-zipWithIter : forall<a,b,c,(e :: E)> ((std/core/types/int, a, b) -> (e :: E) c, std/core/types/int, (std/core/list :: V -> V)<a>, (std/core/list :: V -> V)<b>, .acc : (std/core/types/ctail :: V -> V)<(std/core/list :: V -> V)<c>>) -> (e :: E) (std/core/list :: V -> V)<c>;
 pub fun .ctailm-zipWithIter : forall<a,b,c,(e :: E)> ((std/core/types/int, a, b) -> (e :: E) c, std/core/types/int, (std/core/list :: V -> V)<a>, (std/core/list :: V -> V)<b>, .accm : ((std/core/list :: V -> V)<c>) -> (std/core/list :: V -> V)<c>) -> (e :: E) (std/core/list :: V -> V)<c>;
 pub fun zipWithIter : forall<a,b,c,(e :: E)> ((std/core/types/int, a, b) -> (e :: E) c, std/core/types/int, (std/core/list :: V -> V)<a>, (std/core/list :: V -> V)<b>) -> (e :: E) (std/core/list :: V -> V)<c>;
@@ -372,14 +377,22 @@ fun parseFixedDefault // inline size: 3
     match ((compat/parseFixed(s))) {
       ((std/core/types/Nothing() : (std/core/types/maybe :: V -> V)<std/core/types/float64> ) as .pat1: ((std/core/types/maybe :: V -> V)<std/core/types/float64>))
          -> (match (default) {
-          ((std/core/types/Optional((.default.2151: std/core/types/float64) : std/core/types/float64) : (std/core/types/optional :: V -> V)<std/core/types/float64> ) as .pat: ((std/core/types/optional :: V -> V)<std/core/types/float64>))
-             -> .default.2151;
+          ((std/core/types/Optional((.default.2171: std/core/types/float64) : std/core/types/float64) : (std/core/types/optional :: V -> V)<std/core/types/float64> ) as .pat: ((std/core/types/optional :: V -> V)<std/core/types/float64>))
+             -> .default.2171;
           ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/float64> ) as .pat0: ((std/core/types/optional :: V -> V)<std/core/types/float64>))
              -> 0.0;
         });
       ((.skip std/core/types/Just((d: std/core/types/float64) : std/core/types/float64) : (std/core/types/maybe :: V -> V)<std/core/types/float64> ) as .pat2: ((std/core/types/maybe :: V -> V)<std/core/types/float64>))
          -> d;
     };
+  };
+fun printRedirect // inline size: 3
+  = fn<(std/core/io :: E)>(print: (msg : std/core/types/string) -> <(std/core/console :: X)> ()){
+    std/core/types/.open<<(std/core/types/write :: H -> X)<(std/core/types/global :: H)>>,<(std/core/types/write :: H -> X)<(std/core/types/global :: H)>,(std/core/types/alloc :: H -> X)<(std/core/types/global :: H)>,(std/core/console :: X),(std/core/types/div :: X),(std/core/types/handled :: HX -> X)<(std/core/exn :: HX)>,(std/core/fsys :: X),(std/core/types/ndet :: X),(std/core/net :: X),(std/core/types/read :: H -> X)<(std/core/types/global :: H)>,(std/core/ui :: X)>,(ref : (std/core/types/ref :: (H, V) -> V)<(std/core/types/global :: H),(std/core/types/maybe :: V -> V)<(std/core/types/string) -> <(std/core/console :: X)> ()>>, assigned : (std/core/types/maybe :: V -> V)<(std/core/types/string) -> <(std/core/console :: X)> ()>) -> <(std/core/types/write :: H -> X)<(std/core/types/global :: H)>> (),(ref : (std/core/types/ref :: (H, V) -> V)<(std/core/types/global :: H),(std/core/types/maybe :: V -> V)<(std/core/types/string) -> <(std/core/console :: X)> ()>>, assigned : (std/core/types/maybe :: V -> V)<(std/core/types/string) -> <(std/core/console :: X)> ()>) -> <(std/core/types/write :: H -> X)<(std/core/types/global :: H)>,(std/core/types/alloc :: H -> X)<(std/core/types/global :: H)>,(std/core/console :: X),(std/core/types/div :: X),(std/core/types/handled :: HX -> X)<(std/core/exn :: HX)>,(std/core/fsys :: X),(std/core/types/ndet :: X),(std/core/net :: X),(std/core/types/read :: H -> X)<(std/core/types/global :: H)>,(std/core/ui :: X)> ()>((std/core/types/set<(std/core/types/maybe :: V -> V)<(std/core/types/string) -> <(std/core/console :: X)> ()>,(std/core/types/global :: H)>))(compat/redirect, (std/core/types/Just<(msg : std/core/types/string) -> <(std/core/console :: X)> ()>(print)));
+  };
+fun show2 // inline size: 3
+  = fn(i: std/core/types/int){
+    compat/align((std/core/show(i)), 2, (std/core/types/Optional<std/core/types/char>('0')));
   };
 fun substr.1 // inline size: 3
   = fn(s: std/core/types/string, start: std/core/types/int, len: std/core/types/int){

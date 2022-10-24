@@ -18,7 +18,6 @@ import latexFormatter
 import entity
 import hilite // inlineMode
 import codeAlign
-
 import compat
 import compat/dict
 import compat/regex

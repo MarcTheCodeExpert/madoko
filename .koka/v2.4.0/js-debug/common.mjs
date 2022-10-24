@@ -7,7 +7,6 @@ import * as $std_core_hnd from './std_core_hnd.mjs';
 import * as $std_core from './std_core.mjs';
 import * as $std_text_parse from './std_text_parse.mjs';
 import * as $std_os_path from './std_os_path.mjs';
-import * as $std_num_int32 from './std_num_int32.mjs';
 import * as $std_text_regex from './std_text_regex.mjs';
 import * as $compat_dict from './compat_dict.mjs';
 import * as $compat from './compat.mjs';
@@ -736,7 +735,7 @@ export var mimes;
  
 var d = $compat_dict.dict();
  
-$std_core.foreach($std_core.vlist([$std_core_types._Tuple2_("", "text/plain"), $std_core_types._Tuple2_("mdk", "text/plain"), $std_core_types._Tuple2_("md", "text/plain"), $std_core_types._Tuple2_("mkdn", "text/plain"), $std_core_types._Tuple2_("markdown", "text/plain"), $std_core_types._Tuple2_("txt", "text/plain"), $std_core_types._Tuple2_("css", "text/css"), $std_core_types._Tuple2_("html", "text/html"), $std_core_types._Tuple2_("htm", "text/html"), $std_core_types._Tuple2_("js", "text/javascript"), $std_core_types._Tuple2_("tex", "text/tex"), $std_core_types._Tuple2_("sty", "text/latex"), $std_core_types._Tuple2_("cls", "text/latex"), $std_core_types._Tuple2_("bib", "text/plain"), $std_core_types._Tuple2_("bbl", "text/plain"), $std_core_types._Tuple2_("bst", "text/plain"), $std_core_types._Tuple2_("aux", "text/plain"), $std_core_types._Tuple2_("png", "image/png"), $std_core_types._Tuple2_("jpg", "image/jpg"), $std_core_types._Tuple2_("jpeg", "image/jpg"), $std_core_types._Tuple2_("gif", "image/gif"), $std_core_types._Tuple2_("svg", "image/svg+xml"), $std_core_types._Tuple2_("eps", "image/eps"), $std_core_types._Tuple2_("pdf", "application/pdf")], $std_core.Nil), function(elem0 /* (string, string) */ ) {
+var _null_ = $std_core.foreach($std_core.vlist([$std_core_types._Tuple2_("", "text/plain"), $std_core_types._Tuple2_("mdk", "text/plain"), $std_core_types._Tuple2_("md", "text/plain"), $std_core_types._Tuple2_("mkdn", "text/plain"), $std_core_types._Tuple2_("markdown", "text/plain"), $std_core_types._Tuple2_("txt", "text/plain"), $std_core_types._Tuple2_("css", "text/css"), $std_core_types._Tuple2_("html", "text/html"), $std_core_types._Tuple2_("htm", "text/html"), $std_core_types._Tuple2_("js", "text/javascript"), $std_core_types._Tuple2_("tex", "text/tex"), $std_core_types._Tuple2_("sty", "text/latex"), $std_core_types._Tuple2_("cls", "text/latex"), $std_core_types._Tuple2_("bib", "text/plain"), $std_core_types._Tuple2_("bbl", "text/plain"), $std_core_types._Tuple2_("bst", "text/plain"), $std_core_types._Tuple2_("aux", "text/plain"), $std_core_types._Tuple2_("png", "image/png"), $std_core_types._Tuple2_("jpg", "image/jpg"), $std_core_types._Tuple2_("jpeg", "image/jpg"), $std_core_types._Tuple2_("gif", "image/gif"), $std_core_types._Tuple2_("svg", "image/svg+xml"), $std_core_types._Tuple2_("eps", "image/eps"), $std_core_types._Tuple2_("pdf", "application/pdf")], $std_core.Nil), function(elem0 /* (string, string) */ ) {
     return $compat_dict.unsafeDictAdd(d, elem0.fst, elem0.snd);
   });
 var mimes = d;

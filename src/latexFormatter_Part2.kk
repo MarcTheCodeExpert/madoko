@@ -25,7 +25,7 @@ fun getTableEnv( attrs : attrs ) : string {
    then attrs.lookupKey("tex-longtable","longtable")
    else "tabular"
 }
-
+^
 fun normalize( sandbox: bool, path : string ) : string {
   if (sandbox) then xnormalize(path) else path
 }

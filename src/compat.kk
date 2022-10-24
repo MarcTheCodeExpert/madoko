@@ -464,4 +464,15 @@ pub fun isNothing(x: maybe<a>): bool {
 
 }
 
+val redirect : ref<global,maybe<(string) -> console ()>> = unsafe-total { ref(Nothing) }
+
+pub fun printRedirect( print : (msg : string) -> console () ) : io ()
+{
+  redirect := Just(print);
+}
+
+pub fun show2( i : int ) : string {
+  i.show.align(2,'0')
+} 
+
 pub val maxInt = 0x7FFFFFFF

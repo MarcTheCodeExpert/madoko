@@ -179,7 +179,6 @@ fun texEntity( cap : matched ) {
   }
 }
 
-
 fun getTableEnv( attrs : attrs ) : string {
   if (attrs.hasBoolKey("pretty-breakable") || attrs.hasBoolKey("breakable") || attrs.hasClass("long") /* legacy */)
    then attrs.lookupKey("tex-longtable","longtable")

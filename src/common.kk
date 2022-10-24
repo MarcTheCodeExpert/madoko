@@ -66,13 +66,13 @@ pub fun json(s : string) : string {
 pub struct rule<a,c>(
   name : string,
   regex : regex,
-  action : (cap : matched, ctx : c) -> <div> a 
-)  
+  action : (cap : matched, ctx : c) -> <> a
+)
 
 pub alias grammar<a,c> = list<rule<a,c>>
 
 // Replace a rule in a grammar by another one, if the rule name is a prefix of the name of the new rule.
-pub fun ruleReplace( grammar : grammar<a,c>, pred : bool, rule : rule<a,c> ) : <div|e> grammar<a,c> {
+pub fun ruleReplace( grammar : grammar<a,c>, pred : bool, rule : rule<a,c> ) : grammar<a,c> {
   if (!pred)
    then grammar
    else grammar.map fn(r) {
@@ -107,7 +107,7 @@ pub fun combineRules( rules : list<rule<a,c>> ) : rule<a,c> {
 // Generic rule matcher: takes a list of rules and applies the action that matches
 // on the given "src". Returns the result of the action and the string following the
 // match.
-pub fun matchRules( rules : grammar<a,c>, ctx: c, src : string, def : string -> a ) : <div|e> (a,int,string)
+pub fun matchRules( rules : grammar<a,c>, ctx: c, src : string, def : string -> a ) : (a,int,string)
 {
   match(rules) {
     Nil -> {
@@ -125,7 +125,7 @@ pub fun matchRules( rules : grammar<a,c>, ctx: c, src : string, def : string -> 
         }
         Nothing -> {
           //stat("fail-" + rule.name)
-          matchRules(rulesNext,ctx,src,def)
+          matchRules(unsafe-decreasing(rulesNext),ctx,src,def)
         }
       }
     }
@@ -177,7 +177,7 @@ fun reverseAcc( lineMap : lineMap, acc : lineMap ) : lineMap {
   match(lineMap) {
     End -> acc
     Include(line,start,count,fileName,lmap,rest)
-      -> reverseAcc( rest, Include(line,start,count,fileName,lmap,acc) )
+      -> reverseAcc( unsafe-decreasing(rest), Include(line,start,count,fileName,lmap,acc) )
   }
 }
 
@@ -551,7 +551,7 @@ pub fun unquote( s : string ) : string {
 pub fun unindent( txt : string ) : string {
   val lines = txt.lines
   val cindent = lines.filter(fn(s) { !s.contains(regex(r"^\\s*$")) })
-                     .map(fn(s) { 
+                     .map(fn(s) {
                        match(s.find(regex(r"^\\s*"))) {
                         Nothing   -> 0
                         Just(cap) -> cap.matched.length

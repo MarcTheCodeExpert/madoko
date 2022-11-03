@@ -21,6 +21,7 @@ import compat/path
 import common
 import entity
 import texCommon
+import stringcompat
 
 /* --------------------------------------
  The ctx for latex elements
@@ -33,11 +34,11 @@ pub rec type texContext {
               bststyle  : string,
               ignore    : bool = True,
               name      : string = "",
-              texparse  : (ctx:texContext, input:string) -> <div> string )
+              texparse  : (ctx:texContext, input:string) -> string )
 }
 
 
-pub fun parse( txt : string, ctx : texContext ) : <div> string
+pub fun parse( txt : string, ctx : texContext ) : string
 {
   (ctx.texparse)(ctx,txt)
 }
@@ -116,7 +117,7 @@ val rxNL0 = regex(r"^[ \t]*\r?\n|\r?\n$")
 struct mRule(
   regex: regex,
   keys  : list<string>,
-  values: (cap:matched, ctx: texContext ) -> <div> list<string>,
+  values: (cap:matched, ctx: texContext ) -> list<string>,
   replacer: (cap:matched) -> string
 )
 
@@ -174,11 +175,11 @@ fun metaValueBib( cap : matched, _context ) : list<string> {
 
 
 
-fun metaTexValue( cap : matched, ctx ) : <div> list<string> {
+fun metaTexValue( cap : matched, ctx ) : list<string> {
   [cap.groups[1].parse(ctx)]
 }
 
-fun metaTexValue3( cap : matched, ctx ) : <div> list<string> {
+fun metaTexValue3( cap : matched, ctx ) : list<string> {
   list(1,3).map(fn(i) { cap.groups[i].parse(ctx) })
 }
 
@@ -202,7 +203,7 @@ fun removeSections( txt : string ) : string {
 }
 val rxSection = regex(r"\\(sub)?section\b\*?\s*" + optarg + r"?" + texarg + r"\s*")
 
-pub fun texDocClass( cap : matched, ctx : texContext ) : <div> string {
+pub fun texDocClass( cap : matched, ctx : texContext ) : string {
   val docClass = cap.groups[2].unbrace.trim
   val comment  = [ "<!-- LaTeX conversion",
                    "  Drag&Drop further .tex/.bib/.cls/.sty/.bst or image files in the editor window",
@@ -234,7 +235,7 @@ pub fun texDocClass( cap : matched, ctx : texContext ) : <div> string {
 }
 val rxDocument = regex(r"^([\s\S]*?)\n *\\begin{document}([\s\S]*?)\n *\\end{document}" )
 
-fun extractMeta( text0 : string, ctx, mdata0 : list<string> ) : <div> (list<string>,string) {
+fun extractMeta( text0 : string, ctx, mdata0 : list<string> ) : (list<string>,string) {
   var mdata := mdata0
   val content = metadataGrammar.foldl( text0, fn(text,mrule) {
     text.replaceAll(mrule.regex, fn(cap) {

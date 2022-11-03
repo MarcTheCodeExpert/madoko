@@ -5,13 +5,14 @@
 import * as $std_core_types from './std_core_types.mjs';
 import * as $std_core_hnd from './std_core_hnd.mjs';
 import * as $std_core from './std_core.mjs';
+import * as $compat from './compat.mjs';
+import * as $stringcompat from './stringcompat.mjs';
+import * as $compat_regex from './compat_regex.mjs';
+import * as $compat_path from './compat_path.mjs';
+import * as $compat_dict from './compat_dict.mjs';
+import * as $compat_log from './compat_log.mjs';
 import * as $std_text_parse from './std_text_parse.mjs';
 import * as $std_os_path from './std_os_path.mjs';
-import * as $std_text_regex from './std_text_regex.mjs';
-import * as $compat_dict from './compat_dict.mjs';
-import * as $compat from './compat.mjs';
-import * as $compat_log from './compat_log.mjs';
-import * as $compat_regex from './compat_regex.mjs';
  
 // externals
  
@@ -45,7 +46,7 @@ export function Embedinfo(embedName, embedData) /* (embedName : string, embedDat
   return { embedName: embedName, embedData: embedData };
 }
 // type rule
-export function Rule(name, regex, action) /* forall<a,b> (name : string, regex : compat/regex/regex, action : (cap : compat/regex/matched, ctx : b) -> div a) -> rule<a,b> */  {
+export function Rule(name, regex, action) /* forall<a,b> (name : string, regex : compat/regex/regex, action : (cap : compat/regex/matched, ctx : b) -> a) -> rule<a,b> */  {
   return { name: name, regex: regex, action: action };
 }
 // type label
@@ -423,11 +424,11 @@ export function regex(rule) /* forall<a,b> (rule : rule<a,b>) -> compat/regex/re
  
  
 // Automatically generated. Retrieves the `action` constructor field of the `:rule` type.
-export function action(rule) /* forall<a,b> (rule : rule<a,b>) -> ((cap : compat/regex/matched, ctx : b) -> div a) */  {
+export function action(rule) /* forall<a,b> (rule : rule<a,b>) -> ((cap : compat/regex/matched, ctx : b) -> a) */  {
   return rule.action;
 }
  
-export function _copy_3(_this, name0, regex0, action0) /* forall<a,b> (rule<a,b>, name : optional<string>, regex : optional<compat/regex/regex>, action : optional<(cap : compat/regex/matched, ctx : b) -> div a>) -> rule<a,b> */  {
+export function _copy_3(_this, name0, regex0, action0) /* forall<a,b> (rule<a,b>, name : optional<string>, regex : optional<compat/regex/regex>, action : optional<(cap : compat/regex/matched, ctx : b) -> a>) -> rule<a,b> */  {
   if (name0 !== undefined) {
     var _x22 = name0;
   }
@@ -623,8 +624,8 @@ export function showFormatter(f) /* (f : formatter) -> string */  {
  
  
 // monadic lift
-export function _mlift10845_combineRules(cap, ctx, _y_10821) /* forall<_e,a,b> (cap : compat/regex/matched, ctx : b, (cap : compat/regex/matched, ctx : b) -> <div,exn|_e> a) -> <exn,div|_e> a */  {
-  return _y_10821(cap, ctx);
+export function _mlift10823_combineRules(cap, ctx, _y_10811) /* forall<_e,a,b> (cap : compat/regex/matched, ctx : b, (cap : compat/regex/matched, ctx : b) -> <exn|_e> a) -> <exn|_e> a */  {
+  return _y_10811(cap, ctx);
 }
  
  
@@ -632,35 +633,35 @@ export function _mlift10845_combineRules(cap, ctx, _y_10821) /* forall<_e,a,b> (
 // For inline expressions, this does not improve the performance much.
 export function combineRules(rules) /* forall<a,b> (rules : list<rule<a,b>>) -> rule<a,b> */  {
    
-  var xs_10563 = $std_core.map_5(rules, function(rule /* rule<1408,1409> */ ) {
+  var xs_10543 = $std_core.map_5(rules, function(rule /* rule<1397,1398> */ ) {
       var _x35 = rule.regex;
-      return $std_core_types._Tuple2_($compat_regex.regexSource(_x35), function(_x1 /* compat/regex/matched */ , _x2 /* 1409 */ ) {
+      return $std_core_types._Tuple2_($compat_regex.regexSource(_x35), function(_x1 /* compat/regex/matched */ , _x2 /* 1398 */ ) {
           var _x36 = rule.action;
           return $std_core_hnd._open_none2(_x36, _x1, _x2);
         });
     });
-  var _x35 = $std_core._lift17204_unzip(xs_10563, $std_core.Nil, $std_core.Nil);
+  var _x35 = $std_core._lift17204_unzip(xs_10543, $std_core.Nil, $std_core.Nil);
    
   var actions = $std_core.unvlist(_x35.snd);
    
   var rx = $compat_regex.regexAlt(_x35.fst);
-  return Rule("<combined>", rx, function(cap /* compat/regex/matched */ , ctx /* 1409 */ ) {
+  return Rule("<combined>", rx, function(cap /* compat/regex/matched */ , ctx /* 1398 */ ) {
        
       var _x36 = cap.groups;
-      var j_10569 = $compat_regex.alternative(_x36);
+      var j_10549 = $compat_regex.alternative(_x36);
        
-      var i0 = ($std_core._int_ge(0,j_10569)) ? 0 : j_10569;
+      var i0 = ($std_core._int_ge(0,j_10549)) ? 0 : j_10549;
        
-      var x_10847 = $std_core_hnd._open_at2($std_core_hnd._evv_index($std_core._tag_exn), (function(_x37, _x38) {
+      var x_10824 = $std_core_hnd._open_at2($std_core_hnd._evv_index($std_core._tag_exn), (function(_x37, _x38) {
           return $std_core._vector_at(_x37,_x38);
         }), actions, i0);
       if ($std_core_hnd._yielding()) {
-        return $std_core_hnd.yield_extend(function(_y_10821 /* (cap : compat/regex/matched, ctx : 1409) -> <div,exn|_1391> 1408 */ ) {
-          return _y_10821(cap, ctx);
+        return $std_core_hnd.yield_extend(function(_y_10811 /* (cap : compat/regex/matched, ctx : 1398) -> <exn|_1375> 1397 */ ) {
+          return _y_10811(cap, ctx);
         });
       }
       else {
-        return x_10847(cap, ctx);
+        return x_10824(cap, ctx);
       }
     });
 }
@@ -676,16 +677,16 @@ var rxChoicePattern = $compat_regex.regex("\\[(\\w+(?:,\\w+)*)\\]");
 // replace whitespace, colons, and stars by a dash, and convert to lower case.
 export function normalizeId(txt) /* (txt : string) -> string */  {
    
-  var regex00_10577 = $compat_regex.regex("[^\\w\\-_:\\*\\s]+");
+  var regex00_10557 = $compat_regex.regex("[^\\w\\-_:\\*\\s]+");
    
   var _x37 = undefined;
   var _x36 = (_x37 !== undefined) ? _x37 : 0;
-  var s_10572 = $compat_regex.replaceEx_1(txt, regex00_10577, "", true, _x36);
+  var s_10552 = $compat_regex.replaceEx_1(txt, regex00_10557, "", true, _x36);
    
-  var regex0_10573 = $compat_regex.regex("\\s+|[:\\*]");
+  var regex0_10553 = $compat_regex.regex("\\s+|[:\\*]");
   var _x37 = undefined;
   var _x36 = (_x37 !== undefined) ? _x37 : 0;
-  return $compat.toLower($compat_regex.replaceEx_1(s_10572, regex0_10573, "-", true, _x36));
+  return $compat.toLower($compat_regex.replaceEx_1(s_10552, regex0_10553, "-", true, _x36));
 }
  
 export var rxamp;
@@ -735,7 +736,7 @@ export var mimes;
  
 var d = $compat_dict.dict();
  
-var _null_ = $std_core.foreach($std_core.vlist([$std_core_types._Tuple2_("", "text/plain"), $std_core_types._Tuple2_("mdk", "text/plain"), $std_core_types._Tuple2_("md", "text/plain"), $std_core_types._Tuple2_("mkdn", "text/plain"), $std_core_types._Tuple2_("markdown", "text/plain"), $std_core_types._Tuple2_("txt", "text/plain"), $std_core_types._Tuple2_("css", "text/css"), $std_core_types._Tuple2_("html", "text/html"), $std_core_types._Tuple2_("htm", "text/html"), $std_core_types._Tuple2_("js", "text/javascript"), $std_core_types._Tuple2_("tex", "text/tex"), $std_core_types._Tuple2_("sty", "text/latex"), $std_core_types._Tuple2_("cls", "text/latex"), $std_core_types._Tuple2_("bib", "text/plain"), $std_core_types._Tuple2_("bbl", "text/plain"), $std_core_types._Tuple2_("bst", "text/plain"), $std_core_types._Tuple2_("aux", "text/plain"), $std_core_types._Tuple2_("png", "image/png"), $std_core_types._Tuple2_("jpg", "image/jpg"), $std_core_types._Tuple2_("jpeg", "image/jpg"), $std_core_types._Tuple2_("gif", "image/gif"), $std_core_types._Tuple2_("svg", "image/svg+xml"), $std_core_types._Tuple2_("eps", "image/eps"), $std_core_types._Tuple2_("pdf", "application/pdf")], $std_core.Nil), function(elem0 /* (string, string) */ ) {
+$std_core.foreach($std_core.vlist([$std_core_types._Tuple2_("", "text/plain"), $std_core_types._Tuple2_("mdk", "text/plain"), $std_core_types._Tuple2_("md", "text/plain"), $std_core_types._Tuple2_("mkdn", "text/plain"), $std_core_types._Tuple2_("markdown", "text/plain"), $std_core_types._Tuple2_("txt", "text/plain"), $std_core_types._Tuple2_("css", "text/css"), $std_core_types._Tuple2_("html", "text/html"), $std_core_types._Tuple2_("htm", "text/html"), $std_core_types._Tuple2_("js", "text/javascript"), $std_core_types._Tuple2_("tex", "text/tex"), $std_core_types._Tuple2_("sty", "text/latex"), $std_core_types._Tuple2_("cls", "text/latex"), $std_core_types._Tuple2_("bib", "text/plain"), $std_core_types._Tuple2_("bbl", "text/plain"), $std_core_types._Tuple2_("bst", "text/plain"), $std_core_types._Tuple2_("aux", "text/plain"), $std_core_types._Tuple2_("png", "image/png"), $std_core_types._Tuple2_("jpg", "image/jpg"), $std_core_types._Tuple2_("jpeg", "image/jpg"), $std_core_types._Tuple2_("gif", "image/gif"), $std_core_types._Tuple2_("svg", "image/svg+xml"), $std_core_types._Tuple2_("eps", "image/eps"), $std_core_types._Tuple2_("pdf", "application/pdf")], $std_core.Nil), function(elem0 /* (string, string) */ ) {
     return $compat_dict.unsafeDictAdd(d, elem0.fst, elem0.snd);
   });
 var mimes = d;
@@ -760,13 +761,13 @@ var rxProtocol = $compat_regex.regex("^(\\\\w+:|//)");
 export function removeKeys(attrs, keys) /* (attrs : attrs, keys : list<string>) -> attrs */  {
    
   var _x39 = attrs.keyvals;
-  var _arg_2574 = $std_core.filter(_x39, function(kv /* (string, string) */ ) {
+  var _arg_2563 = $std_core.filter(_x39, function(kv /* (string, string) */ ) {
       return $std_core.all(keys, function(key /* string */ ) {
           var _x40 = kv.fst;
           return (_x40 !== key);
         });
     });
-  return _copy(attrs, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, _arg_2574);
+  return _copy(attrs, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, _arg_2563);
 }
  
  
@@ -776,12 +777,12 @@ var ruleHist = $compat_dict.mdict();
  
 export function ruleRemove(grammar, pred, names) /* forall<a,b> (grammar : grammar<a,b>, pred : bool, names : list<string>) -> grammar<a,b> */  {
   if (pred) {
-    return $std_core.filter(grammar, function(rule /* rule<2694,2695> */ ) {
+    return $std_core.filter(grammar, function(rule /* rule<2683,2684> */ ) {
         return $std_core.all(names, function(nm /* string */ ) {
              
             var _x39 = rule.name;
-            var b0_10588 = $compat.startsWith(_x39, nm);
-            return (b0_10588) ? false : true;
+            var b0_10568 = $compat.startsWith(_x39, nm);
+            return (b0_10568) ? false : true;
           });
       });
   }
@@ -792,9 +793,9 @@ export function ruleRemove(grammar, pred, names) /* forall<a,b> (grammar : gramm
  
  
 // Replace a rule in a grammar by another one, if the rule name is a prefix of the name of the new rule.
-export function ruleReplace(grammar, pred, rule) /* forall<a,b,e> (grammar : grammar<a,b>, pred : bool, rule : rule<a,b>) -> <div|e> grammar<a,b> */  {
+export function ruleReplace(grammar, pred, rule) /* forall<a,b> (grammar : grammar<a,b>, pred : bool, rule : rule<a,b>) -> grammar<a,b> */  {
   if (pred) {
-    return $std_core.map_5(grammar, function(r /* rule<2895,2896> */ ) {
+    return $std_core.map_5(grammar, function(r /* rule<2881,2882> */ ) {
         var _x40 = rule.name;
         var _x41 = r.name;
         var _x39 = $compat.startsWith(_x40, _x41);
@@ -812,8 +813,8 @@ var rxTrimLines = $compat_regex.regex("^([ \\t\\r]*\\n)+|([ \\t\\r]*\\n)+$");
 export function show(attrs) /* (attrs : attrs) -> string */  {
    
   var _x42 = attrs.text;
-  var left_10590 = $std_core._lp__plus__plus__1_rp_("{", _x42);
-  return $std_core._lp__plus__plus__1_rp_(left_10590, "}");
+  var left_10573 = $std_core._lp__plus__plus__1_rp_("{", _x42);
+  return $std_core._lp__plus__plus__1_rp_(left_10573, "}");
 }
  
  
@@ -832,14 +833,14 @@ export function unquote(s) /* (s : string) -> string */  {
     var _x43 = $compat.endsWith(s, "\'");
     if (_x43) {
        
-      var x_10600 = $std_core.count_1(s);
+      var x_10583 = $std_core.count_1(s);
        
-      var len_10599 = $std_core._int_sub(x_10600,2);
-      if ($std_core._int_le(len_10599,0)) {
+      var len_10582 = $std_core._int_sub(x_10583,2);
+      if ($std_core._int_le(len_10582,0)) {
         return "";
       }
       else {
-        return $compat.substr2(s, 1, len_10599);
+        return $compat.substr2(s, 1, len_10582);
       }
     }
     else {
@@ -848,14 +849,14 @@ export function unquote(s) /* (s : string) -> string */  {
         var _x45 = $compat.endsWith(s, "\"");
         if (_x45) {
            
-          var x0_10606 = $std_core.count_1(s);
+          var x0_10589 = $std_core.count_1(s);
            
-          var len0_10605 = $std_core._int_sub(x0_10606,2);
-          if ($std_core._int_le(len0_10605,0)) {
+          var len0_10588 = $std_core._int_sub(x0_10589,2);
+          if ($std_core._int_le(len0_10588,0)) {
             return "";
           }
           else {
-            return $compat.substr2(s, 1, len0_10605);
+            return $compat.substr2(s, 1, len0_10588);
           }
         }
         else {
@@ -873,14 +874,14 @@ export function unquote(s) /* (s : string) -> string */  {
       var _x47 = $compat.endsWith(s, "\"");
       if (_x47) {
          
-        var x1_10612 = $std_core.count_1(s);
+        var x1_10595 = $std_core.count_1(s);
          
-        var len1_10611 = $std_core._int_sub(x1_10612,2);
-        if ($std_core._int_le(len1_10611,0)) {
+        var len1_10594 = $std_core._int_sub(x1_10595,2);
+        if ($std_core._int_le(len1_10594,0)) {
           return "";
         }
         else {
-          return $compat.substr2(s, 1, len1_10611);
+          return $compat.substr2(s, 1, len1_10594);
         }
       }
       else {
@@ -1022,22 +1023,22 @@ export function _lp__eq__eq__rp_(x, y) /* (x : formatter, y : formatter) -> bool
  
 export function contains(xs, s) /* (xs : list<string>, s : string) -> bool */  {
    
-  var m_10639 = $std_core.find(xs, function(x /* string */ ) {
+  var m_10622 = $std_core.find(xs, function(x /* string */ ) {
       return (x === s);
     });
-  return (m_10639 === null) ? false : true;
+  return (m_10622 === null) ? false : true;
 }
  
 export function quote(s) /* (s : string) -> string */  {
   if (((s).indexOf(("\"")) >= 0)) {
      
-    var left_10640 = $std_core._lp__plus__plus__1_rp_("\'", s);
-    return $std_core._lp__plus__plus__1_rp_(left_10640, "\'");
+    var left_10623 = $std_core._lp__plus__plus__1_rp_("\'", s);
+    return $std_core._lp__plus__plus__1_rp_(left_10623, "\'");
   }
   else {
      
-    var left1_10644 = $std_core._lp__plus__plus__1_rp_("\"", s);
-    return $std_core._lp__plus__plus__1_rp_(left1_10644, "\"");
+    var left1_10627 = $std_core._lp__plus__plus__1_rp_("\"", s);
+    return $std_core._lp__plus__plus__1_rp_(left1_10627, "\"");
   }
 }
  
@@ -1056,15 +1057,15 @@ export function addClass(attrs, cname) /* (attrs : attrs, cname : string) -> att
     else {
        
       var _x115 = attrs.classes;
-      var _arg_3833 = $std_core.append(_x115, $std_core.Cons(cname, $std_core.Nil));
+      var _arg_3818 = $std_core.append(_x115, $std_core.Cons(cname, $std_core.Nil));
        
       var _x116 = attrs.text;
-      var left0_10652 = $std_core._lp__plus__plus__1_rp_(_x116, " ; class: ");
+      var left0_10635 = $std_core._lp__plus__plus__1_rp_(_x116, " ; class: ");
        
-      var right0_10653 = quote(cname);
+      var right0_10636 = quote(cname);
        
-      var _arg_3821 = $std_core._lp__plus__plus__1_rp_(left0_10652, right0_10653);
-      return _copy(attrs, false, undefined, undefined, _arg_3821, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, _arg_3833);
+      var _arg_3806 = $std_core._lp__plus__plus__1_rp_(left0_10635, right0_10636);
+      return _copy(attrs, false, undefined, undefined, _arg_3806, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, _arg_3818);
     }
   }
 }
@@ -1100,8 +1101,8 @@ export function showInput(r) /* (r : input) -> string */  {
     else {
       var _x115 = (r.only.value === 2) ? "tex" : "html";
     }
-    var left_10657 = $std_core._lp__plus__plus__1_rp_("raw(", _x115);
-    return $std_core._lp__plus__plus__1_rp_(left_10657, ")");
+    var left_10640 = $std_core._lp__plus__plus__1_rp_("raw(", _x115);
+    return $std_core._lp__plus__plus__1_rp_(left_10640, ")");
   }
   else {
     return "markdown";
@@ -1115,32 +1116,32 @@ export function addInputClass(attrs) /* (attrs : attrs) -> attrs */  {
   else {
      
     var _x115 = attrs.input;
-    var right_10667 = showInput(_x115);
-    return addClass(attrs, $std_core._lp__plus__plus__1_rp_("input-", right_10667));
+    var right_10650 = showInput(_x115);
+    return addClass(attrs, $std_core._lp__plus__plus__1_rp_("input-", right_10650));
   }
 }
  
 export function addKeyval(attrs, key, value) /* (attrs : attrs, key : string, value : string) -> attrs */  {
    
   var _x115 = attrs.keyvals;
-  var left_10669 = $std_core.filter(_x115, function(kv /* (string, string) */ ) {
+  var left_10652 = $std_core.filter(_x115, function(kv /* (string, string) */ ) {
       var _x116 = kv.fst;
       return (_x116 !== key);
     });
    
-  var _arg_4823 = $std_core.append(left_10669, $std_core.Cons($std_core_types._Tuple2_(key, value), $std_core.Nil));
+  var _arg_4808 = $std_core.append(left_10652, $std_core.Cons($std_core_types._Tuple2_(key, value), $std_core.Nil));
    
   var _x117 = attrs.text;
-  var left2_10677 = $std_core._lp__plus__plus__1_rp_(_x117, " ; ");
+  var left2_10660 = $std_core._lp__plus__plus__1_rp_(_x117, " ; ");
    
-  var left1_10675 = $std_core._lp__plus__plus__1_rp_(left2_10677, key);
+  var left1_10658 = $std_core._lp__plus__plus__1_rp_(left2_10660, key);
    
-  var left0_10673 = $std_core._lp__plus__plus__1_rp_(left1_10675, ": ");
+  var left0_10656 = $std_core._lp__plus__plus__1_rp_(left1_10658, ": ");
    
-  var right0_10674 = quote(value);
+  var right0_10657 = quote(value);
    
-  var _arg_4809 = $std_core._lp__plus__plus__1_rp_(left0_10673, right0_10674);
-  return _copy(attrs, false, undefined, undefined, _arg_4809, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, _arg_4823);
+  var _arg_4794 = $std_core._lp__plus__plus__1_rp_(left0_10656, right0_10657);
+  return _copy(attrs, false, undefined, undefined, _arg_4794, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, _arg_4808);
 }
  
 export function addKeyvalIfNotEmpty(attrs, key, value) /* (attrs : attrs, key : string, value : string) -> attrs */  {
@@ -1160,15 +1161,15 @@ export function addKeyvalIfNotEmpty(attrs, key, value) /* (attrs : attrs, key : 
 export function hasKey(attrs, key) /* (attrs : attrs, key : string) -> maybe<string> */  {
    
   var _x115 = attrs.keyvals;
-  var m_10682 = $std_core.find(_x115, function(kv /* (string, string) */ ) {
+  var m_10665 = $std_core.find(_x115, function(kv /* (string, string) */ ) {
       var _x116 = kv.fst;
       return (_x116 === key);
     });
-  if (m_10682 === null) {
+  if (m_10665 === null) {
     return $std_core_types.Nothing;
   }
   else {
-    var _x115 = m_10682.value.snd;
+    var _x115 = m_10665.value.snd;
     return $std_core_types.Just(_x115);
   }
 }
@@ -1176,11 +1177,11 @@ export function hasKey(attrs, key) /* (attrs : attrs, key : string) -> maybe<str
 export function addKeyvalIfNotExist(attrs, key, value) /* (attrs : attrs, key : string, value : string) -> attrs */  {
    
   var _x116 = attrs.keyvals;
-  var m_10682 = $std_core.find(_x116, function(kv /* (string, string) */ ) {
+  var m_10665 = $std_core.find(_x116, function(kv /* (string, string) */ ) {
       var _x117 = kv.fst;
       return (_x117 === key);
     });
-  if (m_10682 === null) {
+  if (m_10665 === null) {
     var _x116 = $std_core_types.Nothing;
     if (_x116 === null) {
       return addKeyval(attrs, key, value);
@@ -1244,13 +1245,13 @@ export function expandChoices(s) /* (s : string) -> list<string> */  {
     var post = $compat.substr(s, _x127);
      
     var _x128 = _x123.value.groups;
-    var s1_10702 = $compat_regex.groupsIndex(_x128, 1);
+    var s1_10685 = $compat_regex.groupsIndex(_x128, 1);
      
-    var v_17122 = ((s1_10702).split((",")));
+    var v_17122 = ((s1_10685).split((",")));
     return $std_core.map_5($std_core.vlist(v_17122), function(part /* string */ ) {
          
-        var left_10707 = $std_core._lp__plus__plus__1_rp_(pre, part);
-        return $std_core._lp__plus__plus__1_rp_(left_10707, post);
+        var left_10690 = $std_core._lp__plus__plus__1_rp_(pre, part);
+        return $std_core._lp__plus__plus__1_rp_(left_10690, post);
       });
   }
   else {
@@ -1279,46 +1280,46 @@ export function generateHeaderId(attrs, heading, pre) /* (attrs : attrs, heading
     }
      
     var _x127 = attrs.text;
-    var left0_10714 = $std_core._lp__plus__plus__1_rp_(_x127, " ; id:");
+    var left0_10697 = $std_core._lp__plus__plus__1_rp_(_x127, " ; id:");
      
-    var right0_10715 = quote(newname);
+    var right0_10698 = quote(newname);
      
-    var _arg_5991 = $std_core._lp__plus__plus__1_rp_(left0_10714, right0_10715);
-    return _copy(attrs, false, undefined, undefined, _arg_5991, undefined, undefined, undefined, undefined, undefined, undefined, undefined, newname);
+    var _arg_5976 = $std_core._lp__plus__plus__1_rp_(left0_10697, right0_10698);
+    return _copy(attrs, false, undefined, undefined, _arg_5976, undefined, undefined, undefined, undefined, undefined, undefined, undefined, newname);
   }
 }
  
 export function hasClass(attrs, className) /* (attrs : attrs, className : string) -> bool */  {
    
   var _x126 = attrs.classes;
-  var m_10719 = $std_core.find(_x126, function(cname /* string */ ) {
+  var m_10702 = $std_core.find(_x126, function(cname /* string */ ) {
       return (cname === className);
     });
-  return (m_10719 === null) ? false : true;
+  return (m_10702 === null) ? false : true;
 }
  
 export function hasBoolKey(attrs, key) /* (attrs : attrs, key : string) -> bool */  {
    
   var _x126 = attrs.keyvals;
-  var m_10682 = $std_core.find(_x126, function(kv /* (string, string) */ ) {
+  var m_10665 = $std_core.find(_x126, function(kv /* (string, string) */ ) {
       var _x127 = kv.fst;
       return (_x127 === key);
     });
    
-  if (m_10682 === null) {
+  if (m_10665 === null) {
     var _x129 = $std_core_types.Nothing;
     var _x128 = (_x129 === null) ? "" : _x129.value;
   }
   else {
-    var _x128 = m_10682.value.snd;
+    var _x128 = m_10665.value.snd;
   }
   var value = $compat.toLower(_x128);
    
   var _x130 = attrs.classes;
-  var m_10719 = $std_core.find(_x130, function(cname /* string */ ) {
+  var m_10702 = $std_core.find(_x130, function(cname /* string */ ) {
       return (cname === key);
     });
-  if (m_10719 === null) {
+  if (m_10702 === null) {
     return ((value === ("true"))) ? true : (value === ("1"));
   }
   else {
@@ -1338,22 +1339,22 @@ export function htmlEscape(s, allowEntity) /* (s : string, allowEntity : optiona
     }
     var _x129 = undefined;
     var _x128 = (_x129 !== undefined) ? _x129 : 0;
-    var s3_10736 = $compat_regex.replaceEx_1(s, _x127, "&amp;", true, _x128);
+    var s3_10719 = $compat_regex.replaceEx_1(s, _x127, "&amp;", true, _x128);
      
     var _x131 = undefined;
     var _x130 = (_x131 !== undefined) ? _x131 : 0;
-    var s2_10732 = $compat_regex.replaceEx_1(s3_10736, rxlt, "&lt;", true, _x130);
+    var s2_10715 = $compat_regex.replaceEx_1(s3_10719, rxlt, "&lt;", true, _x130);
      
     var _x133 = undefined;
     var _x132 = (_x133 !== undefined) ? _x133 : 0;
-    var s1_10728 = $compat_regex.replaceEx_1(s2_10732, rxgt, "&gt;", true, _x132);
+    var s1_10711 = $compat_regex.replaceEx_1(s2_10715, rxgt, "&gt;", true, _x132);
      
     var _x135 = undefined;
     var _x134 = (_x135 !== undefined) ? _x135 : 0;
-    var s0_10724 = $compat_regex.replaceEx_1(s1_10728, rxquot, "&quot;", true, _x134);
+    var s0_10707 = $compat_regex.replaceEx_1(s1_10711, rxquot, "&quot;", true, _x134);
     var _x128 = undefined;
     var _x127 = (_x128 !== undefined) ? _x128 : 0;
-    return $compat_regex.replaceEx_1(s0_10724, rxapos, "&#39;", true, _x127);
+    return $compat_regex.replaceEx_1(s0_10707, rxapos, "&#39;", true, _x127);
   }
   else {
     return s;
@@ -1397,14 +1398,14 @@ export function json(s) /* (s : string) -> string */  {
                   }
                   else {
                      
-                    var right_10749 = $compat.showHex(c, 4);
-                    return $std_core._lp__plus__plus__1_rp_("\\u", right_10749);
+                    var right_10732 = $compat.showHex(c, 4);
+                    return $std_core._lp__plus__plus__1_rp_("\\u", right_10732);
                   }
                 }
                 else {
                    
-                  var right0_10751 = $compat.showHex(c, 4);
-                  return $std_core._lp__plus__plus__1_rp_("\\u", right0_10751);
+                  var right0_10734 = $compat.showHex(c, 4);
+                  return $std_core._lp__plus__plus__1_rp_("\\u", right0_10734);
                 }
               }
             }
@@ -1414,45 +1415,37 @@ export function json(s) /* (s : string) -> string */  {
     });
    
   if (cs === null) {
-    var right2_10755 = "";
+    var right2_10738 = "";
   }
   else {
-    var right2_10755 = $std_core._lift17189_join_2(cs.tail, cs.head);
+    var right2_10738 = $std_core._lift17189_join_2(cs.tail, cs.head);
   }
    
-  var left1_10752 = $std_core._lp__plus__plus__1_rp_("\"", right2_10755);
-  return $std_core._lp__plus__plus__1_rp_(left1_10752, "\"");
+  var left1_10735 = $std_core._lp__plus__plus__1_rp_("\"", right2_10738);
+  return $std_core._lp__plus__plus__1_rp_(left1_10735, "\"");
 }
  
 export function lookupKey(attrs, key, def) /* (attrs : attrs, key : string, def : string) -> string */  {
    
   var _x131 = attrs.keyvals;
-  var m_10682 = $std_core.find(_x131, function(kv /* (string, string) */ ) {
+  var m_10665 = $std_core.find(_x131, function(kv /* (string, string) */ ) {
       var _x132 = kv.fst;
       return (_x132 === key);
     });
-  if (m_10682 === null) {
+  if (m_10665 === null) {
     var _x131 = $std_core_types.Nothing;
     return (_x131 === null) ? def : _x131.value;
   }
   else {
-    return m_10682.value.snd;
+    return m_10665.value.snd;
   }
-}
- 
- 
-// monadic lift
-export function _mlift10846_matchRules(cap, _y_10826) /* forall<a,e> (cap : compat/regex/matched, a) -> <div|e> (a, int, string) */  {
-  var _x132 = cap.next;
-  var _x133 = cap.matched;
-  return $std_core_types._Tuple3_(_y_10826, _x132, _x133);
 }
  
  
 // Generic rule matcher: takes a list of rules and applies the action that matches
 // on the given "src". Returns the result of the action and the string following the
 // match.
-export function matchRules(rules, ctx, src, def) /* forall<a,b,e> (rules : grammar<a,b>, ctx : b, src : string, def : (string) -> a) -> <div|e> (a, int, string) */  { tailcall: while(1)
+export function matchRules(rules, ctx, src, def) /* forall<a,b> (rules : grammar<a,b>, ctx : b, src : string, def : (string) -> a) -> (a, int, string) */  { tailcall: while(1)
 {
   if (rules === null) {
      
@@ -1465,21 +1458,13 @@ export function matchRules(rules, ctx, src, def) /* forall<a,b,e> (rules : gramm
     return $std_core_types._Tuple3_(def(matched), 1, matched);
   }
   else {
-    var _x135 = rules.head.regex;
-    var _x134 = $compat_regex.find(src, _x135);
-    if (_x134 !== null) {
-       
-      var x_10857 = rules.head.action(_x134.value, ctx);
-      if ($std_core_hnd._yielding()) {
-        return $std_core_hnd.yield_extend(function(_y_108260 /* 7690 */ ) {
-          return _mlift10846_matchRules(_x134.value, _y_108260);
-        });
-      }
-      else {
-        var _x136 = _x134.value.next;
-        var _x137 = _x134.value.matched;
-        return $std_core_types._Tuple3_(x_10857, _x136, _x137);
-      }
+    var _x133 = rules.head.regex;
+    var _x132 = $compat_regex.find(src, _x133);
+    if (_x132 !== null) {
+      var _x134 = rules.head.action(_x132.value, ctx);
+      var _x135 = _x132.value.next;
+      var _x136 = _x132.value.matched;
+      return $std_core_types._Tuple3_(_x134, _x135, _x136);
     }
     else {
       {
@@ -1496,36 +1481,36 @@ export function matchRules(rules, ctx, src, def) /* forall<a,b,e> (rules : gramm
 export function mimeFromExt(fname) /* (fname : string) -> string */  {
    
   var ext = $compat.toLower($compat.substr($compat.extname(fname), 1));
-  var _x138 = $compat_dict.containsKey_1(mimes, ext);
-  if (_x138) {
+  var _x137 = $compat_dict.containsKey_1(mimes, ext);
+  if (_x137) {
     return $compat_dict.unsafeDictGet(mimes, ext);
   }
   else {
-    var _x139 = $std_core_types.Nothing;
-    return (_x139 !== null) ? _x139.value : "";
+    var _x138 = $std_core_types.Nothing;
+    return (_x138 !== null) ? _x138.value : "";
   }
 }
  
 export function newLink(href0, title0, linkattrs0, linkid0, bench) /* (href : string, title : optional<string>, linkattrs : optional<attrs>, linkid : optional<string>, bench : bool) -> link */  {
    
   if (bench) {
-    var _x140 = (linkattrs0 !== undefined) ? linkattrs0 : attrsNone;
+    var _x139 = (linkattrs0 !== undefined) ? linkattrs0 : attrsNone;
   }
   else {
-    var _x141 = $compat.startsWith(href0, "#");
-    if (_x141) {
-      var _x142 = (linkattrs0 !== undefined) ? linkattrs0 : attrsNone;
-      var _x140 = addClass(_x142, "localref");
+    var _x140 = $compat.startsWith(href0, "#");
+    if (_x140) {
+      var _x141 = (linkattrs0 !== undefined) ? linkattrs0 : attrsNone;
+      var _x139 = addClass(_x141, "localref");
     }
     else {
-      var _x140 = (linkattrs0 !== undefined) ? linkattrs0 : attrsNone;
+      var _x139 = (linkattrs0 !== undefined) ? linkattrs0 : attrsNone;
     }
   }
-  var linkattrs1_10764 = _x140;
-  var _x140 = (title0 !== undefined) ? title0 : "";
-  var _x141 = (linkattrs1_10764 !== undefined) ? linkattrs1_10764 : attrsNone;
-  var _x142 = (linkid0 !== undefined) ? linkid0 : "";
-  return Link(href0, _x140, _x141, _x142);
+  var linkattrs1_10754 = _x139;
+  var _x139 = (title0 !== undefined) ? title0 : "";
+  var _x140 = (linkattrs1_10754 !== undefined) ? linkattrs1_10754 : attrsNone;
+  var _x141 = (linkid0 !== undefined) ? linkid0 : "";
+  return Link(href0, _x139, _x140, _x141);
 }
  
 export var peano10;
@@ -1567,10 +1552,10 @@ export function pickExtension(exts, paths) /* (exts : list<string>, paths : list
   else {
      
     var pathext = $compat.toLower($compat.extname(paths.head));
-    var _x143 = $std_core.find(exts, function(ext /* string */ ) {
+    var _x142 = $std_core.find(exts, function(ext /* string */ ) {
         return (pathext === ext);
       });
-    if (_x143 !== null) {
+    if (_x142 !== null) {
       return paths.head;
     }
     else {
@@ -1585,8 +1570,8 @@ export function pickExtension(exts, paths) /* (exts : list<string>, paths : list
  
 export function relative(path) /* (path : string) -> bool */  {
    
-  var b_10767 = $compat_regex.contains(path, rxProtocol);
-  return (b_10767) ? false : true;
+  var b_10757 = $compat_regex.contains(path, rxProtocol);
+  return (b_10757) ? false : true;
 }
  
 export function reverseAcc(lineMap, acc) /* (lineMap : lineMap, acc : lineMap) -> lineMap */  { tailcall: while(1)
@@ -1597,9 +1582,9 @@ export function reverseAcc(lineMap, acc) /* (lineMap : lineMap, acc : lineMap) -
   else {
     {
       // tail call
-      var _x144 = Include(lineMap.line, lineMap.start, lineMap.count, lineMap.fileName, lineMap.lineMap, acc);
+      var _x143 = Include(lineMap.line, lineMap.start, lineMap.count, lineMap.fileName, lineMap.lineMap, acc);
       lineMap = lineMap.rest;
-      acc = _x144;
+      acc = _x143;
       continue tailcall;
     }
   }
@@ -1610,30 +1595,30 @@ export function reverse(lineMap) /* (lineMap : lineMap) -> lineMap */  {
 }
  
 export function ruleInc(rule) /* (rule : string) -> () */  {
-  var _x145 = $compat_dict._lp__lb__rb__rp_(ruleHist, rule);
-  if (_x145 === null) {
+  var _x144 = $compat_dict._lp__lb__rb__rp_(ruleHist, rule);
+  if (_x144 === null) {
     return $compat_dict._lp__lb__rb__1_rp_(ruleHist, rule, 0);
   }
   else {
-    return $compat_dict._lp__lb__rb__1_rp_(ruleHist, rule, $std_core._int_add((_x145.value),1));
+    return $compat_dict._lp__lb__rb__1_rp_(ruleHist, rule, $std_core._int_add((_x144.value),1));
   }
 }
  
 export function setLineNo(attrs, line, dataline) /* (attrs : attrs, line : int, dataline : string) -> attrs */  {
    
-  var _x146 = attrs.text;
-  var left_10769 = $std_core._lp__plus__plus__1_rp_(_x146, " ; line:");
+  var _x145 = attrs.text;
+  var left_10759 = $std_core._lp__plus__plus__1_rp_(_x145, " ; line:");
    
-  var right_10770 = $std_core.show(line);
+  var right_10760 = $std_core.show(line);
    
-  var _arg_8375 = $std_core._lp__plus__plus__1_rp_(left_10769, right_10770);
-  return addKeyval(_copy(attrs, false, undefined, undefined, _arg_8375, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, line), "data-line", dataline);
+  var _arg_8355 = $std_core._lp__plus__plus__1_rp_(left_10759, right_10760);
+  return addKeyval(_copy(attrs, false, undefined, undefined, _arg_8355, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, line), "data-line", dataline);
 }
  
 export function traceRuleHist() /* () -> () */  {
   return $std_core.foreach($compat_dict.list_1($compat_dict.freeze(ruleHist)), function(kv /* (string, int) */ ) {
-      var _x146 = $std_core._lp__plus__plus__1_rp_($std_core._lp__plus__plus__1_rp_($compat.align(kv.fst, 20), ": "), $std_core.show(kv.snd));
-      return $std_core.trace(_x146);
+      var _x145 = $std_core._lp__plus__plus__1_rp_($std_core._lp__plus__plus__1_rp_($compat.align(kv.fst, 20), ": "), $std_core.show(kv.snd));
+      return $std_core.trace(_x145);
     });
 }
  
@@ -1647,41 +1632,41 @@ export function translateLine(lineInfos, lineNo0) /* (lineInfos : lineMap, lineN
       return $std_core.show(lineNo0);
     }
     else {
-      var _x147 = $std_core._int_ge(lineNo0,($std_core._int_add((lineInfos.line),(lineInfos.count))));
-      if (_x147) {
+      var _x146 = $std_core._int_ge(lineNo0,($std_core._int_add((lineInfos.line),(lineInfos.count))));
+      if (_x146) {
          
-        var y0_10778 = $std_core._int_sub((lineInfos.count),1);
+        var y0_10768 = $std_core._int_sub((lineInfos.count),1);
         {
           // tail call
-          var _x148 = $std_core._int_sub(lineNo0,y0_10778);
+          var _x147 = $std_core._int_sub(lineNo0,y0_10768);
           lineInfos = lineInfos.rest;
-          lineNo0 = _x148;
+          lineNo0 = _x147;
           continue tailcall;
         }
       }
       else {
          
-        var left2_10787 = $std_core.show(lineInfos.line);
+        var left2_10777 = $std_core.show(lineInfos.line);
          
-        var left1_10785 = $std_core._lp__plus__plus__1_rp_(left2_10787, ";");
+        var left1_10775 = $std_core._lp__plus__plus__1_rp_(left2_10777, ";");
          
-        var left0_10783 = $std_core._lp__plus__plus__1_rp_(left1_10785, lineInfos.fileName);
+        var left0_10773 = $std_core._lp__plus__plus__1_rp_(left1_10775, lineInfos.fileName);
          
-        var left_10781 = $std_core._lp__plus__plus__1_rp_(left0_10783, ":");
+        var left_10771 = $std_core._lp__plus__plus__1_rp_(left0_10773, ":");
          
-        var x2_10789 = $std_core._int_sub(lineNo0,(lineInfos.line));
+        var x2_10779 = $std_core._int_sub(lineNo0,(lineInfos.line));
          
-        var right_10782 = translateLine(lineInfos.lineMap, $std_core._int_add(x2_10789,(lineInfos.start)));
-        return $std_core._lp__plus__plus__1_rp_(left_10781, right_10782);
+        var right_10772 = translateLine(lineInfos.lineMap, $std_core._int_add(x2_10779,(lineInfos.start)));
+        return $std_core._lp__plus__plus__1_rp_(left_10771, right_10772);
       }
     }
   }
 }}
  
 export function trimLines(s) /* (s : string) -> string */  {
-  var _x150 = undefined;
-  var _x149 = (_x150 !== undefined) ? _x150 : 0;
-  return $compat_regex.replaceEx_1(s, rxTrimLines, "", true, _x149);
+  var _x149 = undefined;
+  var _x148 = (_x149 !== undefined) ? _x149 : 0;
+  return $compat_regex.replaceEx_1(s, rxTrimLines, "", true, _x148);
 }
  
 export function unindent(txt) /* (txt : string) -> string */  {
@@ -1690,41 +1675,41 @@ export function unindent(txt) /* (txt : string) -> string */  {
    
   var lines = $std_core.vlist(v_17126);
    
-  var xs_10798 = $std_core.map_5($std_core.filter(lines, function(s0 /* string */ ) {
+  var xs_10788 = $std_core.map_5($std_core.filter(lines, function(s0 /* string */ ) {
          
-        var b_10800 = $compat_regex.contains(s0, $compat_regex.regex("^\\\\s*$"));
-        return (b_10800) ? false : true;
+        var b_10790 = $compat_regex.contains(s0, $compat_regex.regex("^\\\\s*$"));
+        return (b_10790) ? false : true;
       }), function(s00 /* string */ ) {
-      var _x151 = $compat_regex.find(s00, $compat_regex.regex("^\\\\s*"));
-      if (_x151 === null) {
+      var _x150 = $compat_regex.find(s00, $compat_regex.regex("^\\\\s*"));
+      if (_x150 === null) {
         return 0;
       }
       else {
-        var _x152 = _x151.value.matched;
-        return $std_core.count_1(_x152);
+        var _x151 = _x150.value.matched;
+        return $std_core.count_1(_x151);
       }
     });
    
-  if (xs_10798 === null) {
-    var _x153 = undefined;
-    var cindent = (_x153 !== undefined) ? _x153 : 0;
+  if (xs_10788 === null) {
+    var _x152 = undefined;
+    var cindent = (_x152 !== undefined) ? _x152 : 0;
   }
   else {
-    var cindent = $std_core.foldl(xs_10798.tail, xs_10798.head, $std_core.min);
+    var cindent = $std_core.foldl(xs_10788.tail, xs_10788.head, $std_core.min);
   }
   if ($std_core._int_le(cindent,0)) {
     return txt;
   }
   else {
      
-    var xs0_10803 = $std_core.map_5(lines, function(s10 /* string */ ) {
+    var xs0_10793 = $std_core.map_5(lines, function(s10 /* string */ ) {
         return $compat.substr(s10, cindent);
       });
-    if (xs0_10803 === null) {
+    if (xs0_10793 === null) {
       return "";
     }
     else {
-      return $std_core._lift17188_joinsep("\n", xs0_10803.tail, xs0_10803.head);
+      return $std_core._lift17188_joinsep("\n", xs0_10793.tail, xs0_10793.head);
     }
   }
 }

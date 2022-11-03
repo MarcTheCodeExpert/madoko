@@ -14,6 +14,7 @@ module compat/flags
 
 import compat/env
 import compat
+import stringcompat
 
 // Specifies how to handle options that follow nonOption command line arguments.
 pub type optionOrder<a> {

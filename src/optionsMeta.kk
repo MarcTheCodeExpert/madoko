@@ -18,6 +18,7 @@ import compat
 import compat/string
 import compat/path
 import compat/log
+import stringcompat
 
 pub fun fromMeta( opts : options, mdata : metadata ) : options {
   mdata.foldl(opts) fn(options : options, kv : (string,string)) {

@@ -10,6 +10,9 @@
 */  
 pub module compat/dict
 
+
+import stringcompat
+
 extern include {
   js file "dict-inline.js"
 }

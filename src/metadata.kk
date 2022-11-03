@@ -21,6 +21,7 @@ import compat/path
 import compat/regex
 import compat/dict
 import compat/log
+import stringcompat
 
 
 

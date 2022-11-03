@@ -14,6 +14,7 @@ import entity
 import expression
 
 import compat
+import stringcompat
 import compat/regex
 import compat/dict
 import compat/string

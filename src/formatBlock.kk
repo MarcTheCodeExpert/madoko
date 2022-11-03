@@ -22,6 +22,7 @@ import inline
 import formatInline
 
 import compat
+import stringcompat
 
 
 pub struct formatContext(
@@ -287,7 +288,7 @@ fun deriveMathAttrs( parentAttrs : attrs ) {
 
 fun formatRows( rows : list<row>,
                       colstyles : list<attrs>, ctx : formatContext,
-                      attrs : attrs, isBody : bool ) : <div> list<row>
+                      attrs : attrs, isBody : bool ) : list<row>
 {
   if (rows.is-nil) then return Nil
 
@@ -316,7 +317,7 @@ fun formatRows( rows : list<row>,
     kvs
   }
 
-  fun formatRow( colNum : int, row : list<cell>, cols : list<attrs>, rowstyle : attrs ) : <div> list<cell> {
+  fun formatRow( colNum : int, row : list<cell>, cols : list<attrs>, rowstyle : attrs ) : list<cell> {
     match(row) {
       Cons(cell,rs) -> {
         match(cols) {

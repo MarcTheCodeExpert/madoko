@@ -5,18 +5,23 @@
 import * as $std_core_types from './std_core_types.mjs';
 import * as $std_core_hnd from './std_core_hnd.mjs';
 import * as $std_core from './std_core.mjs';
+import * as $compat from './compat.mjs';
+import * as $stringcompat from './stringcompat.mjs';
+import * as $compat_regex from './compat_regex.mjs';
+import * as $compat_path from './compat_path.mjs';
+import * as $compat_dict from './compat_dict.mjs';
+import * as $compat_log from './compat_log.mjs';
 import * as $std_text_parse from './std_text_parse.mjs';
 import * as $std_os_path from './std_os_path.mjs';
-import * as $std_text_regex from './std_text_regex.mjs';
-import * as $compat_dict from './compat_dict.mjs';
-import * as $compat from './compat.mjs';
-import * as $compat_log from './compat_log.mjs';
-import * as $compat_regex from './compat_regex.mjs';
 import * as $common from './common.mjs';
-import * as $std_os_flags from './std_os_flags.mjs';
-import * as $compat_path from './compat_path.mjs';
-import * as $compat_env from './compat_env.mjs';
 import * as $std_os_env from './std_os_env.mjs';
+import * as $std_os_flags from './std_os_flags.mjs';
+import * as $std_text_regex from './std_text_regex.mjs';
+import * as $compat_env from './compat_env.mjs';
+import * as $std_num_int64 from './std_num_int64.mjs';
+import * as $std_num_float64 from './std_num_float64.mjs';
+import * as $std_num_decimal from './std_num_decimal.mjs';
+import * as $std_num_ddouble from './std_num_ddouble.mjs';
 import * as $compat_array from './compat_array.mjs';
 import * as $compat_string from './compat_string.mjs';
 import * as $compat_flags from './compat_flags.mjs';
@@ -540,7 +545,7 @@ export function fexistsSync(fileName) /* (fileName : string) -> io bool */  {
       else {
         return $std_core_hnd._open_at1(0, xfexistsSync, x_2212);
       }
-    }, function(___wildcard__172__9 /* exception */ ) {
+    }, function(___wildcard__173__9 /* exception */ ) {
       return false;
     });
 }
@@ -1121,7 +1126,7 @@ export function tryWriteTextFile(fileName, content) /* (fileName : string, conte
       else {
         return true;
       }
-    }, function(___wildcard__153__60 /* exception */ ) {
+    }, function(___wildcard__154__60 /* exception */ ) {
       return false;
     });
 }
@@ -1246,7 +1251,7 @@ export function tryReadFileSync(fileName) /* (fileName : string) -> io maybe<buf
       else {
         return $std_core_types.Just(x_2327);
       }
-    }, function(___wildcard__210__22 /* exception */ ) {
+    }, function(___wildcard__199__22 /* exception */ ) {
       return $std_core_types.Nothing;
     });
 }
@@ -1386,7 +1391,7 @@ export function tryWriteBase64File(fileName, content) /* (fileName : string, con
       else {
         return true;
       }
-    }, function(___wildcard__266__62 /* exception */ ) {
+    }, function(___wildcard__267__62 /* exception */ ) {
       return false;
     });
 }

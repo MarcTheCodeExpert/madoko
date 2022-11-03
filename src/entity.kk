@@ -14,6 +14,7 @@ import common  // warning
 import compat
 import compat/log
 import compat/regex
+import stringcompat
 
 
 

@@ -23,6 +23,7 @@ import compat/regex
 import compat/flags
 import compat
 import common
+import stringcompat
 
 // Metadata is just a string to string map.
 pub alias metadata = list<(string,string)>

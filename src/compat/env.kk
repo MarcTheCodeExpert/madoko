@@ -20,6 +20,7 @@ module compat/env
 
 import compat/path
 import compat/dict
+import stringcompat
 
 extern getEnvironment() : dict<string>  {
   cs inline "Primitive.DictFromStringCollection(System.Environment.GetEnvironmentVariables())"

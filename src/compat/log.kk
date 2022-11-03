@@ -3,6 +3,7 @@ pub module compat/log
 
 import compat/dict
 import compat
+import stringcompat
 
 val logDict : mdict<global,string> = unsafe-total { mdict() }
 

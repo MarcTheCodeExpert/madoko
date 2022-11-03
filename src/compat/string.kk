@@ -12,6 +12,7 @@ module compat/string
 
 import std/num/ddouble
 import compat/array
+import stringcompat
 
 // Indent all lines a string `s` by `n`. `fill` is used for indentation, by default `" "`.
 pub fun indent( s : string, n : int = 2, fill : string = " " ) {

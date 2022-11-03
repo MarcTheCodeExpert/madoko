@@ -14,8 +14,8 @@ module interface compat/env
  
 import std/core/types = std/core/types = "";
 import std/core = std/core = "";
-import compat/dict = compat/dict = "";
 import compat/path = compat/path = "";
+import compat/dict = compat/dict = "";
  
 //------------------------------
 //#kki: external imports

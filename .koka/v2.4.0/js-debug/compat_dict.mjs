@@ -5,10 +5,10 @@
 import * as $std_core_types from './std_core_types.mjs';
 import * as $std_core_hnd from './std_core_hnd.mjs';
 import * as $std_core from './std_core.mjs';
-import * as $std_text_parse from './std_text_parse.mjs';
-import * as $std_os_path from './std_os_path.mjs';
-import * as $std_num_int32 from './std_num_int32.mjs';
-import * as $std_text_regex from './std_text_regex.mjs';
+import * as $compat from './compat.mjs';
+import * as $stringcompat from './stringcompat.mjs';
+import * as $compat_regex from './compat_regex.mjs';
+import * as $compat_path from './compat_path.mjs';
  
 // externals
 /*---------------------------------------------------------------------------

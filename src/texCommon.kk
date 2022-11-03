@@ -14,6 +14,7 @@ import compat/dict
 import compat/regex
 import compat
 import common
+import stringcompat
 
 pub val texAccents = [
   ("`","grave"),

@@ -18,6 +18,7 @@ import compat/log
 import compat/regex
 import compat/dict
 import compat/string
+import stringcompat
 
 
 infixl 5 (<*), (*>), (<*>)

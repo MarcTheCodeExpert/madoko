@@ -23,6 +23,7 @@ import entity
 import texCommon
 import texParserBase
 import texParserItems
+import stringcompat
 
 /* --------------------------------------
   Latex grammar
@@ -230,7 +231,7 @@ val texGrammar : grammar<string,texContext> = [
 
 
 // Parse TeX elements and return Markdown
-pub fun parseTex( txt : string, id: string = "", bststyle: string = "", verbose : bool = False, ignore : bool = True  ) : <div> string
+pub fun parseTex( txt : string, id: string = "", bststyle: string = "", verbose : bool = False, ignore : bool = True  ) : string
 {
   val normTxt = txt.replaceAll(regex(r"\r\n?"),"\n").replaceAll(regex(r"\t"),"   ")
   val md = contextParse(TexContext(texGrammar,bststyle,ignore,id,contextParse), normTxt)
@@ -238,15 +239,15 @@ pub fun parseTex( txt : string, id: string = "", bststyle: string = "", verbose 
   md
 }
 
-fun contextParse( ctx : texContext, txt : string ) : <div> string {
+fun contextParse( ctx : texContext, txt : string ) : string {
   if (txt=="") then "" else {
     parseTexAcc(ctx,builder(), txt.unbrace)
   }
 }
 
-fun parseTexAcc( ctx : texContext, acc : builder<h>, txt : string ) : <div,st<h>> string
+fun parseTexAcc( ctx : texContext, acc : builder<h>, txt : string ) : <st<h>> string
 {
   if (txt=="") return acc.build
   val (s,next,_) = matchRules(ctx.grammar,ctx,txt,id)
-  parseTexAcc(ctx, acc.append(s), txt.substr1(next))
+  parseTexAcc(ctx, unsafe-decreasing(acc.append(s)), txt.substr1(next))
 }

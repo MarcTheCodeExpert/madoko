@@ -19,6 +19,7 @@ import codeAlign  // codeTable
 import hilite  // hilitemode
 
 import compat
+import stringcompat
 
 pub alias cells = list<list<(string,attrs)>>
 

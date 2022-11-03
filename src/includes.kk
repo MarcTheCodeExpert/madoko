@@ -6,6 +6,7 @@ import compat/regex
 import compat/path
 import compat/dict
 import compat
+import stringcompat
 import common
 import options
 import block    // for lineMap

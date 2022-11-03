@@ -8,6 +8,7 @@ module compat/regex
 
 import compat
 import std/core/types
+import stringcompat
 
 extern include {
   js file "regex-inline.js"

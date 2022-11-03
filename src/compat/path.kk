@@ -13,6 +13,7 @@ Handle and transform file paths
 pub module compat/path
 
 import compat
+import stringcompat
 
 extern include {
   js file "path-inline.js"

@@ -10,9 +10,6 @@
 module driver
 
 
-import std/time/time
-import std/time/date
-import std/time/chrono
 import common
 import options
 import metadata
@@ -29,6 +26,7 @@ import compat/log
 import compat/regex
 import compat/dict
 import compat/string
+import stringcompat
 
 pub struct runners()
 
@@ -42,21 +40,21 @@ pub fun processContent( inName : string, outName : string, content : string,
   val searchDirs = [inName.dirname,outName.dirname,styleDir]
   val opts0  = if (inName.endsWith(".xmp.html") || inName.endsWith(".xmp"))
                 then (opts.options)(xmp = True,full = opts.options.full.maybe(Just(False),Just)) else opts.options
+  //val icontent = content
+  //val xopts = Options()
   content.include(False, inName, outName, searchDirs, opts0) fn(icontent0,lmap) {
-    // remove madoko comments
+     // remove madoko comments
     val icontent = icontent0.removeMadokoComments
-    // set up options
+  //   // set up options
 
-    val date   = time-now()
+    val date   = now()
     val xopts  = opts0(lineMap=lmap,
                        metadata=opts0.metadata
-    
-                       
                        + [("docname",inName.stemname),("filename",inName)]
-                       + [("madoko-version",opts0.version)])
-                       /*+ [("date",date.isoLocalDate),("time",date.isoLocalTime.substr(0,5)),
+                       + [("madoko-version",opts0.version)]
+                       + [("date",date.isoLocalDate),("time",date.isoLocalTime.substr(0,5)),
                           ("year",date.year.show),("month",date.month.show2),("day",date.day.show2),
-                          ("hours",date.hours.show2),("minutes",date.minutes.show2),("seconds",date.clock.seconds.show2)] )*/
+                          ("hours",date.hours.show2),("minutes",date.minutes.show2),("seconds",date.seconds.show2)])
 
     val mopts = if (xopts.xmp)
                   then xopts.parseMeta( FmtHtml, icontent.normalizeSource.extractFirstXmp ).fst
@@ -79,14 +77,15 @@ pub fun processContent( inName : string, outName : string, content : string,
       files.foreach fn(fname) {
         tryCopyTextFileFromNoSandboxTo(fname, styleDir, outName.dirname )
       }
-    }
-    val html = ""
-
-    process( inName, outName, searchDirs, content, icontent, xopts, mopts, firstTime)
-      fn() {
-        continue(html,inName,outName,mopts)
-      }
+    }  
+    process( inName, outName, searchDirs, content, icontent, xopts, mopts, firstTime, 
+    fn(html) {
+      continue(html,inName,outName,mopts)
+    })
   }
+    
+  
+ // }
 }
 
 fun extractFirstXmp( s : string ) : string {
@@ -214,15 +213,13 @@ fun tryCopyTextFileFromNoSandboxTo( fname, srcDir, outDir ) {
   
   val inName = combine(srcDir,fname)
   val outName = combine(outDir,fname)
-  /*
-  catch {
+  
+  try (fn(){
     val txt = readTextFileNoSandbox( inName )
     tryWriteTextFile(outName,txt)
     ()
-  }
-  fn(exn) { () }
-  */
-  ()
+  }, fn(exn) { () })
+  
 }
 
 

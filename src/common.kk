@@ -14,6 +14,7 @@ import compat/dict
 import std/os/path
 import compat/regex
 import compat
+import stringcompat
 
 
 

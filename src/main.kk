@@ -9,18 +9,20 @@
 // Main Madoko command line interface
 module main
 
-import std/os/path
-import std/text/regex
+import compat
+import compat/regex
+import compat/path
 import common
 import options
 import storage
 import driver
 import version
+import stringcompat
 
 pub fun main() : io () {
-  markdownFiles("") fn(html,inName,outName,opts) {
+  markdownFiles("", fn(html,inName,outName,opts) {
     ()
-  }
+  })
 }
 
 pub fun test( s : string = "code_blocks", moreargs = "" ) {
@@ -30,30 +32,30 @@ pub fun test( s : string = "code_blocks", moreargs = "" ) {
   val outputDir = "test/out"
   val target = root + ".html"
 
-  markdownFiles("-v --tex --installdir=src --odir=" + outputDir + " " + moreargs + " " + input)
-  fn(outText,_input,output,_options) {
-    //trace("-----\n" + outText + "\n-----")
-    val targetText = target.readTextFileDef("")
-    val outStrip = outText.replaceAll(regex(r"\s"),"")
-    // .replaceAll(regex(@"class=""indent"""),"")                  
-    val targetStrip = targetText.replaceAll(regex(r"\s"),"")
-    if (outStrip != targetStrip) {
-      trace("\n*** test failed ***")
-      //trace(targetText + "\n***")
+  markdownFiles("-v --tex --installdir=src --odir=" + outputDir + " " + moreargs + " " + input, 
+    fn(outText,_input,output,_options) {
+      //trace("-----\n" + outText + "\n-----")
+      val targetText = target.readTextFileDef("")
+      val outStrip = outText.replaceAll(regex(r"\s"),"")
+      // .replaceAll(regex(@"class=""indent"""),"")                  
+      val targetStrip = targetText.replaceAll(regex(r"\s"),"")
+      if (outStrip != targetStrip) {
+        trace("\n*** test failed ***")
+        //trace(targetText + "\n***")
 
-      var i := 0;
-      while { outStrip[i] == targetStrip[i] } { i := i+1 }
-      trace("position: " + i.show)
-      val preN = 20
-      i := max(0, i-preN)
-      trace("inferred: " + outStrip.substr(i,preN) + " " + outStrip.substr(i+preN,40) + " ...")
-      trace("expected: " + targetStrip.substr(i,preN) + " " + targetStrip.substr(i+preN,40) + "...")
-      trace("***")
-    }
-    else {
-      trace("*** test success (modulo whitespace)")
-    }
-}
+        var i := 0;
+        //while { outStrip[i] == targetStrip[i] } { i := i+1 }
+        trace("position: " + i.show)
+        val preN = 20
+        i := max(0, i - preN)
+        trace("inferred: " + outStrip.substr(i,preN) + " " + outStrip.substr(i+preN,40) + " ...")
+        trace("expected: " + targetStrip.substr(i,preN) + " " + targetStrip.substr(i+preN,40) + "...")
+        trace("***")
+      }
+      else {
+        trace("*** test success (modulo whitespace)")
+      }
+  })
 }
 
 pub fun markdownFiles(args : string, action : (string,string,string,options) -> io ()) : io () {

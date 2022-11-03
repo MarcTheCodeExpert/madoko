@@ -16,6 +16,7 @@ import common
 import attributes
 
 import compat
+import stringcompat
 
 import compat/log
 import compat/regex

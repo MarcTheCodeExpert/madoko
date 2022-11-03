@@ -23,6 +23,7 @@ import compat
 import compat/path
 import compat/log
 import compat/regex
+import stringcompat
 
 extern include {
   js file "storage-inline.js"

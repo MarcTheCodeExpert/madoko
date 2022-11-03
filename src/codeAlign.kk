@@ -15,6 +15,7 @@ import common
 import attributes
 
 import compat
+import stringcompat
 
 pub struct codeTable(
   columns: int,
@@ -53,7 +54,7 @@ pub fun foldCodeTable( ct : codeTable, st : a, f : (string,a) -> (string,a) ) : 
   ct( rows = foldRows(ct.rows,st ).fst )
 }
 
-pub fun map( ct : codeTable,  f : (string,int) -> <div> string ) : <div> codeTable {
+pub fun map( ct : codeTable,  f : (string,int) -> string ) : codeTable {
   ct( rows = ct.rows.map( fn(row) { row.map-indexed( fn(idx,ccell) { ccell(content = f(ccell.content,idx)) }) }) )
 }
 

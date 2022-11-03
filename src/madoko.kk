@@ -14,6 +14,7 @@ import compat/dict
 import compat/regex
 import compat/path
 import compat/log
+import stringcompat
 
 //import backports
 //import version
@@ -227,7 +228,7 @@ pub fun inlineContext( fmt : formatter,
                                highlight : bool = True,
                                starBold : bool = False,
                                sandbox: bool = False,
-                               prettyAlign : int = 2 ) : <div> inlineContext
+                               prettyAlign : int = 2 ) : inlineContext
 {
   val isTex2  = match(metadata["tex2"]) {
                   Just(value) -> value.toLower == "true"

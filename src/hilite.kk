@@ -13,6 +13,7 @@ import compat/regex
 import compat/path
 import common
 import compat
+import stringcompat
 
 extern import {
   js monarch "./monarch"

@@ -24,18 +24,11 @@ local alias std/core/io :: E = <(std/core/types/handled :: HX -> X)<(std/core/ex
 //------------------------------
 //#kki: type declarations
  
+type date ;
  
 //------------------------------
 //#kki: declarations
  
-/*
-  Operator "+" --> addition of 2 strings
-*/
-pub fun (+) : (left : std/core/types/string, right : std/core/types/string) -> std/core/types/string;
-/*
-  Operator "+" --> addition of 2 list<string>
-*/
-pub fun (+.1) : forall<a> (left : (std/core/list :: V -> V)<a>, right : (std/core/list :: V -> V)<a>) -> (std/core/list :: V -> V)<a>;
 /*
   returns the length of a string
 */
@@ -49,8 +42,10 @@ fun makeString : (n : std/core/types/int, c : std/core/types/char) -> std/core/t
 pub fun catch_old : forall<(e :: E),a> (action : () -> <(std/core/types/handled :: HX -> X)<(std/core/exn :: HX)>|(e :: E)> a, hndl : (std/core/exception) -> (e :: E) a) -> (e :: E) a;
 // Does string `s`  contain the character `c`  ?
 pub fun contains : (s : std/core/types/string, c : std/core/types/char) -> std/core/types/bool;
+// Get the day of the month, starting at 1
+pub fun day : (d : date) -> std/core/types/int;
 // monadic lift
-fun .mlift2812-dropWhile : forall<a,(e :: E)> (.y.2761 : ((std/core/list :: V -> V)<a>, (std/core/list :: V -> V)<a>)) -> (e :: E) (std/core/list :: V -> V)<a>;
+fun .mlift3788-dropWhile : forall<a,(e :: E)> (.y.3737 : ((std/core/list :: V -> V)<a>, (std/core/list :: V -> V)<a>)) -> (e :: E) (std/core/list :: V -> V)<a>;
 fun dropWhile : forall<a,(e :: E)> (xs : (std/core/list :: V -> V)<a>, predicate : (a) -> (e :: E) std/core/types/bool) -> (e :: E) (std/core/list :: V -> V)<a>;
 /*
   endsWith function from core.kk
@@ -74,7 +69,19 @@ pub fun foldr : forall<a,b,(e :: E)> (xs : (std/core/list :: V -> V)<a>, z : b, 
   helper function for showHex from core.kk
 */
 fun gformat : forall<a> (value : a, format : std/core/types/string) -> std/core/types/string;
+pub fun hours : (date) -> std/core/types/int;
 pub fun isNothing : forall<a> (x : (std/core/types/maybe :: V -> V)<a>) -> std/core/types/bool;
+// Return an ISO 8601 date-time string.
+// See <http://en.wikipedia.org/wiki/ISO_8601>
+pub fun isoDateTime : (date) -> std/core/types/string;
+pub fun substr2 : (s : std/core/types/string, start : std/core/types/int, len : std/core/types/int) -> std/core/types/string;
+// Get the month, starting at 1
+pub fun month : (d : date) -> std/core/types/int;
+pub fun show : (exn : std/core/exception) -> std/core/types/string;
+// Get the year
+pub fun year : (d : date) -> std/core/types/int;
+pub fun minutes : (date) -> std/core/types/int;
+pub fun seconds : (date) -> std/core/types/int;
 fun isWhite : (c : std/core/types/char) -> std/core/types/bool;
 // Does string `s`  contain the character `c`  ?
 pub fun lastIndexOf : (s : std/core/types/string, c : std/core/types/char) -> std/core/types/int;
@@ -85,23 +92,24 @@ val maxListStack : std/core/types/int;
 pub fun mbstring : (ms : (std/core/types/maybe :: V -> V)<std/core/types/string>) -> std/core/types/string;
 // Compute an md5 hash of a string.
 pub fun md5 : (s : std/core/types/string) -> std/core/types/string;
+pub fun now : () -> <(std/core/types/ndet :: X)> date;
 // Returns "true" if the integer `i`  is an odd number.
 pub fun odd : (i : std/core/types/int) -> std/core/types/bool;
 // Return a default value when an exception is raised
 pub fun onExn : forall<a,(e :: E)> (value : a, action : () -> <(std/core/types/handled :: HX -> X)<(std/core/exn :: HX)>|(e :: E)> a) -> (e :: E) a;
 val redirect : (std/core/types/ref :: (H, V) -> V)<(std/core/types/global :: H),(std/core/types/maybe :: V -> V)<(std/core/types/string) -> <(std/core/console :: X)> ()>>;
 pub fun replaceAll : (s : std/core/types/string, pattern : std/core/types/string, repl : std/core/types/string) -> std/core/types/string;
-pub fun show : (exn : std/core/exception) -> std/core/types/string;
 /*
   startsWith function from core.kk
 */
 pub fun startsWith : (s : std/core/types/string, pre : std/core/types/string) -> std/core/types/bool;
-pub fun substr2 : (s : std/core/types/string, start : std/core/types/int, len : std/core/types/int) -> std/core/types/string;
 /*
   substring functions operating in csharp and js
   all from core.kk
 */
 pub fun substr1 : (s : std/core/types/string, start : std/core/types/int) -> std/core/types/string;
+// Number of milliseconds since 1 January 1970 00:00:00 UTC.
+pub fun time : (date) -> std/core/types/int;
 /*
   to lowercase funtion from core.kk
 */
@@ -121,19 +129,19 @@ pub fun string : (n : std/core/types/int, c : std/core/types/char) -> std/core/t
 */
 pub fun align : (s : std/core/types/string, width : std/core/types/int, char : (std/core/types/optional :: V -> V)<std/core/types/char>) -> std/core/types/string;
 // monadic lift
-fun .mlift2813-concat : forall<a,(e :: E)> (.y.2766 : (std/core/list :: V -> V)<(std/core/list :: V -> V)<a>>) -> (e :: E) (std/core/list :: V -> V)<a>;
+fun .mlift3789-concat : forall<a,(e :: E)> (.y.3742 : (std/core/list :: V -> V)<(std/core/list :: V -> V)<a>>) -> (e :: E) (std/core/list :: V -> V)<a>;
 // Concatenate the result lists from applying a function to all elements
 pub fun concat : forall<a,b,(e :: E)> (xs : (std/core/list :: V -> V)<a>, f : (a) -> (e :: E) (std/core/list :: V -> V)<b>) -> (e :: E) (std/core/list :: V -> V)<b>;
 pub fun fill : (s : std/core/types/string, width : std/core/types/int, char : (std/core/types/optional :: V -> V)<std/core/types/char>) -> std/core/types/string;
 // monadic lift
-fun .mlift2814-op : forall<a,b,(e :: E)> (.acc : (std/core/types/ctail :: V -> V)<(std/core/list :: V -> V)<b>>, pred : (a) -> (e :: E) (std/core/types/maybe :: V -> V)<b>, xx : (std/core/list :: V -> V)<a>, .y.2767 : (std/core/types/maybe :: V -> V)<b>) -> (e :: E) (std/core/list :: V -> V)<b>;
+fun .mlift3790-op : forall<a,b,(e :: E)> (.acc : (std/core/types/ctail :: V -> V)<(std/core/list :: V -> V)<b>>, pred : (a) -> (e :: E) (std/core/types/maybe :: V -> V)<b>, xx : (std/core/list :: V -> V)<a>, .y.3743 : (std/core/types/maybe :: V -> V)<b>) -> (e :: E) (std/core/list :: V -> V)<b>;
 // monadic lift
-fun .mlift2815-op : forall<a,b,(e :: E)> (.accm : ((std/core/list :: V -> V)<b>) -> (std/core/list :: V -> V)<b>, pred : (a) -> (e :: E) (std/core/types/maybe :: V -> V)<b>, xx : (std/core/list :: V -> V)<a>, .y.2772 : (std/core/types/maybe :: V -> V)<b>) -> (e :: E) (std/core/list :: V -> V)<b>;
+fun .mlift3791-op : forall<a,b,(e :: E)> (.accm : ((std/core/list :: V -> V)<b>) -> (std/core/list :: V -> V)<b>, pred : (a) -> (e :: E) (std/core/types/maybe :: V -> V)<b>, xx : (std/core/list :: V -> V)<a>, .y.3748 : (std/core/types/maybe :: V -> V)<b>) -> (e :: E) (std/core/list :: V -> V)<b>;
 pub fun .ctail-filterMap : forall<a,b,(e :: E)> (xs : (std/core/list :: V -> V)<a>, pred : (a) -> (e :: E) (std/core/types/maybe :: V -> V)<b>, .acc : (std/core/types/ctail :: V -> V)<(std/core/list :: V -> V)<b>>) -> (e :: E) (std/core/list :: V -> V)<b>;
 pub fun .ctailm-filterMap : forall<a,b,(e :: E)> (xs : (std/core/list :: V -> V)<a>, pred : (a) -> (e :: E) (std/core/types/maybe :: V -> V)<b>, .accm : ((std/core/list :: V -> V)<b>) -> (std/core/list :: V -> V)<b>) -> (e :: E) (std/core/list :: V -> V)<b>;
 pub fun filterMap : forall<a,b,(e :: E)> (xs : (std/core/list :: V -> V)<a>, pred : (a) -> (e :: E) (std/core/types/maybe :: V -> V)<b>) -> (e :: E) (std/core/list :: V -> V)<b>;
 // monadic lift
-fun .mlift2816-foreachUntil : forall<a,b,(e :: E)> (action : (a) -> (e :: E) (std/core/types/maybe :: V -> V)<b>, xx : (std/core/list :: V -> V)<a>, .y.2780 : (std/core/types/maybe :: V -> V)<b>) -> (e :: E) (std/core/types/maybe :: V -> V)<b>;
+fun .mlift3792-foreachUntil : forall<a,b,(e :: E)> (action : (a) -> (e :: E) (std/core/types/maybe :: V -> V)<b>, xx : (std/core/list :: V -> V)<a>, .y.3756 : (std/core/types/maybe :: V -> V)<b>) -> (e :: E) (std/core/types/maybe :: V -> V)<b>;
 // Invoke "action" for each element of a list while "action" return "Nothing"
 pub fun foreachUntil : forall<a,b,(e :: E)> (xs : (std/core/list :: V -> V)<a>, action : (a) -> (e :: E) (std/core/types/maybe :: V -> V)<b>) -> (e :: E) (std/core/types/maybe :: V -> V)<b>;
 fun indexOfAcc : forall<a> (xs : (std/core/list :: V -> V)<a>, pred : (a) -> std/core/types/bool, idx : std/core/types/int) -> std/core/types/int;
@@ -143,6 +151,17 @@ pub fun indexOf : (s : std/core/types/string, c : std/core/types/char) -> std/co
 pub fun indexOf.1 : (s : std/core/types/string, sub : std/core/types/string) -> std/core/types/int;
 // Returns the index of the first element where "pred" holds, or "-1" if no such element exists.
 pub fun indexOf.2 : forall<a> (xs : (std/core/list :: V -> V)<a>, pred : (a) -> std/core/types/bool) -> std/core/types/int;
+pub fun substr : (s : std/core/types/string, start : std/core/types/int) -> std/core/types/string;
+pub fun substr.1 : (s : std/core/types/string, start : std/core/types/int, len : std/core/types/int) -> std/core/types/string;
+// Return the date portion of an ISO date/time string.
+pub fun isoDate : (d : date) -> std/core/types/string;
+pub fun show2 : (i : std/core/types/int) -> std/core/types/string;
+// return the ISO date in local time
+pub fun isoLocalDate : (d : date) -> std/core/types/string;
+// return the ISO time in local time
+pub fun isoLocalTime : (d : date) -> std/core/types/string;
+// Return the time portion of an ISO date/time string.
+pub fun isoTime : (d : date) -> std/core/types/string;
 // Parse digits in a "base" between 2 and 36 (default 10) given an initial value "acc" (default 0)
 // Returns "acc" on the empty string, and "Nothing" if an invalid digit is encountered.
 fun parseDigits : (cs : (std/core/list :: V -> V)<std/core/types/char>, base : (std/core/types/optional :: V -> V)<std/core/types/int>, acc : (std/core/types/optional :: V -> V)<std/core/types/int>) -> (std/core/types/maybe :: V -> V)<std/core/types/int>;
@@ -152,22 +171,19 @@ pub fun parseFixed : (s : std/core/types/string) -> (std/core/types/maybe :: V -
 pub fun parseFixedDefault : (s : std/core/types/string, default : (std/core/types/optional :: V -> V)<std/core/types/float64>) -> std/core/types/float64;
 pub fun parseIntDefault : (s : std/core/types/string, default : (std/core/types/optional :: V -> V)<std/core/types/int>, hex : (std/core/types/optional :: V -> V)<std/core/types/bool>) -> std/core/types/int;
 pub fun printRedirect : (print : (msg : std/core/types/string) -> <(std/core/console :: X)> ()) -> <(std/core/io :: E)> ();
-pub fun show2 : (i : std/core/types/int) -> std/core/types/string;
 /*
   showHex function from core.kk
 */
 pub fun showHex : (i : std/core/types/int, width : (std/core/types/optional :: V -> V)<std/core/types/int>, useCapitals : (std/core/types/optional :: V -> V)<std/core/types/bool>) -> std/core/types/string;
-pub fun substr : (s : std/core/types/string, start : std/core/types/int) -> std/core/types/string;
-pub fun substr.1 : (s : std/core/types/string, start : std/core/types/int, len : std/core/types/int) -> std/core/types/string;
 // monadic lift
-fun .mlift2817-zipWithAcc : forall<(e :: E),a,b,c> (acc : (std/core/list :: V -> V)<b>, f : (std/core/types/int, a, c) -> (e :: E) b, i : std/core/types/int, xx : (std/core/list :: V -> V)<a>, yy : (std/core/list :: V -> V)<c>, .y.2784 : b) -> (e :: E) (std/core/list :: V -> V)<b>;
+fun .mlift3793-zipWithAcc : forall<(e :: E),a,b,c> (acc : (std/core/list :: V -> V)<b>, f : (std/core/types/int, a, c) -> (e :: E) b, i : std/core/types/int, xx : (std/core/list :: V -> V)<a>, yy : (std/core/list :: V -> V)<c>, .y.3760 : b) -> (e :: E) (std/core/list :: V -> V)<b>;
 fun zipWithAcc : forall<a,b,c,(e :: E)> ((std/core/types/int, a, b) -> (e :: E) c, std/core/types/int, (std/core/list :: V -> V)<c>, (std/core/list :: V -> V)<a>, (std/core/list :: V -> V)<b>) -> (e :: E) (std/core/list :: V -> V)<c>;
 // monadic lift
-fun .mlift2818-op : forall<(e :: E),a> (.acc : (std/core/types/ctail :: V -> V)<(std/core/list :: V -> V)<a>>, .y.2788 : (std/core/list :: V -> V)<a>) -> (e :: E) (std/core/list :: V -> V)<a>;
+fun .mlift3794-op : forall<(e :: E),a> (.acc : (std/core/types/ctail :: V -> V)<(std/core/list :: V -> V)<a>>, .y.3764 : (std/core/list :: V -> V)<a>) -> (e :: E) (std/core/list :: V -> V)<a>;
 // monadic lift
-fun .mlift2819-op : forall<(e :: E),a,b,c> (.acc : (std/core/types/ctail :: V -> V)<(std/core/list :: V -> V)<c>>, f : (std/core/types/int, a, b) -> (e :: E) c, i : std/core/types/int, xx : (std/core/list :: V -> V)<a>, yy : (std/core/list :: V -> V)<b>, .ctail.2754 : c) -> (e :: E) (std/core/list :: V -> V)<c>;
+fun .mlift3795-op : forall<(e :: E),a,b,c> (.acc : (std/core/types/ctail :: V -> V)<(std/core/list :: V -> V)<c>>, f : (std/core/types/int, a, b) -> (e :: E) c, i : std/core/types/int, xx : (std/core/list :: V -> V)<a>, yy : (std/core/list :: V -> V)<b>, .ctail.3730 : c) -> (e :: E) (std/core/list :: V -> V)<c>;
 // monadic lift
-fun .mlift2820-op : forall<(e :: E),a,b,c> (.accm : ((std/core/list :: V -> V)<c>) -> (std/core/list :: V -> V)<c>, f : (std/core/types/int, a, b) -> (e :: E) c, i : std/core/types/int, xx : (std/core/list :: V -> V)<a>, yy : (std/core/list :: V -> V)<b>, .ctail.2759 : c) -> (e :: E) (std/core/list :: V -> V)<c>;
+fun .mlift3796-op : forall<(e :: E),a,b,c> (.accm : ((std/core/list :: V -> V)<c>) -> (std/core/list :: V -> V)<c>, f : (std/core/types/int, a, b) -> (e :: E) c, i : std/core/types/int, xx : (std/core/list :: V -> V)<a>, yy : (std/core/list :: V -> V)<b>, .ctail.3735 : c) -> (e :: E) (std/core/list :: V -> V)<c>;
 pub fun .ctail-zipWithIter : forall<a,b,c,(e :: E)> ((std/core/types/int, a, b) -> (e :: E) c, std/core/types/int, (std/core/list :: V -> V)<a>, (std/core/list :: V -> V)<b>, .acc : (std/core/types/ctail :: V -> V)<(std/core/list :: V -> V)<c>>) -> (e :: E) (std/core/list :: V -> V)<c>;
 pub fun .ctailm-zipWithIter : forall<a,b,c,(e :: E)> ((std/core/types/int, a, b) -> (e :: E) c, std/core/types/int, (std/core/list :: V -> V)<a>, (std/core/list :: V -> V)<b>, .accm : ((std/core/list :: V -> V)<c>) -> (std/core/list :: V -> V)<c>) -> (e :: E) (std/core/list :: V -> V)<c>;
 pub fun zipWithIter : forall<a,b,c,(e :: E)> ((std/core/types/int, a, b) -> (e :: E) c, std/core/types/int, (std/core/list :: V -> V)<a>, (std/core/list :: V -> V)<b>) -> (e :: E) (std/core/list :: V -> V)<c>;
@@ -297,14 +313,6 @@ specialize "*___" fun zipWithIter // inline size: 1
         });
     });
   };
-fun (+) // inline size: 1
-  = fn(left: std/core/types/string, right: std/core/types/string){
-    std/core/(++.1)(left, right);
-  };
-fun (+.1) // inline size: 1
-  = forall<a> fn(left: (std/core/list :: V -> V)<a>, right: (std/core/list :: V -> V)<a>){
-    std/core/append<a>(left, right);
-  };
 fun length // inline size: 1
   = fn(s: std/core/types/string){
     std/core/count.1(s);
@@ -351,7 +359,7 @@ fun odd // inline size: 2
   };
 fun onExn // inline size: 1
   = forall<a,(e :: E)> fn<(e :: E)>(value: a, action: () -> <(std/core/types/handled :: HX -> X)<(std/core/exn :: HX)>|(e :: E)> a){
-    std/core/try<a,(e :: E)>(action, (fn<(e :: E)>(._wildcard_210_22: std/core/exception){
+    std/core/try<a,(e :: E)>(action, (fn<(e :: E)>(._wildcard_199_22: std/core/exception){
         value;
       }));
   };
@@ -372,13 +380,26 @@ fun indexOf.2 // inline size: 1
   = forall<a> fn(xs: (std/core/list :: V -> V)<a>, pred: (a) -> std/core/types/bool){
     compat/indexOfAcc<a>(xs, pred, 0);
   };
+fun substr.1 // inline size: 3
+  = fn(s: std/core/types/string, start: std/core/types/int, len: std/core/types/int){
+    match ((std/core/(<=.1)(len, 0))) {
+      ((std/core/types/True() : std/core/types/bool ) as .pat: std/core/types/bool)
+         -> "";
+      ((.skip std/core/types/False() : std/core/types/bool ) as .pat0: std/core/types/bool)
+         -> compat/substr2(s, start, len);
+    };
+  };
+fun show2 // inline size: 3
+  = fn(i: std/core/types/int){
+    compat/align((std/core/show(i)), 2, (std/core/types/Optional<std/core/types/char>('0')));
+  };
 fun parseFixedDefault // inline size: 3
   = fn(s: std/core/types/string, default: (std/core/types/optional :: V -> V)<std/core/types/float64>){
     match ((compat/parseFixed(s))) {
       ((std/core/types/Nothing() : (std/core/types/maybe :: V -> V)<std/core/types/float64> ) as .pat1: ((std/core/types/maybe :: V -> V)<std/core/types/float64>))
          -> (match (default) {
-          ((std/core/types/Optional((.default.2171: std/core/types/float64) : std/core/types/float64) : (std/core/types/optional :: V -> V)<std/core/types/float64> ) as .pat: ((std/core/types/optional :: V -> V)<std/core/types/float64>))
-             -> .default.2171;
+          ((std/core/types/Optional((.default.3182: std/core/types/float64) : std/core/types/float64) : (std/core/types/optional :: V -> V)<std/core/types/float64> ) as .pat: ((std/core/types/optional :: V -> V)<std/core/types/float64>))
+             -> .default.3182;
           ((.skip std/core/types/None() : (std/core/types/optional :: V -> V)<std/core/types/float64> ) as .pat0: ((std/core/types/optional :: V -> V)<std/core/types/float64>))
              -> 0.0;
         });
@@ -389,19 +410,6 @@ fun parseFixedDefault // inline size: 3
 fun printRedirect // inline size: 3
   = fn<(std/core/io :: E)>(print: (msg : std/core/types/string) -> <(std/core/console :: X)> ()){
     std/core/types/.open<<(std/core/types/write :: H -> X)<(std/core/types/global :: H)>>,<(std/core/types/write :: H -> X)<(std/core/types/global :: H)>,(std/core/types/alloc :: H -> X)<(std/core/types/global :: H)>,(std/core/console :: X),(std/core/types/div :: X),(std/core/types/handled :: HX -> X)<(std/core/exn :: HX)>,(std/core/fsys :: X),(std/core/types/ndet :: X),(std/core/net :: X),(std/core/types/read :: H -> X)<(std/core/types/global :: H)>,(std/core/ui :: X)>,(ref : (std/core/types/ref :: (H, V) -> V)<(std/core/types/global :: H),(std/core/types/maybe :: V -> V)<(std/core/types/string) -> <(std/core/console :: X)> ()>>, assigned : (std/core/types/maybe :: V -> V)<(std/core/types/string) -> <(std/core/console :: X)> ()>) -> <(std/core/types/write :: H -> X)<(std/core/types/global :: H)>> (),(ref : (std/core/types/ref :: (H, V) -> V)<(std/core/types/global :: H),(std/core/types/maybe :: V -> V)<(std/core/types/string) -> <(std/core/console :: X)> ()>>, assigned : (std/core/types/maybe :: V -> V)<(std/core/types/string) -> <(std/core/console :: X)> ()>) -> <(std/core/types/write :: H -> X)<(std/core/types/global :: H)>,(std/core/types/alloc :: H -> X)<(std/core/types/global :: H)>,(std/core/console :: X),(std/core/types/div :: X),(std/core/types/handled :: HX -> X)<(std/core/exn :: HX)>,(std/core/fsys :: X),(std/core/types/ndet :: X),(std/core/net :: X),(std/core/types/read :: H -> X)<(std/core/types/global :: H)>,(std/core/ui :: X)> ()>((std/core/types/set<(std/core/types/maybe :: V -> V)<(std/core/types/string) -> <(std/core/console :: X)> ()>,(std/core/types/global :: H)>))(compat/redirect, (std/core/types/Just<(msg : std/core/types/string) -> <(std/core/console :: X)> ()>(print)));
-  };
-fun show2 // inline size: 3
-  = fn(i: std/core/types/int){
-    compat/align((std/core/show(i)), 2, (std/core/types/Optional<std/core/types/char>('0')));
-  };
-fun substr.1 // inline size: 3
-  = fn(s: std/core/types/string, start: std/core/types/int, len: std/core/types/int){
-    match ((std/core/(<=.1)(len, 0))) {
-      ((std/core/types/True() : std/core/types/bool ) as .pat: std/core/types/bool)
-         -> "";
-      ((.skip std/core/types/False() : std/core/types/bool ) as .pat0: std/core/types/bool)
-         -> compat/substr2(s, start, len);
-    };
   };
 fun zipWithIndexed // inline size: 1
   = forall<a,b,c,(e :: E)> fn<(e :: E)>(xs: (std/core/list :: V -> V)<a>, ys: (std/core/list :: V -> V)<b>, f: (std/core/types/int, a, b) -> (e :: E) c){

@@ -5,12 +5,8 @@
 import * as $std_core_types from './std_core_types.mjs';
 import * as $std_core_hnd from './std_core_hnd.mjs';
 import * as $std_core from './std_core.mjs';
-import * as $std_text_parse from './std_text_parse.mjs';
-import * as $std_os_path from './std_os_path.mjs';
-import * as $std_text_regex from './std_text_regex.mjs';
-import * as $compat_dict from './compat_dict.mjs';
 import * as $compat from './compat.mjs';
-import * as $compat_log from './compat_log.mjs';
+import * as $stringcompat from './stringcompat.mjs';
  
 // externals
 /*---------------------------------------------------------------------------
@@ -358,8 +354,8 @@ export function contains(s, r, start) /* (s : string, r : regex, start : optiona
   else {
     var _x12 = 0;
   }
-  var m_1918 = regexExec(_x11, s, _x12);
-  return (m_1918 === null) ? false : true;
+  var m_1913 = regexExec(_x11, s, _x12);
+  return (m_1913 === null) ? false : true;
 }
  
  
@@ -390,8 +386,8 @@ export function findAll(s, regex0, start) /* (s : string, regex : regex, start :
 export function matchedOn(groups0, index0) /* (groups : groups, index : int) -> bool */  {
    
   var _x17 = groups0;
-  var i_1929 = groupsMatchedOn(_x17, index0);
-  return $std_core._int_ne(i_1929,0);
+  var i_1924 = groupsMatchedOn(_x17, index0);
+  return $std_core._int_ne(i_1924,0);
 }
  
  
@@ -402,8 +398,8 @@ export function firstMatchedOn(groups0, start, end) /* (groups : groups, start :
   var _x17 = $std_core.find($std_core.list(_x18, _x19), function(i /* int */ ) {
        
       var _x20 = groups0;
-      var i0_1933 = groupsMatchedOn(_x20, i);
-      return $std_core._int_ne(i0_1933,0);
+      var i0_1928 = groupsMatchedOn(_x20, i);
+      return $std_core._int_ne(i0_1928,0);
     });
   return (_x17 === null) ? $std_core._int_negate(1) : _x17.value;
 }
@@ -418,8 +414,8 @@ export function firstMatched(groups0, start, end) /* (groups : groups, start : o
   var _x20 = $std_core.find($std_core.list(_x21, _x22), function(i /* int */ ) {
        
       var _x23 = groups0;
-      var i0_1933 = groupsMatchedOn(_x23, i);
-      return $std_core._int_ne(i0_1933,0);
+      var i0_1928 = groupsMatchedOn(_x23, i);
+      return $std_core._int_ne(i0_1928,0);
     });
   var i0 = (_x20 === null) ? $std_core._int_negate(1) : _x20.value;
   if ($std_core._int_ge(i0,0)) {
@@ -546,22 +542,22 @@ export function source(r) /* (r : regex) -> string */  {
 export function groupsCount(r) /* (r : regex) -> int */  {
    
   var _x44 = r;
-  var s0_1947 = regexSource(_x44);
+  var s0_1942 = regexSource(_x44);
    
   var _x46 = undefined;
   var _x45 = (_x46 !== undefined) ? _x46 : 0;
-  var s_1946 = replaceEx_1(s0_1947, rxNonGroup, "", true, _x45);
-  return $std_core.count_1(s_1946);
+  var s_1941 = replaceEx_1(s0_1942, rxNonGroup, "", true, _x45);
+  return $std_core.count_1(s_1941);
 }
  
  
-// Create a new _alternative_ regular expression. 
+// Create a new _alternative_ regular expression.
 // Matches any of the given patterns but the groups are local to each alternative.
 // See "alternative" to find out which alternative was matched. Contains an optimization
 // where a common prefix of all patterns is lifted out of the alternative to increase efficiency.
 // Takes two optional parameters. Set "ignoreCase" to "True"
 // to ignore uppercase/lowercase distinction. If  "multiline" is set to "True", then "^" and "$"
-// match also the beginning and end of every line (instead of the entire input).  
+// match also the beginning and end of every line (instead of the entire input).
 // Note: currently only supported in the javascript backend.
 export function regexAlt(regexs, ignorecase, multiline) /* (regexs : list<string>, ignorecase : optional<bool>, multiline : optional<bool>) -> regex */  {
   if (ignorecase !== undefined) {
@@ -634,7 +630,7 @@ export function split(s, r, n, start) /* (s : string, r : regex, n : optional<in
   }
 }
  
-export function _ctail_splitExcludeX(s, splitr, acc, _acc) /* (s : string, splitr : regex, acc : string, ctail<list<string>>) -> div list<string> */  { tailcall: while(1)
+export function _ctail_splitExcludeX(s, splitr, acc, _acc) /* (s : string, splitr : regex, acc : string, ctail<list<string>>) -> list<string> */  { tailcall: while(1)
 {
   if ((s === (""))) {
     return $std_core_types._ctail_resolve(_acc,($std_core.Cons(acc, $std_core.Nil)));
@@ -655,15 +651,15 @@ export function _ctail_splitExcludeX(s, splitr, acc, _acc) /* (s : string, split
     if (_x59 === null) {
        
       if ($std_core._int_le(1,0)) {
-        var right_1967 = "";
+        var right_1962 = "";
       }
       else {
-        var right_1967 = $compat.substr2(s, 0, 1);
+        var right_1962 = $compat.substr2(s, 0, 1);
       }
       {
         // tail call
         var _x66 = $compat.substr1(s, 1);
-        var _x67 = $std_core._lp__plus__plus__1_rp_(acc, right_1967);
+        var _x67 = $std_core._lp__plus__plus__1_rp_(acc, right_1962);
         s = _x66;
         acc = _x67;
         continue tailcall;
@@ -672,23 +668,23 @@ export function _ctail_splitExcludeX(s, splitr, acc, _acc) /* (s : string, split
     else {
        
       var _x68 = _x59.value.groups;
-      var i0_1974 = groupsMatchedOn(_x68, 1);
-      if ($std_core._int_ne(i0_1974,0)) {
+      var i0_1969 = groupsMatchedOn(_x68, 1);
+      if ($std_core._int_ne(i0_1969,0)) {
          
         var _x69 = _x59.value.next;
         var _x68 = $std_core._int_le(_x69,0);
         if (_x68) {
-          var right0_1978 = "";
+          var right0_1973 = "";
         }
         else {
           var _x70 = _x59.value.next;
-          var right0_1978 = $compat.substr2(s, 0, _x70);
+          var right0_1973 = $compat.substr2(s, 0, _x70);
         }
         {
           // tail call
           var _x69 = _x59.value.next;
           var _x68 = $compat.substr1(s, _x69);
-          var _x70 = $std_core._lp__plus__plus__1_rp_(acc, right0_1978);
+          var _x70 = $std_core._lp__plus__plus__1_rp_(acc, right0_1973);
           s = _x68;
           acc = _x70;
           continue tailcall;
@@ -696,15 +692,15 @@ export function _ctail_splitExcludeX(s, splitr, acc, _acc) /* (s : string, split
       }
       else {
          
-        var _ctail_2002 = undefined;
+        var _ctail_1997 = undefined;
          
-        var _ctail_2003 = $std_core.Cons(acc, _ctail_2002);
+        var _ctail_1998 = $std_core.Cons(acc, _ctail_1997);
         {
           // tail call
           var _x72 = _x59.value.next;
           var _x71 = $compat.substr1(s, _x72);
           var _x73 = "";
-          var _x74 = $std_core_types._ctail_link(_acc,_ctail_2003,({value: _ctail_2003, field: "tail"}));
+          var _x74 = $std_core_types._ctail_link(_acc,_ctail_1998,({value: _ctail_1998, field: "tail"}));
           s = _x71;
           acc = _x73;
           _acc = _x74;
@@ -715,33 +711,33 @@ export function _ctail_splitExcludeX(s, splitr, acc, _acc) /* (s : string, split
   }
 }}
  
-export function splitExcludeX(s0, splitr0, acc0) /* (s : string, splitr : regex, acc : string) -> div list<string> */  {
+export function splitExcludeX(s0, splitr0, acc0) /* (s : string, splitr : regex, acc : string) -> list<string> */  {
   return _ctail_splitExcludeX(s0, splitr0, acc0, $std_core_types._ctail_nil());
 }
  
  
-// Split a string "s" over separator "sep" where "sep" does not occur in 
+// Split a string "s" over separator "sep" where "sep" does not occur in
 // _tokens_ matching "exclude".
 // For example: `splitExclude("comma,'sep,arated',values", regex(","),regex("'[^']*'|[^',]"))`
-export function splitExclude(s, sep, exclude) /* (s : string, sep : regex, exclude : regex) -> div list<string> */  {
+export function splitExclude(s, sep, exclude) /* (s : string, sep : regex, exclude : regex) -> list<string> */  {
   if ((s === (""))) {
     return $std_core.Nil;
   }
   else {
      
     var _x75 = exclude;
-    var right2_1994 = regexSource(_x75);
+    var right2_1989 = regexSource(_x75);
      
-    var left1_1991 = $std_core._lp__plus__plus__1_rp_("^(?:((?:", right2_1994);
+    var left1_1986 = $std_core._lp__plus__plus__1_rp_("^(?:((?:", right2_1989);
      
-    var left0_1989 = $std_core._lp__plus__plus__1_rp_(left1_1991, ")+)|(");
+    var left0_1984 = $std_core._lp__plus__plus__1_rp_(left1_1986, ")+)|(");
      
     var _x76 = sep;
-    var right0_1990 = regexSource(_x76);
+    var right0_1985 = regexSource(_x76);
      
-    var left_1987 = $std_core._lp__plus__plus__1_rp_(left0_1989, right0_1990);
+    var left_1982 = $std_core._lp__plus__plus__1_rp_(left0_1984, right0_1985);
      
-    var regex0_1984 = $std_core._lp__plus__plus__1_rp_(left_1987, "))");
+    var regex0_1979 = $std_core._lp__plus__plus__1_rp_(left_1982, "))");
      
     var _x78 = undefined;
     if (_x78 !== undefined) {
@@ -757,7 +753,7 @@ export function splitExclude(s, sep, exclude) /* (s : string, sep : regex, exclu
     else {
       var _x79 = 0;
     }
-    var splitr = regexCreate(regex0_1984, _x77, _x79);
+    var splitr = regexCreate(regex0_1979, _x77, _x79);
     return splitExcludeX(s, splitr, "");
   }
 }

@@ -14,6 +14,7 @@ import compat/dict
 import compat/string
 import compat/regex
 import common
+import stringcompat
 
 
 pub fun cssIsBlock( kvs : dict<string> ) : bool {

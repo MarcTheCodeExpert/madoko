@@ -96,6 +96,10 @@ fun parseDefinitionsFull(
   var footnoteItems := Nil
   var tocs := mdict()
   var footnotesAtEnd := True
+  var previousPar := ParNone
+  with handler
+    fun getParInfo previousPar
+    fun setParInfo(prev) previousPar := prev
 
   // initialize defaults from metadata
   //val mdefaultAttrs = mdict()
@@ -103,7 +107,7 @@ fun parseDefinitionsFull(
   val defaultAttrs : rules = rulesFromMeta(mdata)
 
   // process attributes
-  fun process( attrs : attrs, previousPar : parinfo, block : block ) : <div,st<_h>, inlineContext, formatContext, texContext> block {
+  fun process( attrs : attrs, block : block ) : <div,st<_h>, inlineContext, formatContext, texContext, parInfoEffect> block {
     val bname = block.blockName
 
     // merge and set default attributes
@@ -157,7 +161,7 @@ fun parseDefinitionsFull(
 
     // paragraph indentation
     val attrsp = match(block) {
-      Para -> match (previousPar) {
+      Para -> match (getParInfo()) {
         ParBlock -> attrsx.addClasses(["noindent","para-continued"])
         ParEnded -> attrsx.addClass("indent")
         ParNone  -> attrsx.addClass("noindent")
@@ -196,7 +200,7 @@ fun parseDefinitionsFull(
   }
 
   // process a block
-  fun parseDefBlock( previousPar : parinfo,  block : block ) : <div,st<_h>,  inlineContext, formatContext> block {
+  fun parseDefBlock(  block : block ): <div,st<_h>, inlineContext, formatContext> block {
     unsafe-total {
       val attrs : attrs = match(block) {
         DefLink(id,link) -> {
@@ -241,7 +245,7 @@ fun parseDefinitionsFull(
      
     
 
-      attrs.process( previousPar, block )
+      attrs.process(block )
     }
   }
 
@@ -297,21 +301,27 @@ type parinfo {
   ParEnded
   ParBlock
 }
+
+pub effect parInfoEffect
+  fun getParInfo(): parinfo
+  fun setParInfo(info: parinfo): ()
+
+
 // <st<h>,div|e> before para block
 fun mapBlocks( blocks : list<block>,
-                    action : (parinfo,block) -> <st<h>,div|e> block  ) : <st<h>,div|e> list<block> {
-  /*var previousPar := ParNone
+                    action : (block) -> <parInfoEffect|e> block  ) : <parInfoEffect|e> list<block> {
+
   blocks.map fn(block) {
-    val nblock = action(previousPar,block)
+    val nblock = action(block)
 
     match(nblock) {
-      Para(_,xs)  -> previousPar := (if (xs.hasClass("para-block")) then ParBlock else ParEnded)
+      Para(_,xs)  -> (if (xs.hasClass("para-block")) then setParInfo(ParBlock) else setParInfo(ParEnded))
       Div(_,xs)   | nblock.blockName == "figure" || xs.hasClass("float") -> ()  // leave as is
       Source(input,Raw(Just(FmtHtml))) | input.startsWith("<!--") -> () // ignore comments too
-      Div(_,xs)   -> previousPar := (if (xs.hasClass("para-end")) then ParEnded elif (xs.hasClass("para-block")) then ParBlock else ParNone)
-      Code(_,_,xs)-> previousPar := (if (xs.hasClass("para-end")) then ParEnded elif (xs.hasClass("para-block")) then ParBlock else ParNone)
+      Div(_,xs)   -> (if (xs.hasClass("para-end")) then setParInfo(ParEnded) elif (xs.hasClass("para-block")) then setParInfo(ParBlock) else setParInfo(ParNone))
+      Code(_,_,xs)-> (if (xs.hasClass("para-end")) then setParInfo(ParEnded) elif (xs.hasClass("para-block")) then setParInfo(ParBlock) else setParInfo(ParNone))
       DefFootnote -> ()
-      _    -> previousPar := ParNone
+      _    -> setParInfo(ParNone)
     }
     match(nblock) {
       Div(content,xs) -> {
@@ -329,8 +339,6 @@ fun mapBlocks( blocks : list<block>,
       _ -> nblock
        }
   } 
-      */
-    blocks
   
 }
 

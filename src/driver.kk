@@ -79,10 +79,6 @@ pub fun processContent( inName : string, outName : string, content : string,
       }
     }  
     process( inName, outName, searchDirs, content, icontent, xopts, mopts, firstTime) 
-    /*fn(html) {
-      val html =  
-      continue(html,inName,outName,mopts)
-    }*/
     ()
   }
     

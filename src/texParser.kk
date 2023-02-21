@@ -241,11 +241,7 @@ pub fun parseTex( txt : string, id: string = "", bststyle: string = "", verbose 
   val normTxt = txt.replaceAll(regex(r"\r\n?"),"\n").replaceAll(regex(r"\t"),"   ")
   with handler
     fun getTexContextStruct TexContextStruct(texGrammar,bststyle,ignoreIt,id,contextParse)
-    //TexContext(texGrammar,bststyle,ignoreIt,id,contextParse),
-   
-  //val md = contextParse(normTxt)
-  // if (verbose) then trace( "TeX to Markdown:\n" + md )
-  //md
+
   contextParse(normTxt)
 }
 

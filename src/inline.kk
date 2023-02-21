@@ -187,14 +187,7 @@ pub fun formatInline( txt : string, attrs : attrs = attrsNone ) : <inlineContext
 }
 
 // changed acc: builder<h> to simple string addition since there is no builder in current koka anymore
-/*
-  fun formatInlineAcc(acc : builder<h> , txt : string) : <inlineContext> string
-{
-  if (txt=="") then return acc.build
-  val (s,next,_) = matchRules(getGrammar(), txt, id)
-  formatInlineAcc(acc.append(s), unsafe-decreasing(txt.substr1(next)))
-}
-*/
+
 fun formatInlineAcc(acc : string , txt : string) : <inlineContext> string
 {
   if (txt=="") then return acc

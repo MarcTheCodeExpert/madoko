@@ -182,18 +182,17 @@ fun markdownNormal( src0 : string, options0 : options = initialOptions0, fmt : f
   */
   
 
-  inlineContext(fmt,options.metadata.dict,
+  with inlineContext(fmt,options.metadata.dict,
                                     options.embedinfos,
                                     options.sanitize,options.bench,options.verbose,
                                     options.highlight,options.starBold,options.sandbox,options.prettyAlign)
   //val icontext  = getInlineContexte()
-
   //contextFunction(fmt)
   
   
-  initialFormatContext(options.lineMap,options.headingBase,options.pedantic,fmt)
-  val (fblocks)
-    = parseBody(options.lineNo,
+  with initialFormatContext(options.lineMap,options.headingBase,options.pedantic,fmt)
+  
+  val (fblocks) = parseBody(options.lineNo,
                 src + logo,
                 options.metadata, options.tocDepth,
                 options.sectionBase,options.sectionMax)
@@ -236,45 +235,9 @@ fun logMetadata( mdata : metadata ) {
     }
   }
 }
-/*
-pub fun contextFunction(fmt: formatter, sandbox: bool = False) : <contextFunctions> string{
-  with handler  
-    fun exfmtCmd(cmd, body, attrs) fmtLatexCmd(cmd, body, attrs)
-    fun exfmtText(txt) fmtLatexCmd("", txt, attrsNone)
-    fun exfmtEscape(body) fmtLatexEscape(body, True)
-    fun exfmtEscapePre(body) fmtLatexEscape(body, False)
-    fun exfmtLink(isImage, link, content) fmtLatexLink(isImage, link, content, sandbox)
-    fun exfmtFootnote(id, ftn) fmtLatexFootnote(id, ftn)
-    fun exfmtTable(head, body, colattrs, attrs) fmtLatexTable(head, body, colattrs, attrs) 
-    fun exfmtEnv(env, txt, attrs) fmtLatexEnv(env, txt, attrs)
-    fun exfmtCodePlain(txt, startline) fmtLatexCodePlain(txt, startline)
-                  // xfmtCodeHilite : (ctx : inlineContext, txt : string, startLine: bool ) -> (string),
-    fun exfmtCodeToken(classes, txt, lang, attrs) fmtLatexCodeToken(classes, txt, lang, attrs)
-    fun exfmtLineInfo(lineInfo) fmtLatexLineInfo(lineInfo)
-    fun exfmtCodeTable(ct, attrs) fmtLatexCodeTable(ct, attrs)
-    fun exfmtMathCmd(cmd, body, attrs) fmtLatexMathCmd(cmd, body, attrs)
-    fun exfmtMathEnv(env, txt, attrs) fmtLatexMathEnv( env, txt, attrs)
-    fun efmt fmt
-  ""    
-}
 
-*/
-/*
-fun fmtLatexCmd1(ctx: inlineContext, cmd: string,body:string,attrs:attrs){""}
-fun fmtLatexEscape1(ctx: inlineContext,body:string,allowEntity:bool){""}
-fun fmtLatexLink1(ctx: inlineContext,isImage : bool, link : link, content : string ){""}
-fun fmtLatexFootnote1(ctx: inlineContext, id : string, footn : footnote ){""}
-fun fmtLatexTable1(ctx: inlineContext, head : list<row>, body : list<row>, colattrs: list<attrs>, attrs : attrs ){""}
-fun fmtLatexEnv1(ctx: inlineContext, env : string, txt : string, attrs : attrs ){""}
-fun fmtLatexCodePlain1(ctx: inlineContext, txt : string, startline : bool ){""}
-fun fmtLatexCodeToken1(ctx: inlineContext, classes: list<string>, txt : string, lang : string, attrs : attrs){""}
-fun fmtLatexLineInfo1(ctx: inlineContext, lineInfo : string ){""}
-fun fmtLatexCodeTable1(ctx: inlineContext, ct : codeTable, attrs : attrs ){""}
-fun fmtLatexMathCmd1(ctx: inlineContext,cmd:string,body:string,attrs:attrs){""}
-fun fmtLatexMathEnv1(ctx: inlineContext, env : string, txt : string, attrs : attrs ){""}
-*/
 
-// Create an ":inlineContext"
+// Create an ":inlineContext" --> changed to abstracted handler for inlineContext
 pub fun inlineContext( fmt : formatter,
                                metadata : dict<string>,
                                embedinfos : dict<embedinfo>,
@@ -284,7 +247,7 @@ pub fun inlineContext( fmt : formatter,
                                highlight : bool = True,
                                starBold : bool = False,
                                sandbox: bool = False,
-                               prettyAlign : int = 2 ) : <inlineContext> () {
+                               prettyAlign : int = 2, action: () -> <inlineContext|e> a) : e a {
   val isTex2  = match(metadata["tex2"]) {
                   Just(value) -> value.toLower == "true"
                   _ -> False
@@ -317,64 +280,8 @@ pub fun inlineContext( fmt : formatter,
     fun setLabels(new_labels) incontext := incontext(labels = new_labels)
     fun setFootnotes(footn) incontext := incontext(footnotes = footn)
     fun setDefaults(new_defaults) incontext := incontext(defaults = new_defaults)
-    /*           
-    fun getGrammar inlineGrammar(fmt, bench)
-    fun getLinks links
-    fun getLabels labels
-    fun setLabels(new_labels) labels := new_labels
-    fun getFootnotes footnotes
-    fun setFootnotes(footn) footnotes := footn
-    fun getDefaults defaults
-    fun setDefaults(new_defaults) defaults := new_defaults
-    fun getInlineMetadata metadata
-    fun getEmbedinfos embedinfos
-    fun isSanitize sanitize
-    fun isBench bench
-    fun getVerbose verbose
-    fun isHighlight highlight
-    fun isStarBold starBold
-    fun isSandbox sandbox
-    fun getPrettyAlign prettyAlign
-    fun exfmtCmd(cmd, body, attrs) fmtLatexCmd(cmd, body, attrs)
-    fun exfmtText(txt) fmtLatexCmd("", txt, attrsNone)
-    fun exfmtEscape(body) fmtLatexEscape(body, True)
-    fun exfmtEscapePre(body) fmtLatexEscape(body, False)
-    fun exfmtLink(isImage, link, content) fmtLatexLink(isImage, link, content, sandbox)
-    fun exfmtFootnote(id, ftn) fmtLatexFootnote(id, ftn)
-    fun exfmtTable(head, body, colattrs, attrs) fmtLatexTable(head, body, colattrs, attrs) 
-    fun exfmtEnv(env, txt, attrs) fmtLatexEnv(env, txt, attrs)
-    fun exfmtCodePlain(txt, startline) fmtLatexCodePlain(txt, startline)
-                  // xfmtCodeHilite : (ctx : inlineContext, txt : string, startLine: bool ) -> (string),
-    fun exfmtCodeToken(classes, txt, lang, attrs) fmtLatexCodeToken(classes, txt, lang, attrs)
-    fun exfmtLineInfo(lineInfo) fmtLatexLineInfo(lineInfo)
-    fun exfmtCodeTable(ct, attrs) fmtLatexCodeTable(ct, attrs)
-    fun exfmtMathCmd(cmd, body, attrs) fmtLatexMathCmd(cmd, body, attrs)
-    fun exfmtMathEnv(env, txt, attrs) fmtLatexMathEnv( env, txt, attrs)
-    fun efmt fmt
-*/
-  
-
-  /*
-  InlineContext( inlineGrammar(fmt,bench), dict(), dict(), dict(),
-                 emptyRules,
-                 metadata, embedinfos,
-                 sanitize, bench, verbose, highlight, starBold, sandbox, prettyAlign,
-                 fmtLatexCmd,
-                 fmtLatexEscape,
-                 fmtLatexLink,
-                 fmtLatexFootnote,
-                 fmtLatexTable,
-                 fmtLatexEnv,
-                 fmtLatexCodePlain,
-                 fmtLatexCodeToken,
-                 fmtLatexLineInfo,
-                 fmtLatexCodeTable,
-                 fmtLatexMathCmd, // math cmd
-                 fmtLatexMathEnv, // math env
-                 fmt
-               )
-    */
-  ()          
+    
+  action()          
 }
 
 

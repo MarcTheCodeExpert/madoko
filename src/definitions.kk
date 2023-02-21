@@ -81,12 +81,11 @@ fun parseDefinitionsBench(
 
 // Full version that does attribute processing
 fun parseDefinitionsFull(
-
                      blocks : list<block>,
                      mdata : metadata,
                      tocDepth : int = 0,
                      secBase : int,
-                     secDepth : int ) : <div,  inlineContext, formatContext> (list<block>)
+                     secDepth : int ): <div, inlineContext, formatContext> (list<block>)
 {
   val counters = mdict()
   val nested   = mdict()
@@ -169,7 +168,7 @@ fun parseDefinitionsFull(
     // render
     val rblock = block.setAttrs(attrsp)
 
-    //toc --> commented out
+
     match (attrsp.hasKey("toc")) {
       Nothing -> ()
       Just(value) -> {
@@ -186,7 +185,7 @@ fun parseDefinitionsFull(
             (depth,attrsp)
           }
         }
-        
+        //toc --> commented out
         //tocs[toLower(value)] := Cons(entry, tocs[toLower(value)].maybe([],id)) --> no valid function found for []
         ()
       }

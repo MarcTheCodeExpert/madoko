@@ -72,22 +72,7 @@ pub struct rule<a :: V,e :: E> (
     action: (cap: matched) -> e a 
 )
 
- 
-/*
-pub rec type rule<a> {
 
-  Rule(
-    name : string,
-    regex : regex,
-    action: (cap: matched) -> <e> a 
-  //action : (cap : matched, ctx : c) -> <> a
-  )
-}
-
-fun bla(inter: int): _ int {
-  inter
-}
-*/
 pub alias grammar<a :: V,e :: E> = list<rule<a,e>>
 
 // Replace a rule in a grammar by another one, if the rule name is a prefix of the name of the new rule.

@@ -233,9 +233,8 @@ fun inlineTagX( tag : string) : <inlineContext> string {
 fun inlineTagCode( cap : matched ) : <inlineContext> string {
   // TODO: we do not process fully inside <code> for now; remove this later
   // when koka documentation generates markdown instead of html.
-  /*val ictx = ctx.copy(grammar = ctx.grammar.stripFancyRules)
-  with concreteInlineContext(ictx)
-  with concreteContextFunctions(ictx)*/
+  /*val ictx = ctx.copy(grammar = ctx.grammar.stripFancyRules) */
+
   inlineTagX(cap.groups[1]) +
    formatInline(cap.groups[2]) +
    inlineTagX(cap.groups[3])

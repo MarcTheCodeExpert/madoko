@@ -151,21 +151,7 @@ fun parseGrammar(): grammar<block, <blockContext>> {blockGrammar.ruleReplace( Tr
 ---------------------------------------- */
 
 // The parse context for block elements.
-/*
-rec type blockContext {
-  // The parse context for block elements. Contains the "parse" function,
-  // and the current "grammar".
-  BlockContext( grammar : grammar<block,blockContext>,
-                listGrammar : grammar<block,blockContext>,
-                metadata : dict<string>,
-                bench   : bool,
-                pedantic : bool,
-                loose   : bool = False,
-                lineNo  : int = 0,
-                lineMap : lineMap
-              )
-}
-*/
+
 
 
 
@@ -522,7 +508,6 @@ fun columnStyle( style : string ) : attrs {
 /* --------------------------------------
   Parse a text into blocks
 ---------------------------------------- */
-// needs to have an effect to pass down BlockContext?
 
 // declaration of bC effect operations
 pub effect blockContext

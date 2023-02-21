@@ -41,7 +41,7 @@ extern containsKey( md : mdict<h,a>, s : string ) : read<h> bool {
 } 
 
 // Index into a string dictionary
-fun []( md : mdict<h,a>, s : string ) : read<h> maybe<a> {
+pub fun []( md : mdict<h,a>, s : string ) : read<h> maybe<a> {
   if (md.containsKey(s)) then Just(md.unsafeIndex(s)) else Nothing
 }
 

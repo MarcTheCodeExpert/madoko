@@ -57,7 +57,7 @@ val bibitemBody = r"(?: *\n)*([\s\S]*?)\n(?= *\n|\\bibitem)"
 val eol = r"(?:[ \t]*(?:%.*)?\r?\n)?"
 
 /* main grammar */
-val texGrammar : grammar<string,texContext> = [
+val texGrammar : grammar<string,<texContext>> = [
   Rule("texnormal",   regex(r"^(?:[^" + special + "])+"), texNormal ),
   Rule("texspaces",   regex(r"^\n {4,}"), texIndent ),
 
@@ -225,29 +225,39 @@ val texGrammar : grammar<string,texContext> = [
   Rule("texother",    regex(r"^[\s\S]"), texOther ),
 ]
 
+
+
+
+
+
 /* --------------------------------------
   Parse TeX  elements
 ---------------------------------------- */
 
-
+// tried to not pass effect to higher functions --> removed: if (verbose) then trace( "TeX to Markdown:\n" + md ) 
 // Parse TeX elements and return Markdown
-pub fun parseTex( txt : string, id: string = "", bststyle: string = "", verbose : bool = False, ignore : bool = True  ) : string
+pub fun parseTex( txt : string, id: string = "", bststyle: string = "", verbose : bool = False, ignoreIt : bool = True  ) : <texContext> string
 {
   val normTxt = txt.replaceAll(regex(r"\r\n?"),"\n").replaceAll(regex(r"\t"),"   ")
-  val md = contextParse(TexContext(texGrammar,bststyle,ignore,id,contextParse), normTxt)
-  if (verbose) then trace( "TeX to Markdown:\n" + md )
-  md
+  with handler
+    fun getTexGrammar texGrammar
+    fun getBstStyle bststyle
+    fun isIgnore ignoreIt
+    fun getName id
+    fun tParse(txt) contextParse(txt)
+
+  contextParse(normTxt)
 }
 
-fun contextParse( ctx : texContext, txt : string ) : string {
+fun contextParse(txt : string ) : <texContext> string {
   if (txt=="") then "" else {
-    parseTexAcc(ctx,builder(), txt.unbrace)
+    parseTexAcc("", txt.unbrace)
   }
 }
 
-fun parseTexAcc( ctx : texContext, acc : builder<h>, txt : string ) : <st<h>> string
+fun parseTexAcc(acc : string, txt : string ) : <texContext> string
 {
-  if (txt=="") return acc.build
-  val (s,next,_) = matchRules(ctx.grammar,ctx,txt,id)
-  parseTexAcc(ctx, unsafe-decreasing(acc.append(s)), txt.substr1(next))
+  if (txt=="") return acc
+  val (s,next,_) = matchRules(getTexGrammar(),txt,id)
+  parseTexAcc(unsafe-decreasing(acc ++ s), txt.substr1(next))
 }

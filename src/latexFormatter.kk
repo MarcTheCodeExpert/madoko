@@ -30,7 +30,7 @@ fun warning( msg : string ) {
   common/warning( msg, "texwarning" );
 }
 
-pub fun fmtLatexEnv(ctx : inlineContext, env : string, txt : string, attrs : attrs ) : string {
+pub fun fmtLatexEnv(env : string, txt : string, attrs : attrs ) : string {
   if (env=="")
    then texText(txt)
   elif (env=="ul" || env=="ol")
@@ -38,27 +38,27 @@ pub fun fmtLatexEnv(ctx : inlineContext, env : string, txt : string, attrs : att
    else texEnv(env,txt,attrs)
 }
 
-pub fun fmtLatexCmd(ctx : inlineContext, cmd : string, txt : string, attrs : attrs ) : string {
+pub fun fmtLatexCmd(cmd : string, txt : string, attrs : attrs ) : string {
   if (cmd=="") then texText(txt)
   elif (cmd=="br") then "\\mdbr\n"
   // elif (cmd=="code") then "\\lstinline|" + txt + "|"
   else texCmd(cmd,txt,attrs)
 }
 
-pub fun fmtLatexMathEnv(ctx : inlineContext, env : string, txt : string, attrs : attrs ) : string {
+pub fun fmtLatexMathEnv(env : string, txt : string, attrs : attrs ) : string {
   attrs.cssAttrs(txt,[("display","inline")],"span")
 }
 
-pub fun fmtLatexMathCmd(ctx : inlineContext, cmd : string, txt : string, attrs : attrs ) : string {
+pub fun fmtLatexMathCmd(cmd : string, txt : string, attrs : attrs ) : string {
   attrs.cssAttrs(txt,[("display","inline")],"span")
 }
 
-pub fun fmtLatexLineInfo( ctx : inlineContext, lineInfo : string ) : string {
+pub fun fmtLatexLineInfo( lineInfo : string ) : string {
   //"%mdk-data-line={" + lineInfo + "}\n"
   "\\mdline{fmtLatexLineInfo}"
 }
 
-pub fun fmtLatexEscape( ctx : inlineContext, txt : string, allowEntity : bool ) : string {
+pub fun fmtLatexEscape( txt : string, allowEntity : bool ) : string {
   //texText(htmlEscape(txt,allowEntity))
   if (allowEntity)
    then texText(htmlEscape(txt,allowEntity))
@@ -66,15 +66,15 @@ pub fun fmtLatexEscape( ctx : inlineContext, txt : string, allowEntity : bool ) 
         txt.replaceAll(regex(r"\$"),r"$\mbox{\$}$").replaceAll(regex(r"\|"),r"$\mbox{\char124}$")
 }
 
-pub fun fmtLatexFootnote(ctx : inlineContext, id : string, footn : footnote ) : string {
-  texCmdX( "\\mdfootnote" ++ footn.footnoteNum.braced, ((footn.footnoteContent)(ctx)).trimLeft, attrsNone, [("id","back-fn-" ++ id)])
+pub fun fmtLatexFootnote(id : string, footn : footnote ) : string {
+  unsafe-total{texCmdX( "\\mdfootnote" ++ footn.footnoteNum.braced, ((footn.footnoteContent)()).trimLeft, attrsNone, [("id","back-fn-" ++ id)])}
 }
 
 fun normalize( sandbox: bool, path : string ) : string {
   if (sandbox) then xnormalize(path) else path
 }
 
-pub fun fmtLatexLink( ctx : inlineContext, isImage : bool, link : link, content : string ) {
+pub fun fmtLatexLink( isImage : bool, link : link, content : string, sandbox: bool ) {
   val attrs = if (link.linkid.bool) then link.linkattrs.addKeyval("data-linkid",link.linkid) else link.linkattrs
   val url   = texLinkText(if (link.href.startsWith("#")) then link.href.substr(1) else link.href)
   if (isImage) {
@@ -82,7 +82,7 @@ pub fun fmtLatexLink( ctx : inlineContext, isImage : bool, link : link, content 
     val hrefs  = url.expandChoices
     // pick best one for images
     val imgref = pickExtension(latexImageExtensions, hrefs)
-    val imgname = normalize(ctx.sandbox,imgref)
+    val imgname = normalize(sandbox,imgref)
     log("files",imgname)
 
     val (attrsx, args) = cssImageArgs(attrs)
@@ -109,12 +109,12 @@ fun extractText( s : string ) : string {
 
 val regxTexCmd = regex(rxTexCmd)
 
-pub fun fmtLatexCodePlain( ctx : inlineContext, txt : string, startline : bool ) : string
+pub fun fmtLatexCodePlain( txt : string, startline : bool ) : string
 {
   txt.htmlEscape(False).texText.preSpace(startline)
 }
 
-pub fun fmtLatexCodeToken(ctx:inlineContext, classes : list<string>, txt : string, lang : string, attrs : attrs ) : string
+pub fun fmtLatexCodeToken(classes : list<string>, txt : string, lang : string, attrs : attrs ) : string
 {
     texCmd("span",txt,attrs)
 }
@@ -185,7 +185,7 @@ fun getTableEnv( attrs : attrs ) : string {
    else "tabular"
 }
 
-pub fun fmtLatexCodeTable( ctx : inlineContext, ct : codeTable, attrs : attrs ) : string {
+pub fun fmtLatexCodeTable( ct : codeTable, attrs : attrs ) : string {
   val table = attrs.getTableEnv
   val content =
       r"\\begin{mdcodetabular}" ++ ct.columns.show.braced ++  r"\\begin" ++ table.braced ++ "{" ++ list(1,ct.columns).map(fn(_) {"l"}).join("") ++ r"}\n" ++ ct.rows.map( fn(row) { row.map(fmtLatexCodeCell).join("&") }).join(r"\\\\\n") ++     r"\n\\end" ++ table.braced ++ r"\\end{mdcodetabular}%mdk\n"
@@ -198,7 +198,7 @@ fun fmtLatexCodeCell( ccell : ccell ) : string {
 }
 
 
-pub fun fmtLatexTable( ctx : inlineContext, head : list<row>, body : list<row>, colattrs : list<attrs>, attrs : attrs ) : string {
+pub fun fmtLatexTable( head : list<row>, body : list<row>, colattrs : list<attrs>, attrs : attrs ) : string {
   val rows = head ++ body
   val td = if (attrs.hasClass("columns")) then "column" else "td"
   val breakable = attrs.hasBoolKey("breakable") || attrs.hasClass("long") /* legacy */
@@ -217,7 +217,7 @@ pub fun fmtLatexTable( ctx : inlineContext, head : list<row>, body : list<row>, 
   attrs.cssAttrs(tbody, if (breakable) then [("display","block")] else [])
 }
 
-pub fun fmtLatexPolyTable( ctx : inlineContext, ct : codeTable, attrs : attrs ) : string {
+pub fun fmtLatexPolyTable( ct : codeTable, attrs : attrs ) : string {
   val table = attrs.getTableEnv
   val cols = list(1, ct.columns)
   val colDefs = cols.map(fn(col) { "\\column{C" ++ col.show ++ "}{l}%mdk\n" })

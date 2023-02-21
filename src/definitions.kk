@@ -22,20 +22,21 @@ import inline
 import formatBlock   // just the formatContext
 import formatInline  // just for rxLink
 import texParser
+import texCommon
 
 // // Parse source into blocks (see "parseBlocks") and
 // // process all definitions (see "parseDefinitions").
-pub fun parseBody( fcontext : formatContext,
+pub fun parseBody(
                            lineNo : int,
                            src : string,
                            metadata : metadata,
                            tocDepth : int,
                            secBase : int,
-                           secDepth : int) : <div> (list<block>,formatContext)
+                           secDepth : int) : <div, inlineContext, formatContext> (list<block>) 
 {
   
   
-  parseDefinitions(fcontext, [Div([],(".madoko; line-adjust:0; line:" ++ lineNo.show).parseAttrs("body",src))],
+  parseDefinitions([Div([],(".madoko; line-adjust:0; line:" ++ lineNo.show).parseAttrs("body",src))],
                    metadata,tocDepth,secBase,secDepth)
 }
 
@@ -43,22 +44,22 @@ pub fun parseBody( fcontext : formatContext,
 // a footnote block, and a table-of-contents block.
 
 pub fun parseDefinitions(
-                     fcontext : formatContext,
+                    
                      blocks : list<block>,
                      metadata : metadata,
                      tocDepth : int = 0,
                      secBase : int = 1,
-                     secDepth : int = 6 ) : div (list<block>,formatContext)
+                     secDepth : int = 6 ) : <div, inlineContext, formatContext> (list<block>)
 {
-  if (fcontext.inlineContext.bench)
-    then parseDefinitionsBench(fcontext,blocks)
-    else parseDefinitionsFull(fcontext,blocks,metadata,tocDepth,secBase,secDepth)
+  if (getInlineContext().bench)
+    then parseDefinitionsBench(blocks)
+    else parseDefinitionsFull(blocks,metadata,tocDepth,secBase,secDepth)
 }
 
 // Fast version for benchmarking
 fun parseDefinitionsBench(
-                     fcontext : formatContext,
-                     blocks : list<block> ) : div (list<block>,formatContext)
+                     
+                     blocks : list<block> ) : <div, inlineContext, formatContext> (list<block>)
 {
   val links  = mdict()
 
@@ -70,19 +71,22 @@ fun parseDefinitionsBench(
       _ -> ()
     }
   }
-
-  (blocks, fcontext( fcontext.inlineContext.copy( links=links.freeze ), dict(), Empty)  )
+  setLinks(links.freeze)
+  setFootnoteBlock(Empty)
+  setTocBlocks(dict())
+  // fcontext( fcontext.inlineContext.copy( links=links.freeze ), dict(), Empty)
+  (blocks)
 }
 
 
 // Full version that does attribute processing
 fun parseDefinitionsFull(
-                     fcontext : formatContext,
+
                      blocks : list<block>,
                      mdata : metadata,
                      tocDepth : int = 0,
                      secBase : int,
-                     secDepth : int ) : div (list<block>,formatContext)
+                     secDepth : int ) : <div,  inlineContext, formatContext> (list<block>)
 {
   val counters = mdict()
   val nested   = mdict()
@@ -100,7 +104,7 @@ fun parseDefinitionsFull(
   val defaultAttrs : rules = rulesFromMeta(mdata)
 
   // process attributes
-  fun process( attrs : attrs, previousPar : parinfo, block : block ) : <div,st<_h>> block {
+  fun process( attrs : attrs, previousPar : parinfo, block : block ) : <div,st<_h>, inlineContext, formatContext, texContext> block {
     val bname = block.blockName
 
     // merge and set default attributes
@@ -111,7 +115,7 @@ fun parseDefinitionsFull(
                   }
 
     // stop processing if display=none or not the right backend
-    if (!attrsd.shouldRender(fcontext.fmt)) return Empty
+    if (!attrsd.shouldRender(getFormatContext().fmt)) return Empty
 
     //adjust counters
     if (bname!="" && attrs.defaults && !attrs.hasClass("clearnum")) counters.adjustCounter(bname,"",nested)
@@ -122,15 +126,15 @@ fun parseDefinitionsFull(
     }
 
     // expand counters in label
-    val cmdata = fcontext.inlineContext.metadata
+    val cmdata = getInlineContext().metadata
     val attrsx0 = attrsd.expandCounters(counters,cmdata,nested).expand(cmdata)
 
     // create a nice caption for headings
     val attrsx  = match (block) {
                     Heading(_,txt) -> {
                       val caption = attrsx0.lookupKey("caption",txt)
-                      val ecaption = attrsx0.transformText(caption,dict(),fcontext.inlineContext.metadata)
-                      val xcaption = ecaption.expandKeys(attrsx0.source,attrsx0,dict(),fcontext.inlineContext.metadata)
+                      val ecaption = attrsx0.transformText(caption,dict(),getInlineContext().metadata)
+                      val xcaption = ecaption.expandKeys(attrsx0.source,attrsx0,dict(),getInlineContext().metadata)
                       val kvs = [("caption",xcaption)] ++ (if (!attrsx0.hasKey("toc").bool) then [] else [("bookmark",xcaption.unformat)])
                       attrsx0.addKeyvals(kvs)
                     }
@@ -145,7 +149,7 @@ fun parseDefinitionsFull(
       match (attrsx.hasKey("cite-label")) {
         Nothing -> ()
         Just(clabel) -> {
-          val clabelx = clabel.expandKeys(attrsx.source,attrsx,dict(),fcontext.inlineContext.metadata)
+          val clabelx = clabel.expandKeys(attrsx.source,attrsx,dict(),getInlineContext().metadata)
           //val info    = attrsx.lookupKey("cite-info",clabel)
           labels["@" ++ attrsx.name] := Label(bname,clabelx,labelCaption,attrsx)
         }
@@ -163,36 +167,38 @@ fun parseDefinitionsFull(
     }
 
     // render
-    val rblock = block.setAttrs(attrsp,fcontext)
+    val rblock = block.setAttrs(attrsp)
 
-    // toc --> commented out
-    // match (attrsp.hasKey("toc")) {
-    //   Nothing -> ()
-    //   Just(value) -> {
-    //     val entry = match(rblock) {
-    //       Heading(d,txt,xs) -> {
-    //         val dp = match(attrsp.hasKey("toc-depth")) {
-    //           Nothing -> d
-    //           Just(s) -> s.parseInt.maybe(d,id)
-    //         }
-    //         (dp,if (xs.hasKey("toc-line").bool) then xs else xs.addKeyval("toc-line",txt))  // note: txt is processed already
-    //       }
-    //       _ -> {
-    //         val depth = attrsp.lookupKey("toc-depth","1").parseInt.maybe(1,id)
-    //         (depth,attrsp)
-    //       }
-    //     }
-    //     tocs[value.toLower] := Cons(entry, tocs[value.toLower].maybe([],id))
-    //   }
-    // }
+    //toc --> commented out
+    match (attrsp.hasKey("toc")) {
+      Nothing -> ()
+      Just(value) -> {
+        val entry = match(rblock) {
+          Heading(d,txt,xs) -> {
+            val dp = match(attrsp.hasKey("toc-depth")) {
+              Nothing -> d
+              Just(s) -> s.parseInt.maybe(d,id)
+            }
+            (dp,if (xs.hasKey("toc-line").bool) then xs else xs.addKeyval("toc-line",txt))  // note: txt is processed already
+          }
+          _ -> {
+            val depth = attrsp.lookupKey("toc-depth","1").parseInt.maybe(1,id)
+            (depth,attrsp)
+          }
+        }
+        
+        //tocs[toLower(value)] := Cons(entry, tocs[toLower(value)].maybe([],id)) --> no valid function found for []
+        ()
+      }
+    }
 
-    // return
+    //return
     rblock
   }
 
   // process a block
-  fun parseDefBlock( previousPar : parinfo,  block : block ) : <st<_h>,div> block {
-    /*
+  fun parseDefBlock( previousPar : parinfo,  block : block ) : <div,st<_h>,  inlineContext, formatContext> block {
+    unsafe-total {
       val attrs : attrs = match(block) {
         DefLink(id,link) -> {
           links[id] := link
@@ -209,7 +215,7 @@ fun parseDefinitionsFull(
           val ncontent = content.mapBlocks(parseDefBlock)
           
           footnotes[id] := Footnote("&fn-" ++ id ++ ";",
-                                    fn(ictx){ formatBlocks(fcontext(inlineContext=ictx),ncontent) },
+                                    fn(){ formatBlocks(ncontent) }, // removed fn(ictx) and fcontext(inlineContext = ictx)
                                     extractCaption(ncontent))
           footnoteItems := Cons(ncontent,footnoteItems)
           attrsNone
@@ -233,10 +239,11 @@ fun parseDefinitionsFull(
         }
         _ -> attrsNone
       }
-
-      attrs.process( previousPar, block )*/
-      block
+     
     
+
+      attrs.process( previousPar, block )
+    }
   }
 
   fun mapBlock( b : block, f ) {
@@ -248,7 +255,7 @@ fun parseDefinitionsFull(
   val tocBlocks  = //if (tocDepth <= 0) then Empty else createToc(headings.reverse)
                     (tocs.list.map fn(entry) {
                        (entry.fst,
-                          [createToc(entry.fst, entry.snd.reverse,labelsDict,fcontext.inlineContext.metadata,defaultAttrs)]
+                          [createToc(entry.fst, entry.snd.reverse,labelsDict,getInlineContext().metadata,defaultAttrs)]
                             .mapBlocks(parseDefBlock))
                      }).dict
   val footnoteBlock = if (is-nil(footnoteItems)) then Empty
@@ -262,11 +269,18 @@ fun parseDefinitionsFull(
                              }
 
   val secblocks = fblocks.sections(secInit(secBase=secBase,secMax=secDepth,secDefaults=fn(a){ defaultAttrs.matchRules("section",a) }))
-
+  setDefaults(defaultAttrs)
+  setFootnotes(footnotes.freeze)
+  setLinks(links.freeze)
+  setLabels(labelsDict)
+  setTocBlocks(tocBlocks)
+  setFootnoteBlock(footnoteBlock)
+  /*
   (secblocks,
    fcontext( fcontext.inlineContext.copy( links=links.freeze, labels=labelsDict,
                                           footnotes=footnotes.freeze, defaults=defaultAttrs ),
-              tocBlocks, footnoteBlock )  )
+              tocBlocks, footnoteBlock )  ) */
+  secblocks            
 }
 
 struct secinfo(
@@ -322,20 +336,20 @@ fun mapBlocks( blocks : list<block>,
 }
 
 // Sets new attributes for a block, and applies conversion to text
-fun setAttrs( block : block, xs : attrs, fcontext : formatContext ) : <div> block {
+fun setAttrs( block : block, xs : attrs ) : <div, inlineContext, formatContext, texContext> block {
   match(block) {
     HLine(_)            -> HLine(xs)
-    Para( text )        -> Para(xs.transformText(text,dict(),fcontext.inlineContext.metadata),xs)
-    Heading(depth,text) -> Heading(depth,xs.transformText(text,dict(),fcontext.inlineContext.metadata),xs)
+    Para( text )        -> Para(xs.transformText(text,dict(),getInlineContext().metadata),xs)
+    Heading(depth,text) -> Heading(depth,xs.transformText(text,dict(),getInlineContext().metadata),xs)
     Table(h,cattrs,cells) -> Table(h,cattrs,cells,xs)
     List(tag,items)     -> List(tag,items,xs)
     Item(content)       -> transformItem(content,xs)
-    Div( content  )     -> transformDiv(content, xs, fcontext )
+    Div( content  )     -> transformDiv(content, xs )
     Quote( content )    -> Quote(content, xs)
     Code( text, lang)   -> {
       if (lang=="" && !(xs.input.isPre))
-        then transformDiv([Source(text)], xs(source=text,elem="pre"), fcontext )
-        else Code(xs.transformText(text,dict(),fcontext.inlineContext.metadata),lang,xs)
+        then transformDiv([Source(text)], xs(source=text,elem="pre"))
+        else Code(xs.transformText(text,dict(),getInlineContext().metadata),lang,xs)
     }
     _                   -> block
   }
@@ -357,32 +371,32 @@ fun transformItem( blocks : list<block>, attrs: attrs ) : <div> block {
   }
 }
 
-fun transformDiv( blocks : list<block>, attrs : attrs, fcontext : formatContext )  : <div> block {
+fun transformDiv( blocks : list<block>, attrs : attrs)  : <div, inlineContext, formatContext, texContext> block {
   if (attrs.lookupKey("transform","") == "false") return Div(blocks,attrs)
   match(blocks) {                       // needed for internal divs like definition lists
     Nil              -> ()
     Cons(Source,Nil) -> ()              // but with just one Source we should transform (look above for Code transforms)
     _ -> return Div(blocks,attrs)
   }
-  val txt = attrs.transformText(attrs.source,dict(),fcontext.inlineContext.metadata)
+  val txt = attrs.transformText(attrs.source,dict(),getInlineContext().metadata)
   match(attrs.input) {
     Tex -> {
-      Div(txt.parseTex(attrs.name,"",fcontext.inlineContext.verbose >= 3)
-        .parseBlocks(attrs.lineNo.incLineNo,fcontext.lineMap,fcontext.inlineContext.metadata),attrs)
+      Div(txt.parseTex(attrs.name,"",getInlineContext().verbose >= 3)
+        .parseBlocks(attrs.lineNo.incLineNo,getFormatContext().lineMap,getInlineContext().metadata),attrs)
     }
     Markdown -> {
       val adjLineNo = match (attrs.hasKey("line-adjust")) {
         Nothing -> attrs.lineNo.incLineNo
         Just(d) -> attrs.lineNo.incLineNo(d.parseInt().maybe(0,id))
       }
-      Div(txt.parseBlocks(adjLineNo,fcontext.lineMap,fcontext.inlineContext.metadata),attrs)
+      Div(txt.parseBlocks(adjLineNo,getFormatContext().lineMap,getInlineContext().metadata),attrs)
     }
     MathPoly -> {
       val adjLineNo = match (attrs.hasKey("line-adjust")) {
         Nothing -> attrs.lineNo.incLineNo
         Just(d) -> attrs.lineNo.incLineNo(d.parseInt().maybe(0,id))
       }
-      val attrsx = attrs.setLineNo(fcontext.lineMap,adjLineNo,overwrite=True)
+      val attrsx = attrs.setLineNo(getFormatContext().lineMap,adjLineNo,overwrite=True)
       // keep the source unchanged
       Div([Source(attrs.source,MathPoly,attrsx)], attrs)
     }
@@ -391,7 +405,7 @@ fun transformDiv( blocks : list<block>, attrs : attrs, fcontext : formatContext 
         Nothing -> attrs.lineNo.incLineNo
         Just(d) -> attrs.lineNo.incLineNo(d.parseInt().maybe(0,id))
       }
-      val attrsx = attrs.setLineNo(fcontext.lineMap,adjLineNo,overwrite=True)
+      val attrsx = attrs.setLineNo(getFormatContext().lineMap,adjLineNo,overwrite=True)
       Div([Source(txt,input,attrsx)],attrs)
     }
   }

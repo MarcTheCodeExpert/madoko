@@ -605,7 +605,7 @@ fun expandKeyPattern( name : string, attrs : attrs ) : string {
 }
 
 // expand keys in a string
-private fun expandKeys( p0 : peano, txt : string, source : string,
+fun expandKeys( p0 : peano, txt : string, source : string,
                             attrs : attrs,
                             labels : dict<label>, metadata : dict<string>,
                             notFound : (string,string) -> string = keyNotFound ) : string

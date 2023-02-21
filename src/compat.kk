@@ -29,6 +29,10 @@ pub extern substr1 : (s : string, start : int ) -> string {
   js inline "((#1).substr(#2 >=1 ? #2 : 1))";
 }
 
+pub extern consoleLog : forall<a> (a) -> () {
+  js inline "console.log(#1)"
+}
+
 pub extern substr : (s : string, start : int ) -> string { 
   cs inline "((#1).Substring(#2))";
   js inline "((#1).substr(#2))";

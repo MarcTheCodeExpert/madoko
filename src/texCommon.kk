@@ -16,6 +16,42 @@ import compat
 import common
 import stringcompat
 
+pub alias texRule = rule<string,<texContext>>
+
+
+pub rec type texContextStruct {
+  // The parse ctx for latex elements.
+  TexContextStruct( grammar   : grammar<string,<texContext>>, 
+              bststyle  : string,
+              ignoreIt    : bool = True,
+              name      : string = "",
+              texparse  : (input:string) -> <texContext> string )
+}
+
+pub fun tParse(input: string): <texContext> string {
+  (getTexContextStruct().texparse)(input)
+}
+
+pub effect texContext
+  fun getTexContextStruct(): texContextStruct
+  /*fun getTexGrammar(): grammar<string, <texContext>>
+  fun getBstStyle(): string
+  fun isIgnore(): bool
+  fun getName(): string
+  fun tParse(input: string): string
+*/
+/*
+pub fun concreteTexContext(ctx: texContext, proc: () -> <texContext|e> a): e a {
+  with handler 
+    fun getTexContexte ctx
+    fun getTexGrammar ctx.grammar
+    fun getBstStyle ctx.bststyle
+    fun isIgnore ctx.ignoreIt
+    fun getName ctx.name
+    fun tParse(txt) (ctx.texparse)(ctx, txt)
+  proc()  
+}
+*/
 pub val texAccents = [
   ("`","grave"),
   ("'","acute"),

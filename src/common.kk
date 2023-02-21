@@ -18,6 +18,7 @@ import stringcompat
 
 
 
+
 // Warning messages get logged
 pub fun warning( message : string, logname : string = "warning" ) : () {
   log(logname,"  warning: " + message)
@@ -64,16 +65,33 @@ pub fun json(s : string) : string {
 // capture groups and the a parser context ":c". The action returns
 // results of type ":a" (":block" for the block grammar, and ":string"
 // for the inline grammar)
-pub struct rule<a,c>(
-  name : string,
-  regex : regex,
-  action : (cap : matched, ctx : c) -> <> a
+
+pub struct rule<a :: V,e :: E> (
+    name : string,
+    regex : regex,
+    action: (cap: matched) -> e a 
 )
 
-pub alias grammar<a,c> = list<rule<a,c>>
+ 
+/*
+pub rec type rule<a> {
+
+  Rule(
+    name : string,
+    regex : regex,
+    action: (cap: matched) -> <e> a 
+  //action : (cap : matched, ctx : c) -> <> a
+  )
+}
+
+fun bla(inter: int): _ int {
+  inter
+}
+*/
+pub alias grammar<a :: V,e :: E> = list<rule<a,e>>
 
 // Replace a rule in a grammar by another one, if the rule name is a prefix of the name of the new rule.
-pub fun ruleReplace( grammar : grammar<a,c>, pred : bool, rule : rule<a,c> ) : grammar<a,c> {
+pub fun ruleReplace( grammar : grammar<a,e>, pred : bool, rule : rule<a,e> ) : grammar<a,e> {
   if (!pred)
    then grammar
    else grammar.map fn(r) {
@@ -81,25 +99,27 @@ pub fun ruleReplace( grammar : grammar<a,c>, pred : bool, rule : rule<a,c> ) : g
    }
 }
 
-pub fun ruleRemove( grammar : grammar<a,c>, pred : bool, names : list<string> ) : grammar<a,c> {
+pub fun ruleRemove( grammar : grammar<a,e>, pred : bool, names : list<string> ) : grammar<a,e> {
   if (!pred) then return grammar
   grammar.filter fn(rule) {
     names.all( fn(nm) { !(rule.name.startsWith(nm)) })
   }
 }
-
+// does not get called at allS
+/*
 // Combine rules into one regular expression.
 // For inline expressions, this does not improve the performance much.
-pub fun combineRules( rules : list<rule<a,c>> ) : rule<a,c> {
+pub fun combineRules( rules : list<rule<a,e>> ) : <exn|e> rule<a,e> {
   val (rxs,lactions) = rules.map( fn(rule) { (rule.regex.source, rule.action) }).unzip
   val actions = lactions.vector
   val rx = regexAlt(rxs)
-  Rule("<combined>",rx,fn(cap : matched, ctx) {
+  Rule("<combined>",rx,fn(cap : matched) {
     val i = max(0,cap.groups.alternative)
-    unsafe-total{ actions[i](cap,ctx) }
+    actions[i](cap)
+    //unsafe-total{ actions[i](cap) }
   })
 }
-
+*/
 
 /* --------------------------------------
   Generic rule matcher
@@ -108,7 +128,7 @@ pub fun combineRules( rules : list<rule<a,c>> ) : rule<a,c> {
 // Generic rule matcher: takes a list of rules and applies the action that matches
 // on the given "src". Returns the result of the action and the string following the
 // match.
-pub fun matchRules( rules : grammar<a,c>, ctx: c, src : string, def : string -> a ) : (a,int,string)
+pub fun matchRules( rules : grammar<a,e>, src : string, def : string -> a ) : e (a,int,string)
 {
   match(rules) {
     Nil -> {
@@ -122,11 +142,11 @@ pub fun matchRules( rules : grammar<a,c>, ctx: c, src : string, def : string -> 
           //if (rule.name[0] != '.') then trace("match: " + rule.name.fill(12) + ": " + cap.matched.show )
           // Uncomment the next line to get a histogram of rule matches
           // ruleInc(rule.name)
-          ((rule.action)(cap,ctx), cap.next, cap.matched)//src.substr(cap.next))
+          ((rule.action)(cap), cap.next, cap.matched)//src.substr(cap.next))
         }
         Nothing -> {
           //stat("fail-" + rule.name)
-          matchRules(unsafe-decreasing(rulesNext),ctx,src,def)
+          matchRules(unsafe-decreasing(rulesNext),src,def)
         }
       }
     }

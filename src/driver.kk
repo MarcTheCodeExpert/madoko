@@ -26,6 +26,7 @@ import compat/log
 import compat/regex
 import compat/dict
 import compat/string
+
 import stringcompat
 
 pub struct runners()
@@ -33,13 +34,12 @@ pub struct runners()
 val standardTexStyles = ["ellipse.sty","options.sty","longbox.sty","longfbox.sty","madoko2.sty","latex-madoko.sty"]
 
 pub fun processContent( inName : string, outName : string, content : string,
-                          opts : commandOptions, firstTime : bool = False,
-                          continue : (output:string,inputName:string,outputName:string,options:options) -> io () ) : io ()
+                          opts : commandOptions, firstTime : bool = False) : io ()
 {
   val styleDir = opts.stylesDir
   val searchDirs = [inName.dirname,outName.dirname,styleDir]
-  val opts0  = if (inName.endsWith(".xmp.html") || inName.endsWith(".xmp"))
-                then (opts.options)(xmp = True,full = opts.options.full.maybe(Just(False),Just)) else opts.options
+  val opts0  = opts.options//if (inName.endsWith(".xmp.html") || inName.endsWith(".xmp"))
+                //then (opts.options)(xmp = True,full = opts.options.full.maybe(Just(False),Just)) else opts.options
   //val icontent = content
   //val xopts = Options()
   content.include(False, inName, outName, searchDirs, opts0) fn(icontent0,lmap) {
@@ -78,10 +78,12 @@ pub fun processContent( inName : string, outName : string, content : string,
         tryCopyTextFileFromNoSandboxTo(fname, styleDir, outName.dirname )
       }
     }  
-    process( inName, outName, searchDirs, content, icontent, xopts, mopts, firstTime, 
-    fn(html) {
+    process( inName, outName, searchDirs, content, icontent, xopts, mopts, firstTime) 
+    /*fn(html) {
+      val html =  
       continue(html,inName,outName,mopts)
-    })
+    }*/
+    ()
   }
     
   
@@ -100,8 +102,7 @@ val rxCurDir = regex(r"^(\.)(?=[\\/])")
 
 fun process( inName : string, outName : string, searchDirs : list<string>,
                   content : string, icontent : string,
-                  xopts : options, mopts : options, firstTime : bool,
-                  continue : (string) -> io () ) : io ()
+                  xopts : options, mopts : options, firstTime : bool) : io (string)
 {
 
   // generate tex
@@ -129,8 +130,8 @@ fun process( inName : string, outName : string, searchDirs : list<string>,
   }
 
   texFiles.split("\n") + texRefer.split("\n")
-
-  continue(tex)
+  //continue(tex)
+  tex
 }
 
 // Fixup locations in warnings:

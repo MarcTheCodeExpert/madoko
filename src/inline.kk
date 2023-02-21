@@ -19,6 +19,7 @@ import codeAlign  // codeTable
 import hilite  // hilitemode
 
 import compat
+import block
 import stringcompat
 
 pub alias cells = list<list<(string,attrs)>>
@@ -26,11 +27,35 @@ pub alias cells = list<list<(string,attrs)>>
 /* --------------------------------------
  The ctx for inline elements
 ---------------------------------------- */
-pub rec type inlineContext {
+
+pub struct formatContextStruct(
+  tocBlocks   : dict<list<block>>,
+  footnoteBlock : block,
+  headingBase: int,
+  langPrefix : string,
+  pedantic : bool,
+  lineMap : lineMap,
+  fmt : formatter = FmtHtml
+)
+
+pub effect inlineContext
+  fun getInlineContext(): inlineContextStruct
+  fun setLinks(links: dict<link>): ()
+  fun setLabels(labels: dict<label>): ()
+  fun setFootnotes(footn: dict<footnote>): ()
+  fun setDefaults(defaults: rules): ()
+
+pub effect formatContext
+  fun getFormatContext(): formatContextStruct
+  fun setTocBlocks(tocBlock: dict<list<block>>): ()
+  fun setFootnoteBlock(fnBlock: block): ()
+
+
+pub rec type inlineContextStruct {
   // The parse ctx for inline elements.
   // Contains a dictionary of all define "links", and the current "grammar".
   // If "sanitize" is "True", all (user) html is supressed or escaped.
-  InlineContext( grammar    : grammar<string,inlineContext>,
+  InlineContextStruct( grammar    : grammar<string,<inlineContext>>,
                  links      : dict<link>,
                  labels     : dict<label>,
                  footnotes  : dict<footnote>,
@@ -45,20 +70,20 @@ pub rec type inlineContext {
                  sandbox    : bool,
                  prettyAlign : int,
 
-                 xfmtCmd : (ctx:inlineContext,cmd:string,body:string,attrs:attrs) -> string,
-                 xfmtEscape : (ctx:inlineContext,body:string,allowEntity:bool) -> string,
-                 xfmtLink: (ctx:inlineContext,isImage : bool, link : link, content : string ) -> string,
-                 xfmtFootnote: (ctx : inlineContext, id : string, ftn : footnote ) -> string,
-                 xfmtTable: (ctx : inlineContext, head : list<row>, body : list<row>, colattrs: list<attrs>, attrs : attrs ) -> string,
-                 xfmtEnv : (ctx : inlineContext, env : string, txt : string, attrs : attrs ) -> string,
-                 xfmtCodePlain : (ctx : inlineContext, txt : string, startline : bool ) -> string,
-                 // xfmtCodeHilite : (ctx : inlineContext, txt : string, startLine: bool ) -> (string),
-                 xfmtCodeToken : (ctx : inlineContext, classes: list<string>, txt : string, lang : string, attrs : attrs) -> string,
-                 xfmtLineInfo : (ctx : inlineContext, lineInfo : string ) -> string,
-                 xfmtCodeTable : (ctx : inlineContext, ct : codeTable, attrs : attrs ) -> string,
-                 xfmtMathCmd : (ctx:inlineContext,cmd:string,body:string,attrs:attrs) -> string,
-                 xfmtMathEnv : (ctx : inlineContext, env : string, txt : string, attrs : attrs ) -> string,
-                 fmt : formatter
+                 xfmtCmd : (cmd:string,body:string,attrs:attrs) -> string,
+                 xfmtEscape : (body:string,allowEntity:bool) -> string,
+                 xfmtLink: (isImage : bool, link : link, content : string, sandbox: bool ) -> string,
+                 xfmtFootnote: (id : string, ftn : footnote ) -> string,
+                 xfmtTable: (head : list<row>, body : list<row>, colattrs: list<attrs>, attrs : attrs ) -> string,
+                 xfmtEnv : (env : string, txt : string, attrs : attrs ) -> string,
+                 xfmtCodePlain : (txt : string, startline : bool ) -> string,
+                 // xfmtCodeHilite : (txt : string, startLine: bool ) -> (string),
+                 xfmtCodeToken : (classes: list<string>, txt : string, lang : string, attrs : attrs) -> string,
+                 xfmtLineInfo : (lineInfo : string ) -> string,
+                 xfmtCodeTable : (ct : codeTable, attrs : attrs ) -> string,
+                 xfmtMathCmd : (cmd:string,body:string,attrs:attrs) -> string,
+                 xfmtMathEnv : (env : string, txt : string, attrs : attrs ) -> string,
+                 efmt : formatter
                )
 }
 
@@ -78,104 +103,68 @@ pub struct authorinfo (
 
 pub rec type footnote {
   Footnote( footnoteNum : string,
-            footnoteContent : (inlineContext) -> string,
+            footnoteContent : () -> <formatContext, inlineContext> string,
             footnoteCaption : string  )
 }
 
-pub fun fmtCmd( ctx : inlineContext, cmd : string, txt : string, attrs : attrs = attrsNone ) : string {
-  (ctx.xfmtCmd)(ctx,cmd,txt,attrs)
+pub fun sanitize() : <inlineContext> bool {
+  getInlineContext().xsanitize
 }
 
-pub fun fmtEnv( ctx : inlineContext, env : string, txt : string, attrs : attrs = attrsNone ) : string {
-  (ctx.xfmtEnv)(ctx,env,txt,attrs)
+pub fun fmtCmd(cmd : string, txt : string, attrs : attrs = attrsNone ) : <inlineContext> string {
+  (getInlineContext().xfmtCmd)(cmd,txt,attrs)
 }
 
-pub fun fmtMathCmd( ctx : inlineContext, cmd : string, txt : string, attrs : attrs = attrsNone ) : string {
-  (ctx.xfmtMathCmd)(ctx,cmd,txt,attrs)
+pub fun fmtEnv(env : string, txt : string, attrs : attrs = attrsNone ) : <inlineContext> string {
+  (getInlineContext().xfmtEnv)(env,txt,attrs)
 }
 
-pub fun fmtMathEnv( ctx : inlineContext, env : string, txt : string, attrs : attrs = attrsNone ) : string {
-  (ctx.xfmtMathEnv)(ctx,env,txt,attrs)
+pub fun fmtMathCmd(cmd : string, txt : string, attrs : attrs = attrsNone ) : <inlineContext> string {
+  (getInlineContext().xfmtMathCmd)(cmd,txt,attrs)
 }
 
-pub fun fmtCodePlain( ctx : inlineContext, txt : string, startline : bool = True ) : string {
-  (ctx.xfmtCodePlain)(ctx,txt,startline)
+pub fun fmtMathEnv(env : string, txt : string, attrs : attrs = attrsNone ) : <inlineContext> string {
+  (getInlineContext().xfmtMathEnv)(env,txt,attrs)
 }
 
-pub fun fmtCodeToken( ctx: inlineContext, classes : list<string>, txt : string, lang : string, attrs : attrs ) : string {
-  (ctx.xfmtCodeToken)(ctx,classes,txt,lang,attrs)
+pub fun fmtCodePlain(txt : string, startline : bool = True ) : <inlineContext> string {
+  (getInlineContext().xfmtCodePlain)(txt,startline)
 }
 
-pub fun fmtEscapePre( ctx : inlineContext, txt : string ) : string {
-  (ctx.xfmtEscape)(ctx,txt,False)
+pub fun fmtCodeToken( classes : list<string>, txt : string, lang : string, attrs : attrs ) : <inlineContext> string {
+  (getInlineContext().xfmtCodeToken)(classes,txt,lang,attrs)
 }
 
-pub fun fmtEscape( ctx : inlineContext, txt : string ) : string {
-  (ctx.xfmtEscape)(ctx,txt,True)
+pub fun fmtEscapePre(txt : string ) : <inlineContext> string {
+  (getInlineContext().xfmtEscape)(txt,False)
 }
 
-pub fun fmtText( ctx : inlineContext, txt : string ) : string {
-  (ctx.xfmtCmd)(ctx,"",txt,attrsNone)
+pub fun fmtEscape(txt : string ) : <inlineContext> string {
+  (getInlineContext().xfmtEscape)(txt,True)
 }
 
-pub fun fmtLink( ctx : inlineContext, isImage : bool, link : link, content : string) : string {
-  (ctx.xfmtLink)(ctx,isImage,link,content)
+pub fun fmtText(txt : string ) : <inlineContext> string {
+  (getInlineContext().xfmtCmd)("",txt,attrsNone)
 }
 
-pub fun fmtFootnote(ctx : inlineContext, id : string, ftn : footnote ) : string {
-  (ctx.xfmtFootnote)(ctx,id,ftn)
+pub fun fmtLink(isImage : bool, link : link, content : string, sandbox: bool) : <inlineContext> string {
+  (getInlineContext().xfmtLink)(isImage,link,content, sandbox)
 }
 
-pub fun fmtLineInfo(ctx : inlineContext, lineInfo : string ) : string {
-  (ctx.xfmtLineInfo)(ctx,lineInfo)
+pub fun fmtFootnote(id : string, ftn : footnote ) : <inlineContext> string {
+  (getInlineContext().xfmtFootnote)(id,ftn)
 }
 
-pub fun fmtCodeTable(ctx : inlineContext, ct : codeTable, attrs : attrs = attrsNone ) : string {
-  (ctx.xfmtCodeTable)(ctx,ct,attrs)
+pub fun fmtLineInfo(lineInfo : string ) : <inlineContext> string {
+  (getInlineContext().xfmtLineInfo)(lineInfo)
 }
 
-// Copy an ":inlineContext"
-pub fun copy( self : inlineContext,
-                       grammar : grammar<string,inlineContext> = self.grammar,
-                       links : dict<link> = self.links,
-                       labels : dict<label> = self.labels,
-                       footnotes : dict<footnote> = self.footnotes,
-                       defaults: rules = self.defaults,
-                       metadata: dict<string> = self.metadata,
-                       embedinfos : dict<embedinfo> = self.embedinfos,
-                       sanitize : bool = self.sanitize,
-                       bench : bool = self.bench,
-                       verbose : int = self.verbose,
-                       highlight : bool = self.highlight,
-                       starBold : bool = self.starBold,
-                       sandbox: bool = self.sandbox,
-                       prettyAlign : int = self.prettyAlign,
-                       xfmtCmd = self.xfmtCmd,
-                       xfmtEscape = self.xfmtEscape,
-                       xfmtLink = self.xfmtLink,
-                       xfmtFootnote = self.xfmtFootnote,
-                       xfmtTable = self.xfmtTable,
-                       xfmtEnv = self.xfmtEnv,
-                       xfmtCodePlain = self.xfmtCodePlain,
-                       //xfmtCodeHilite = self.xfmtCodeHilite,
-                       xfmtCodeToken = self.xfmtCodeToken,
-                       xfmtLineInfo = self.xfmtLineInfo,
-                       xfmtCodeTable = self.xfmtCodeTable,
-                       xfmtMathCmd = self.xfmtMathCmd,
-                       xfmtMathEnv = self.xfmtMathEnv,
-                       fmt : formatter = self.fmt  ) : inlineContext
-{
-  InlineContext( grammar,links,labels,footnotes,defaults,metadata,embedinfos,
-                 sanitize,bench,verbose,highlight,starBold,sandbox,prettyAlign,
-                 xfmtCmd,xfmtEscape,xfmtLink,xfmtFootnote,xfmtTable,
-                 xfmtEnv, xfmtCodePlain, /* xfmtCodeHilite, */
-                 xfmtCodeToken, xfmtLineInfo, xfmtCodeTable,
-                 xfmtMathCmd, xfmtMathEnv,
-                 fmt )
+pub fun fmtCodeTable(ct : codeTable, attrs : attrs = attrsNone ) : <inlineContext> string {
+  (getInlineContext().xfmtCodeTable)(ct,attrs)
 }
 
-pub fun sanitize( ctx : inlineContext ) : bool {
-  ctx.xsanitize
+pub fun fmtTable( head : list<row>, body : list<row>, colattrs : list<attrs>, attrs : attrs = attrsNone ) : <inlineContext> string {
+  (getInlineContext().xfmtTable)(head,body,colattrs,attrs)
 }
 
 
@@ -191,9 +180,26 @@ pub fun logDataLine( attrs ) : () {
 }
 
 // Parse _inline_ markdown elements and return formatted html
-pub fun formatInline( ctx : inlineContext, txt : string, attrs : attrs = attrsNone ) : string
+// removed ctx: inlineContext
+pub fun formatInline( txt : string, attrs : attrs = attrsNone ) : <inlineContext> string
 {
-  formatInlineAcc(ctx,builder(), txt)
+    formatInlineAcc("", txt)
+}
+
+// changed acc: builder<h> to simple string addition since there is no builder in current koka anymore
+/*
+  fun formatInlineAcc(acc : builder<h> , txt : string) : <inlineContext> string
+{
+  if (txt=="") then return acc.build
+  val (s,next,_) = matchRules(getGrammar(), txt, id)
+  formatInlineAcc(acc.append(s), unsafe-decreasing(txt.substr1(next)))
+}
+*/
+fun formatInlineAcc(acc : string , txt : string) : <inlineContext> string
+{
+  if (txt=="") then return acc
+  val (s,next,_) = matchRules(getInlineContext().grammar, txt, id)
+  formatInlineAcc(acc ++ s, unsafe-decreasing(txt.substr1(next)))
 }
 
 pub fun parseLineInfo( lineInfo : string ) : (string,int) {
@@ -204,12 +210,8 @@ pub fun parseLineInfo( lineInfo : string ) : (string,int) {
 }
 val rxDataLine = regex( r"^(.*:)?(\d+)$")
 
-fun formatInlineAcc( ctx : inlineContext, acc : builder<h>, txt : string) : st<h> string
-{
-  if (txt=="") return acc.build
-  val (s,next,_) = matchRules(ctx.grammar,ctx,txt,id)
-  formatInlineAcc(ctx, acc.append(s), unsafe-decreasing(txt.substr1(next)))
-}
+
+
 
 pub fun mathPreX( txt : string ) : string
 {

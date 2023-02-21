@@ -108,7 +108,9 @@ val rxtableSep    = r"((?:\| *|\+)[-=~:](?:[-=~+| :]|" + xattrs + ")*)\n"
 val rxtableBody   = r"((?: *(?:\||\+[-=]).*(?:\n|$))+)"
 
 // The main block grammar
-val blockGrammar : grammar<block,blockContext> = [
+
+val blockGrammar : grammar<block, <blockContext>> = [
+
   Rule("lheading",   regex(r"^(?!    )([^ \n].*?)" + iattrs + r"\n *(===+|---+) *(?:\n+|$)"), blockHeadingLine ),
   Rule("deflist",    regex(deflist), blockDefList ),
   Rule("parax",      regex(r"^(" + notbspecial + r"[^|\n]*?(?:\n|$)(?:(?!" + endpara + r").+(?:\n|$))*)\n*"), blockPara ),
@@ -141,49 +143,33 @@ val ruleLine = Rule("para-line",  regex(r"^.+(\n|$)"), blockLine)
 val ruleLineX= Rule("parax-line", regex(r"^" + notbspecial + r".*(\n|$)"), blockLine)
 
 // add fn --> val can not have effects
-fun parseGrammar(): grammar<block,blockContext> {blockGrammar.ruleReplace( True, ruleLineX ).ruleReplace( True, ruleLine  )}
+fun parseGrammar(): grammar<block, <blockContext>> {blockGrammar.ruleReplace( True, ruleLineX ).ruleReplace( True, ruleLine  )}
 
-//val blockListGrammar = parseGrammar()
-/* --------------------------------------
-  The context for blocks
----------------------------------------- */
-
-// The parse context for block elements.
-rec type blockContext {
-  // The parse context for block elements. Contains the "parse" function,
-  // and the current "grammar".
-  BlockContext( grammar : grammar<block,blockContext>,
-                listGrammar : grammar<block,blockContext>,
-                metadata : dict<string>,
-                bench   : bool,
-                pedantic : bool,
-                loose   : bool = False,
-                lineNo  : int = 0,
-                lineMap : lineMap
-              )
-}
-
+val blockListGrammar = parseGrammar()
 
 
 /* --------------------------------------
  Block element funs
 ---------------------------------------- */
-fun blockSpecial( cap : matched, ctx : blockContext ) : block {
+fun blockSpecial( cap : matched) : <blockContext> block {
   fun joinnl( lines : list<string> ) : string {
     lines.map(fn(line) { line + "\n" }).join
   }
-  fun mkblock( name, content : list<string>, lineno = ctx.lineNo ) : list<string> {
+  fun mkblock( name, content : list<string>, lineno = getLineNo() ) : <blockContext> list<string> {
     if (content.is-nil) then [] else ["~ Begin " + name + " { line-adjust:0; line:" + lineno.show + " }"] + content + ["~ End " + name]
   }
+  
   fun entry(name, className = name) {
-    match(ctx.metadata[name]) {
+    //val ctxe = getCurrBlockContext() ctxe.metadata[name]
+    match(getBlockMetaDataEntry(name)) {
       Just(value) | value.trim != ""
         -> mkblock(className, ["&" + name + ";"])
       _ -> []
     }
   }
+  // ctx.metadata[name]
   fun readInt(name,default = 0) {
-    match(ctx.metadata[name]) {
+    match(getBlockMetaDataEntry(name)) {
       Just(value) -> value.trim.parse-int-default(default)
       Nothing     -> default
     }
@@ -199,7 +185,7 @@ fun blockSpecial( cap : matched, ctx : blockContext ) : block {
       }
     }
   }
-  fun author( idx : int ) : list<string> {
+  fun author( idx : int ) : <blockContext> list<string> {
     mkblock("Author",
       [entry("author" + idx.show, "AuthorName"),
        entry("affiliation" + idx.show, "AuthorAddress"),
@@ -207,7 +193,7 @@ fun blockSpecial( cap : matched, ctx : blockContext ) : block {
        entry("author-note" + idx.show, "AuthorNote"),
        entry("email" + idx.show, "AuthorEmail")].concat)
   }
-  fun authorRow( idxs : list<int> ) : list<string> {
+  fun authorRow( idxs : list<int> ) : <blockContext> list<string> {
     mkblock("AuthorRow", idxs.concat(author))
   }
   if (cap.groups[1].toLower == "title") {
@@ -224,7 +210,7 @@ fun blockSpecial( cap : matched, ctx : blockContext ) : block {
   }
 }
 
-fun blockPara( cap : matched, _context ) : block {
+fun blockPara( cap : matched) : <blockContext> block {
   val full = cap.groups[1]
   val (txt,attrTxt) = match(full.find(rxPattrs)) {
     Nothing   -> (full,"")
@@ -234,32 +220,34 @@ fun blockPara( cap : matched, _context ) : block {
 }
 val rxPattrs = regex(r"\n {0,3}" + xattrs + r"\s*$")
 
-fun blockDefLink( cap : matched, ctx : blockContext ) : block {
+fun blockDefLink( cap : matched) : <blockContext> block {
   val id = cap.groups[1].definitionId
-  DefLink(id, newLink(cap.groups[2].joinLines, cap.groups[3].joinLines, cap.groups[4].parseAttrs, id, ctx.bench ))
+  
+  DefLink(id, newLink(cap.groups[2].joinLines, cap.groups[3].joinLines, cap.groups[4].parseAttrs, id,  isBlockBench()))
 }
 
-fun blockLine( cap : matched, ctx : blockContext ) : block {
-  Line(cap.matched, ctx.loose )
+fun blockLine( cap : matched) : <blockContext> block {
+  
+  Line(cap.matched, isBlockLoose() )
 }
 
-fun blockBlank( cap : matched, _context ) : block {
+fun blockBlank( cap : matched) : <blockContext> block {
   Blank(cap.matched)
 }
 
-fun blockHLine( cap : matched, _context ) : block {
+fun blockHLine( cap : matched) : <blockContext> block {
   HLine(cap.groups[1].parseAttrs)
 }
 
-fun blockHtml( cap : matched, ctx : blockContext ) :  block  {
+fun blockHtml( cap : matched) : <blockContext>  block  {
   Source(cap.matched,Raw(Just(FmtHtml)),attrsNone)
 }
 
-fun blockHeading( cap : matched, ctx : blockContext ) : block  {
+fun blockHeading( cap : matched) : <blockContext> block  {
   makeHeading(if (cap.groups[2]=="0") then 0 else cap.groups[1].length,cap.groups[3],cap.groups[4])
 }
 
-fun blockHeadingLine( cap : matched, ctx : blockContext ) : block {
+fun blockHeadingLine( cap : matched) : <blockContext> block {
   makeHeading( (if (cap.groups[3].substr(0,1) == "=") then 1 else 2), cap.groups[1], cap.groups[2] )
 }
 
@@ -268,49 +256,54 @@ fun makeHeading(depth:int, source:string, attrStr : string) {
   Heading(depth, source, attrStr.parseAttrs(elem,source))
 }
 
-fun blockCode( cap : matched, ctx : blockContext ) : block  {
+fun blockCode( cap : matched) : <blockContext> block  {
   val source = cap.groups[1].replaceAll(rxindent4,"")
+  
   Code(source, "",
-          if (!(ctx.pedantic || ctx.bench)) then attrsNone.addClass("pre-indented") else attrsNone)
+          if (!(isBlockPedantic() || isBlockBench() )) then attrsNone.addClass("pre-indented") else attrsNone)
 }
 
-fun blockFencedCode( cap : matched, ctx : blockContext ) {
+fun blockFencedCode( cap : matched) : <blockContext> block{
   val attrs = cap.groups[3].parseAttrs
+  
   Code(cap.groups[4], cap.groups[2],
-        if (!(ctx.pedantic || ctx.bench))
+        if (!(isBlockPedantic() || isBlockBench() ))
           then attrs.addClasses(["pre-fenced","pre-fenced" + cap.groups[1].length.show])
           else attrs)
 }
 
-fun blockQuote( cap : matched, ctx : blockContext ) : block {
+// removed ctx from parseBlocks
+fun blockQuote( cap : matched) : <blockContext> block {
   val text = cap.groups[1].replaceAll(rxquotePrefix,"")
   //mtrace("---")
-  val content = parseBlocks(ctx,text)
+  
+  val content = parseBlocks(text)
   //mtrace("--- end quote")
   Quote(content,cap.groups[2].parseAttrs)
 }
 val rxquotePrefix = regex(r"^ *> ?",multiline=True)
 
-fun blockDiv( cap : matched, ctx : blockContext ) : block {
+fun blockDiv( cap : matched) : <blockContext> block {
   val cname = cap.groups[2].definitionId
   log("customs","{ \"name\":" + cname.json  + ", \"display\":" + cap.groups[2].json + "}");
   val attrs = cap.groups[3].parseAttrs(cname,source=cap.groups[4].substr(1))
   Div( [], attrs )
 }
-
-fun blockDefFootnote( cap : matched, ctx : blockContext ) : block {
+// removed ctx
+fun blockDefFootnote( cap : matched) : <blockContext> block {
   val id  = cap.groups[1].definitionId
   val txt = "~ Begin Footnote { id='fn-" + id + "' }\n" +
                cap.groups[2].replaceAll(rxindent4,"") + "\n" +
             "~ End Footnote"
-  DefFootnote(id, parseBlocks(ctx,txt))
+  
+  DefFootnote(id, parseBlocks(txt))
 }
 
 // --------------------------------
 // Definition Lists
-
-fun blockDefList( cap : matched, ctx : blockContext ) : block {
-  fun parseItem( extraAttrs : string, icap : matched, line : int, icontext : blockContext ) : list<block> {
+// rremoved ctx from parseBlocks
+fun blockDefList( cap : matched) : <blockContext> block {
+  fun parseItem( extraAttrs : string, icap : matched, line : int) : <blockContext> list<block> {
     //trace("item:\n" + icap.matched)
     val item = icap.groups[4].replaceAll(rxindent4,"")
     val attrs = icap.groups[3].parseAttrs("dd",source=item)
@@ -319,28 +312,31 @@ fun blockDefList( cap : matched, ctx : blockContext ) : block {
                   val attrsd = parseAttrs(extraAttrs,"dt",source=term)
                   [Div([Line(term)],attrsd)]
                 }
-    val ddesc = Div(parseBlocks(icontext,item,line),
-                          if (line <= 0) then attrs else attrs.setLineNo(ctx.lineMap,line))
+    // setting flag to use blockListgrammar                
+    val ddesc = Div(parseBlocks(item,line, True),
+                          if (line <= 0) then attrs else attrs.setLineNo(getBlockLineMap(),line))
     [ddesc] + dterm
   }
-
-  blockListX( cap.matched.trim, ctx, "dl", ".dl", rxDefItem, parseItem )
+  
+  blockListX( cap.matched.trim,  "dl", ".dl", rxDefItem, parseItem )
 }
 val rxDefItem = regex( r"^(?:" + defitem + r")?" + defstart + "(?:" + iattrs + r")? *(" + defdef + ")" )
 
 // --------------------------------
 // Lists
-
-fun blockList( cap : matched, ctx : blockContext ) : block {
+// removed ctx from parseBlocks
+fun blockList( cap : matched) : <blockContext> block {
   val tag  = if (cap.groups[2].length > 1) then "ol" else "ul"
 
-  fun parseItem( extraAttrs : string, icap : matched, line : int, icontext : blockContext ) : list<block> {
-    val item = icap.groups[4].replaceAll(if (icontext.pedantic)
+  fun parseItem( extraAttrs : string, icap : matched, line : int) : <blockContext> list<block> {
+    val item = icap.groups[4].replaceAll(if (isBlockPedantic())
                                            then rxindent4
                                            else rxindent(icap.groups[1].length) ,"")
+                                           
     val attrs = (extraAttrs + " ; " + icap.groups[3]).parseAttrs("li", item)
-    [Item(parseBlocks(icontext,item,line),
-           if (line <= 0) then attrs else attrs.setLineNo(ctx.lineMap,line))]
+    // setting flag to use blockListgrammar 
+    [Item(parseBlocks(item,line, True),
+           if (line <= 0) then attrs else attrs.setLineNo(getBlockLineMap(),line))]
   }
 
   val bull = cap.groups[2].substr(0,1)
@@ -355,18 +351,23 @@ fun blockList( cap : matched, ctx : blockContext ) : block {
   val attrs1 = if (cap.groups[2].endsWith(")")) then attrs0 + " ; .list-sep-paren"
                elif (cap.groups[2].endsWith(")")) then attrs0 + " ; .list-sep-dot"
                else attrs0
-  blockListX( cap.matched, ctx, tag, "." + tag + " ; " + attrs1, rxitem, parseItem )
+  
+  blockListX( cap.matched, tag, "." + tag + " ; " + attrs1, rxitem, parseItem )
 }
 val rxitem      = regex(r"^(( *)(?:" + bullrest + r") +)(?:" + iattrs + r")?(.*(?:\n(?!\2" + bullrest + r" ).*)*\n?)",multiline=True);
 
-fun blockListX( text : string, ctx : blockContext,
-                     tag : string, attrsInit : string, rxParseItem : regex, parseItem : (string,matched,int,blockContext) -> list<block> ) : block
+// removed ctx: blockContext
+fun blockListX( text : string, 
+                     tag : string, attrsInit : string, rxParseItem : regex, parseItem : (string,matched,int) -> <blockContext> list<block> ) : <blockContext> block
 {
   val loose = text.contains(blankline)
   // we should merge any text blocks into a paragraph for a loose list
   // in sane mode, we only make text blocks paragraphs if they are followed by a blank line
-  val icontext = ctx(grammar = ctx.listGrammar,// context.grammar.filter( fn(r) { !(r.name.startsWith("paragraph")) }),
-                         loose = loose) // if (ctx.sane) then False else loose)
+  //setBlockGrammar(parseGrammar())
+  //listGrammar()
+  setLoose(loose)
+  /*val icontext = ctx(grammar = ctx.listGrammar,// context.grammar.filter( fn(r) { !(r.name.startsWith("paragraph")) }),
+                         loose = loose) // if (ctx.sane) then False else loose)*/
 
 
   val (txt,attrsTxt) = match(text.find(rxlattrs)) {
@@ -385,18 +386,20 @@ fun blockListX( text : string, ctx : blockContext,
 
   val extraAttrs = attrs.classes.map( fn(cls) { "." + cls + "-li" } ).join(" ")
 
-  fun parseItems( src : string, line : int, acc : list<block> = Nil ): list<block> {
+  fun parseItems( src : string, line : int, acc : list<block> = Nil ): <blockContext> list<block> {
     match (src.find(rxParseItem)) {
       Nothing    -> acc.reverse
       Just(icap) -> {
         val newline = if (line <= 0) then line else line + icap.matched.count("\n")
-        parseItems( unsafe-decreasing(src.substr1(icap.next)), newline, parseItem(extraAttrs,icap,line,icontext) + acc)
+        parseItems( unsafe-decreasing(src.substr1(icap.next)), newline, parseItem(extraAttrs,icap,line) + acc)
       }
     }
   }
 
   // if loose then add a blank at the end of the last item so it has a Blank
-  val items = parseItems( txt + (if (loose) then "\n\n" else ""), ctx.lineNo )
+  val items = parseItems( txt + (if (loose) then "\n\n" else ""), getLineNo() )
+  // need to reset blockGrammer to original state without parseGrammar
+  //setBlockGrammar(blockGrammar)
   List(tag,items,attrs)
 }
 
@@ -421,39 +424,45 @@ val rxindent5x  = regex(r"^ {1,5}",multiline=True)
 // --------------------------------
 // Tables
 
-fun blockNpTable( cap : matched, ctx ) : block {
-  val header = cap.groups[1].npcolumns(ctx,0)
-  val cols   = cap.groups[2].npcolumns(ctx,1).cells.map(fn(c) { c.text_.columnStyle } )
-  val cells  = cap.groups[3].rows.map-indexed( fn(i,row) { npcolumns(row,ctx,i+2) } )
+fun blockNpTable( cap : matched) : <blockContext> block {
+  
+  val header = cap.groups[1].npcolumns(0)
+  val cols   = cap.groups[2].npcolumns(1).cells.map(fn(c) { c.text_.columnStyle } )
+  val cells  = cap.groups[3].rows.map-indexed( fn(i,row) { npcolumns(row,i+2) } )
   Table([header],cols,cells,cap.groups[4].parseAttrs)
 }
 
-fun blockTable( cap : matched, ctx ) : block {
-  val headers = if (cap.groups[1]=="") then [] else cap.groups[1].rows.map-indexed( fn(i,row) { columns(row,ctx,i) } )
+fun blockTable( cap : matched) : <blockContext> block {
+  
+  val headers = if (cap.groups[1]=="") then [] else cap.groups[1].rows.map-indexed( fn(i,row) { columns(row,i) } )
   val cols    = cap.groups[2].columnStyles
   val ofs     = headers.length + 1;
-  val cells   = cap.groups[4].rows.map-indexed( fn(i,row) { columns(row,ctx,i+ofs) })
+  val cells   = cap.groups[4].rows.map-indexed( fn(i,row) { columns(row,i+ofs) })
   // create a horizontal line after the headers?
   val txts    = cols.map(source)
   val hline   = if (txts.all(fn(txt){txt==""})) then [] else [Row(txts.map(fn(t){ Cell(t) }))]
   Table(headers,cols,hline+cells,cap.groups[5].parseAttrs)
 }
 
-fun npcolumns( row : string, ctx : blockContext, ofs : int ) : row {
-  ("|" + row + "|").columns(ctx,ofs)
+//removed ctx
+fun npcolumns( row : string,  ofs : int ) : <blockContext> row {
+  ("|" + row + "|").columns(ofs)
 }
 
 fun rows( body : string ) : list<string> {
   body.trimRight.split("\n")
 }
 
+//removed ctx in parameter 
 // Split a row into cells, keeping final separators ("|" or "+") at the end of each cell.
-fun columns( row : string, ctx : blockContext, ofs: int ) : row {
+fun columns( row : string, ofs: int ) : <blockContext> row {
   // Note: we allow "+" to separate for dashed lines. So we carefully split on "+" too
   // as long as such "+" is followed by dashes or double-dash.
+  //val ctx = getCurrBlockContext()
   val cells = row.findAll(rxCell).list.map( fn(cap) { Cell(cap.groups[1]) })
   val attrs = row.find(rxRowAttr).maybe(attrsNone, fn(cap) { cap.groups[1].parseAttrs("tr")  })
-  Row(cells, if(ctx.lineNo > 0) then attrs.setLineNo(ctx.lineMap, ctx.lineNo + ofs) else attrs)
+  val lineNo = getLineNo()
+  Row(cells, if(lineNo > 0) then attrs.setLineNo(getBlockLineMap(), lineNo + ofs) else attrs)
 }
 
 val rxCellCodeInline = r"(?:``(?:[^`]|`(?!`))*``|`(?:[^`]|``)*`)"
@@ -495,49 +504,109 @@ fun columnStyle( style : string ) : attrs {
   Parse a text into blocks
 ---------------------------------------- */
 
-// Parse text into blocks
+pub effect blockGram
+  fun getBlockGrammar() : grammar<block, <blockGram, blockBench, blockLineMap, blockLineNo, blockLoose, blockPendatic, blockMetadata>>
+  fun getBlockListGrammar(): grammar<block, <blockGram, blockBench, blockLineMap, blockLineNo, blockLoose, blockPendatic, blockMetadata>>
+  
+
+pub effect blockMetadata
+  fun getBlockMetaData(): dict<string>
+  fun getBlockMetaDataEntry(name: string): maybe<string>
+
+pub effect blockBench
+  fun isBlockBench(): bool
+
+pub effect blockPendatic
+  fun isBlockPedantic(): bool
+
+pub effect blockLoose
+  fun isBlockLoose(): bool 
+  fun setLoose(new_loose: bool): ()
+
+pub effect blockLineNo
+  fun setLineNo(num: int): ()
+  fun getLineNo(): int
+
+pub effect blockLineMap
+  fun getBlockLineMap(): lineMap
+
+
+pub alias blockContext = <blockGram, blockBench, blockLineMap, blockLineNo, blockLoose, blockPendatic, blockMetadata>
+
+
 pub fun parseBlocks( src : string, lineNo : int, lineMap : lineMap,
                              mdata : dict<string>,
                              bench : bool = False,
                              pedantic : bool = False
                              )  : list<block>
-{
-  val bcontext = BlockContext(blockGrammar, parseGrammar(), mdata, bench, pedantic, False, lineNo, lineMap)
-  parseBlocks(bcontext,src)
+{ 
+  var lineNum := lineNo
+  var loose := False
+  
+  with handler
+    fun getBlockGrammar blockGrammar
+    fun getBlockListGrammar blockListGrammar
+  with handler
+    fun getBlockMetaData mdata
+    fun getBlockMetaDataEntry(name: string) mdata[name]
+  with handler  
+    fun isBlockBench() bench
+  with handler  
+    fun isBlockPedantic() pedantic
+  with handler  
+    fun isBlockLoose() loose
+    fun setLoose(new_loose) loose := new_loose
+  with handler  
+    fun setLineNo(num) lineNum := num
+    fun getLineNo lineNum
+  with handler  
+    fun getBlockLineMap lineMap
+  
+  parseBlocks(src)
+
 }
 
 // Parse text into blocks
-fun parseBlocks( ctx : blockContext, src : string, line : int = 0 ) : list<block>
+// removed ctx
+fun parseBlocks(src : string, line : int = 0, isList: bool = False ) : <blockContext> list<block>
 {
   val bs = if (line > 0)
-            then parseBlocksAccLine( ctx(lineNo = line), Nil, line, src )
-           elif (ctx.lineNo > 0)
-            then parseBlocksAccLine(ctx, Nil, ctx.lineNo, src)
-            else parseBlocksAcc( ctx, Nil, src)
+            then parseBlocksAccLine(Nil, line, src, isList )
+           elif (getLineNo() > 0)
+            then parseBlocksAccLine(Nil, getLineNo(), src, isList)
+            else parseBlocksAcc(Nil, src, isList)
   bs.reverse
 }
 
-
-fun parseBlocksAcc( ctx : blockContext,  acc : list<block>, src : string ) : list<block>
+// removed ctx: blockContext from parameters
+fun parseBlocksAcc( acc : list<block>, src : string, isList: bool) : <blockContext> list<block>
 {
   if (src=="") return acc;
-  val (block,next,_) = matchRules(ctx.grammar,ctx,src,raw_)
-  parseBlocksAcc( ctx, Cons(block,acc), unsafe-decreasing(src.substr1(next)) )
+  val (block,next,_) = matchRules(if(isList) then getBlockListGrammar() else getBlockGrammar(),src,raw_)
+  
+  parseBlocksAcc(Cons(block,acc), unsafe-decreasing(src.substr1(next)), isList )
 }
 
-fun parseBlocksAccLine( ctx : blockContext,  acc : list<block>, line : int, src : string ) : list<block>
+// removed ctx: blockContext from parameters
+fun parseBlocksAccLine(acc : list<block>, line : int, src : string, isList: bool ) : <blockContext> list<block>
 {
   if (src=="") return acc;
-  val (block,next,matched) = matchRules(ctx.grammar,ctx(lineNo=line),src,raw_)
+  //val ctx = getBlockContexte()
+  setLineNo(line)
+  val (block,next,matched) = matchRules(if(isList) then getBlockListGrammar() else getBlockGrammar(),src,raw_)
+  
+  
   val lines  = matched.count("\n")
 
   // Adjust start and end line and exclude preceding and trailing empty lines
   val start = line + matched.linesMatching(rxPreWhite)
   val end   = line + lines - matched.linesMatching(rxPostWhite)
+  val lineMap = getBlockLineMap() // get line map from Blcok Context effect
   val block2 = block.adjustAttrs( fn(attrs:attrs) {
-    attrs.setLineNo(ctx.lineMap, start).setRange(ctx.lineMap, start, end)
+    //attrs.setLineNo(ctx.lineMap, start).setRange(ctx.lineMap, start, end)
+    attrs.setLineNo(lineMap, start).setRange(lineMap, start, end)
   })
-  parseBlocksAccLine( ctx, Cons(block2,acc), line + lines, unsafe-decreasing(src.substr1(next)) )
+  parseBlocksAccLine(Cons(block2,acc), line + lines, unsafe-decreasing(src.substr1(next)), isList )
 }
 
 val rxPreWhite = regex(r"^\s+")

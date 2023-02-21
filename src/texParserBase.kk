@@ -26,23 +26,14 @@ import stringcompat
 /* --------------------------------------
  The ctx for latex elements
 ---------------------------------------- */
-pub alias texRule = rule<string,texContext>
-
-pub rec type texContext {
-  // The parse ctx for latex elements.
-  TexContext( grammar   : grammar<string,texContext>, 
-              bststyle  : string,
-              ignore    : bool = True,
-              name      : string = "",
-              texparse  : (ctx:texContext, input:string) -> string )
-}
 
 
+/*
 pub fun parse( txt : string, ctx : texContext ) : string
 {
   (ctx.texparse)(ctx,txt)
 }
-
+*/
 
 pub val special = r"\\{}~*_\[\]#\$`%\n\-";
 
@@ -117,7 +108,7 @@ val rxNL0 = regex(r"^[ \t]*\r?\n|\r?\n$")
 struct mRule(
   regex: regex,
   keys  : list<string>,
-  values: (cap:matched, ctx: texContext ) -> list<string>,
+  values: (cap:matched) -> <texContext> list<string>,
   replacer: (cap:matched) -> string
 )
 
@@ -154,36 +145,36 @@ fun metaAddSpace( cap : matched ) : string {
   cap.matched + " "
 }
 
-fun metaNone( _cap : matched, _context ) : list<string> {
+fun metaNone( _cap : matched ) : <texContext> list<string> {
   []
 }
 
 
-fun metaValue( cap : matched, _context ) : list<string> {
+fun metaValue( cap : matched ) : <texContext> list<string> {
   [cap.groups[1].unbrace]
 }
 
-fun metaValueBibStyle( cap : matched, _context ) : list<string> {
+fun metaValueBibStyle( cap : matched ) : <texContext> list<string> {
   val style = cap.groups[1].unbrace.trim
   [(if (style=="plain") then "plainnat" else style)]
 }
 
-fun metaValueBib( cap : matched, _context ) : list<string> {
+fun metaValueBib( cap : matched ) : <texContext> list<string> {
   val bibs = cap.groups[1].unbrace.trim.split(",")
   [bibs.join(";")]
 }
 
 
 
-fun metaTexValue( cap : matched, ctx ) : list<string> {
-  [cap.groups[1].parse(ctx)]
+fun metaTexValue( cap : matched) : <texContext> list<string> {
+  [tParse(cap.groups[1])]
 }
 
-fun metaTexValue3( cap : matched, ctx ) : list<string> {
-  list(1,3).map(fn(i) { cap.groups[i].parse(ctx) })
+fun metaTexValue3( cap : matched) : <texContext> list<string> {
+  list(1,3).map(fn(i) { tParse(cap.groups[i])})
 }
 
-fun metaOptionValue( cap : matched, _context ) : list<string> {
+fun metaOptionValue( cap : matched ) : <texContext> list<string> {
   val pkg = cap.groups[2].unbrace.trim
   if (stdPackages.contains(pkg)) then return []
   [(if (cap.groups[1].is-empty) then "" else "[" + cap.groups[1] + "]") + cap.groups[2].unbrace.trim]
@@ -203,7 +194,7 @@ fun removeSections( txt : string ) : string {
 }
 val rxSection = regex(r"\\(sub)?section\b\*?\s*" + optarg + r"?" + texarg + r"\s*")
 
-pub fun texDocClass( cap : matched, ctx : texContext ) : string {
+pub fun texDocClass( cap : matched) : <texContext> string {
   val docClass = cap.groups[2].unbrace.trim
   val comment  = [ "<!-- LaTeX conversion",
                    "  Drag&Drop further .tex/.bib/.cls/.sty/.bst or image files in the editor window",
@@ -212,12 +203,12 @@ pub fun texDocClass( cap : matched, ctx : texContext ) : string {
                  ].join("\n")
   val mdata0 = if (docClass=="beamer")
                 then ["[INCLUDE=presentation]","Reveal Theme: sky"]
-                else compat/zipWith(["Doc Class"], metaOptionValue(cap,ctx), texMeta)
-  val (mdata1,content0) = extractMeta( cap.groups[3], ctx, mdata0 )
+                else compat/zipWith(["Doc Class"], metaOptionValue(cap), texMeta)
+  val (mdata1,content0) = extractMeta( cap.groups[3], mdata0 )
   val mdata2 = mdata1 + [if (docClass == "book") then "" else "Heading Base: 2","Logo        : True"]
   val content = if (docClass=="beamer") then content0.removeSections else content0
   val (body,mdata) = match(content.find(rxDocument)) {
-    Nothing    -> (content.parse(ctx), mdata2)
+    Nothing    -> (content.tParse, mdata2)
     Just(ccap) -> {
       val header = ccap.groups[1].trim
       val hdata = if (header.is-empty) then []
@@ -228,18 +219,18 @@ pub fun texDocClass( cap : matched, ctx : texContext ) : string {
                           header.trim.indent4].join("\n")] //
                        //"\n<!-- LaTeX definitions; use ~ MathDefs for commands needed for mathematics -->" +
                        //"\n~ TexRaw\n" + header + "\n~\n\n"
-      (ccap.groups[2].parse(ctx), [comment] + mdata2 + hdata)
+      (ccap.groups[2].tParse, [comment] + mdata2 + hdata)
     }
   }
   mdata.join("\n") + "\n\n" + body
 }
 val rxDocument = regex(r"^([\s\S]*?)\n *\\begin{document}([\s\S]*?)\n *\\end{document}" )
 
-fun extractMeta( text0 : string, ctx, mdata0 : list<string> ) : (list<string>,string) {
+fun extractMeta( text0 : string, mdata0 : list<string> ) : <texContext> (list<string>,string) {
   var mdata := mdata0
   val content = metadataGrammar.foldl( text0, fn(text,mrule) {
     text.replaceAll(mrule.regex, fn(cap) {
-      val metas = compat/zipWith(mrule.keys,(mrule.values)(cap,ctx),texMeta)
+      val metas = compat/zipWith(mrule.keys,(mrule.values)(cap),texMeta)
       mdata := mdata + metas
       (mrule.replacer)(cap)
     })

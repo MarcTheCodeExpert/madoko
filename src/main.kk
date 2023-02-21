@@ -20,11 +20,10 @@ import version
 import stringcompat
 
 pub fun main() : io () {
-  markdownFiles("", fn(html,inName,outName,opts) {
-    ()
-  })
+  markdownFiles("")
+  ()
 }
-
+/*
 pub fun test( s : string = "code_blocks", moreargs = "" ) {
   //main("test/code_blocks.text")
   val root = if (s.contains(path/sep)) then combine("test",s) else combine(["test","new",s])
@@ -57,8 +56,8 @@ pub fun test( s : string = "code_blocks", moreargs = "" ) {
       }
   })
 }
-
-pub fun markdownFiles(args : string, action : (string,string,string,options) -> io ()) : io () {
+*/
+pub fun markdownFiles(args : string) : io () {
   val mbopts = parseOptions(version,args);
   match(mbopts) {
     Nothing -> ()
@@ -74,7 +73,7 @@ pub fun markdownFiles(args : string, action : (string,string,string,options) -> 
         match (input.tryReadTextFile()) {
           Left -> println("error: unable to read: " + input )
           Right(content) -> {
-            processContent(input, outName, content, opts, True, action)
+            processContent(input, outName, content, opts, True)
           }
         }
       }

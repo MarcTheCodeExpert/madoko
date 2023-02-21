@@ -25,22 +25,37 @@ import compat
 import stringcompat
 
 
-pub struct formatContext(
-  inlineContext : inlineContext,
-  tocBlocks   : dict<list<block>>,
-  footnoteBlock : block,
-  headingBase: int,
-  langPrefix : string,
-  pedantic : bool,
-  lineMap : lineMap,
-  fmt : formatter = FmtHtml
-)
-
-pub fun initialFormatContext( ictx : inlineContext, lineMap: lineMap,
-                                      headingBase : int, pedantic : bool, fmt : formatter ) {
-  FormatContext(ictx,dict(),Empty,headingBase,"language-",pedantic, lineMap, fmt)
+pub fun initialFormatContext( lineMap: lineMap,
+                                      headingBase : int, pedantic : bool, fmt : formatter, action: () -> <formatContext|e> a): e a {
+  var tocBlocks := dict()
+  var footnoteBlock := Empty
+  with handler 
+    fun getTocBlocks tocBlocks
+    fun setTocBlocks(tocs) tocBlocks := tocs
+  with handler   
+    fun getFootNoteBlock Empty
+    fun setFootnoteBlock(fnBlock) footnoteBlock := fnBlock
+  with handler   
+    fun getHeadingBase headingBase
+  with handler   
+    fun getLangPrefix "language-"
+  with handler   
+    fun isPedantic pedantic
+  with handler   
+    fun getLineMap lineMap
+  with handler   
+    fun getFormatter fmt
+  action()
 }
 
+
+
+
+
+
+
+
+/*
 fun fmtEnv( ctx : formatContext, env : string, txt : string, attrs : attrs = attrsNone ) : string {
   ctx.inlineContext.fmtEnv(env,txt,attrs)
 }
@@ -56,7 +71,7 @@ fun fmtText( ctx : formatContext, txt : string ) : string {
 fun fmtTable( ctx : formatContext, head : list<row>, body : list<row>, colattrs : list<attrs>, attrs : attrs = attrsNone ) : string {
   (ctx.inlineContext.xfmtTable)(ctx.inlineContext,head,body,colattrs,attrs)
 }
-
+*/
 fun escapeMath( txt : string, fmt : formatter ) : string {
   txt
 }
@@ -65,19 +80,22 @@ fun escapeMath( txt : string, fmt : formatter ) : string {
   Process inline text in the blocks
 ---------------------------------------- */
 
+
 // Format blocks into html and parse and format all inline elements
-pub fun formatBlocks( ctx : formatContext, blocks : list<block> ) : string
-{
-  unsafe-no-div{ formatBlocksX(ctx,blocks) }
+pub fun formatBlocks(blocks : list<block> ) : <inlineContext, formatContext> string
+{ 
+  unsafe-no-div{ formatBlocksX(blocks) }
+
 }
 
-pub fun formatBlocksX( ctx : formatContext, blocks : list<block> ) : div string
+pub fun formatBlocksX(blocks : list<block> ) : <div,formatContext, inlineContext> string
 {
-  formatBlocksAcc(ctx,blocks,builder())
+  formatBlocksAcc(blocks,builder())
 }
 
-fun formatBlocksAcc( ctx : formatContext, blocks : list<block>, acc : builder<h> ) : <st<h>,div> string
-{
+fun formatBlocksAcc( blocks : list<block>, acc : builder<h> ) : <st<h>,div,formatContext, inlineContext> string
+{ 
+  val bench = isBench()
   match(blocks) {
     Nil -> acc.build
     Cons(block,rest) -> {
@@ -91,38 +109,40 @@ fun formatBlocksAcc( ctx : formatContext, blocks : list<block>, acc : builder<h>
           val content = txt + lines.map(lineText).join
           match(rest2) {
             Cons(Blank(_),rest3) -> {
-              formatBlocksAcc(ctx,rest3,acc.append(formatBlock(ctx,Para(content,attrs))))
+              formatBlocksAcc(rest3,acc.append(formatBlock(Para(content,attrs))))
             }
             _ -> {
               // This is to emulate fully pedantic list mode where we always
               // combine text lines as a paragraph in a loose list
               val newblock = if (loose) then Para(content,attrs) else Line(content,loose,attrs)
-              formatBlocksAcc(ctx,rest2,acc.append(formatBlock(ctx,newblock)))
+              formatBlocksAcc(rest2,acc.append(formatBlock(newblock)))
             }
           }
         }
         // For TeX output, an equation or list environment should be part of a paragraph
         // If a paragraph is followed by a `.para-block` we mark the paragraph as `.para-continue`
-        Para(text,attrs) | !(ctx.inlineContext.bench) -> {
+        //!(isBench())
+        Para(text,attrs) | !bench -> {
           match(rest) {
             Cons(Div(_,attrsd),_) | attrsd.hasClass("para-block") -> {
-              formatBlocksAcc(ctx,rest,acc.append(formatBlock(ctx,Para(text,attrs.addClass("para-continue")))))
+              formatBlocksAcc(rest,acc.append(formatBlock(Para(text,attrs.addClass("para-continue")))))
             }
             //Cons(List,_) -> {
             //  formatBlocksAcc(ctx,rest,acc.append(formatBlock(ctx,Para(text,attrs.addClass("para-continue")))))
             //}
             _ -> {
-              formatBlocksAcc(ctx,rest, acc.append(formatBlock(ctx,block)))
+              formatBlocksAcc(rest, acc.append(formatBlock(block)))
             }
           }
         }
 
         // otherwise just proces the block element.
-        _ -> formatBlocksAcc(ctx,rest, acc.append(formatBlock(ctx,block)))
+        _ -> formatBlocksAcc(rest, acc.append(formatBlock(block)))
       }
     }
   }
 }
+
 
 fun lineText( b :  block ) {
   match(b) {
@@ -135,90 +155,100 @@ fun lineText( b :  block ) {
    Output a single block element
 ---------------------------------------- */
 
-pub fun formatBlock( ctx : formatContext, block : block ) : div string
-{
+
+pub fun formatBlock(block : block ) : <div, formatContext, inlineContext> string
+{ 
+  val pendatic = isPedantic()
   match(block) {
     Para(txt,attrs) -> {
-      val content = formatInline(ctx.inlineContext, txt, attrs)
+      //with concreteInlineContext(ctx.inlineContext)
+      
+      val content = formatInline(txt, attrs)
       if (attrs.notag)
-       then ctx.fmtEnv("div", content, attrs) // content
+       then exfmtEnv("div", content, attrs) // content
       elif (content.contains(rxblank)) then "" else
-       ctx.fmtEnv("p", content, attrs)
+       exfmtEnv("p", content, attrs)
        //"<p>" + formatInline(ctx.inlineContext,txt) + "</p>"
     }
 
     Line(txt,_loose,attrs) -> {
-      formatInline(ctx.inlineContext, txt, attrs)
+      formatInline(txt, attrs)
     }
 
     Blank -> ""
 
     Code(txt,_,attrs) -> {
       attrs.logDataLine
-      ctx.inlineContext.fmtCode( "pre", txt, attrs )
+      fmtCode( "pre", txt, attrs )
     }
 
     List(tagname,items,attrs) -> {
-      ctx.fmtEnv(tagname, formatBlocksX(ctx,items), attrs)
+      exfmtEnv(tagname, formatBlocksX(items), attrs)
     }
 
     Item(bs,attrs)  -> {
-      ctx.fmtEnv("li",formatBlocksX(ctx,bs), attrs)
+      exfmtEnv("li",formatBlocksX(bs), attrs)
     }
 
     Heading(d,txt,attrs) -> {
-      ctx.fmtCmd("h" + min(6,max(1, d + ctx.headingBase - 1)).show, formatInline(ctx.inlineContext,txt,attrs),
+      exfmtCmd("h" + min(6,max(1, d + getHeadingBase() - 1)).show, formatInline(txt,attrs),
                      attrs.addKeyval("data-heading-depth",d.show))
     }
 
     HLine(attrs) -> {
-      ctx.fmtCmd("hr", "", attrs)
+      exfmtCmd("hr", "", attrs)
     }
 
     Source(txt,input,parentAttrs) -> {
+      val fmt = getFormatter()
       parentAttrs.logDataLine
       match(input) {
         Pre       -> {
-          ctx.inlineContext.fmtCode("pre",txt)
+          fmtCode("pre",txt)
         }
         Math      -> {
-          ctx.inlineContext.fmtMath(True,txt,parentAttrs.deriveMathAttrs)
+          fmtMath(True,txt,parentAttrs.deriveMathAttrs)
         }
         MathPre   -> {
-          ctx.inlineContext.fmtMath(True,txt.mathPreBlock,parentAttrs.deriveMathAttrs)
+          fmtMath(True,txt.mathPreBlock,parentAttrs.deriveMathAttrs)
         }
-        MathPoly  -> ctx.inlineContext.fmtPoly(txt, parentAttrs)
-        MathDefs  -> txt.escapeMath(ctx.fmt)
-        Markdown  -> ctx.inlineContext.formatInline(txt,parentAttrs)
+        MathPoly  -> fmtPoly(txt, parentAttrs)
+        MathDefs  -> txt.escapeMath(fmt)
+        Markdown  -> formatInline(txt,parentAttrs)
         Raw(monly)-> {
-          if (ctx.inlineContext.sanitize) then ""
+          if (isSanitize()) then ""
           else match(monly) {
             Nothing -> txt + "\n"
-            Just(FmtTex) | ctx.fmt == FmtTex -> {
+            Just(FmtTex) | fmt == FmtTex -> {
               "%mdk-197\n" + txt + "\n"
             }
-            Just(f) | f == ctx.fmt -> txt + "\n"
+            Just(f) | f == fmt -> txt + "\n"
             _       -> "\n"
           }
         }
         // these should not happen by now
-        Tex  -> ctx.inlineContext.fmtEscapePre(txt)
+        Tex  -> exfmtEscapePre(txt)
       }
     }
 
     Quote(bs,attrs) -> {
-      ctx.fmtEnv("blockquote", formatBlocksX(ctx,bs), attrs)
+      exfmtEnv("blockquote", formatBlocksX(bs), attrs)
     }
 
     Table(header,colstyles0,cells,attrs) -> {
-      val colstyles = colstyles0.map( fn(colstyle) { ctx.inlineContext.defaults.matchRules("tc",colstyle) } )
-      val thead = formatRows(header,colstyles,ctx,attrs,False)
-      val tbody = formatRows(cells,colstyles,ctx,attrs,True)
-      ctx.fmtTable(thead,tbody, colstyles, attrs.addClass("madoko"))
+      val colstyles = colstyles0.map( fn(colstyle) { matchRules(getDefaults(),"tc",colstyle) } )
+      val thead = formatRows(header,colstyles,attrs,False)
+      val tbody = formatRows(cells,colstyles,attrs,True)
+      exfmtTable(thead,tbody, colstyles, attrs.addClass("madoko"))
     }
 
-    Div(Cons(Source(txt,Pre),Nil),attrs) | ctx.pedantic && attrs.elementName("div") == "pre" -> {
-      ctx.formatBlock(Code(txt,""))
+
+
+
+
+
+    Div(Cons(Source(txt,Pre),Nil),attrs) | pendatic && attrs.elementName("div") == "pre" -> {
+      formatBlock(Code(txt,""))
     }
 
     Div(content,attrs) | attrs.hasClass("columns") -> {
@@ -228,19 +258,20 @@ pub fun formatBlock( ctx : formatContext, block : block ) : div string
             if (!(xs.hasClass("column"))) {
               warning( "a 'Columns' block should only contain 'Column' blocks")
             }
-            Cell(ctx.formatBlocksX(bs), xs)
+            Cell(formatBlocksX(bs), xs)
           }
           _ -> {
             warning( "a 'Columns' block can only contain 'Column' blocks")
-            Cell(ctx.formatBlock(b), attrsNone)
+            Cell(formatBlock(b), attrsNone)
           }
         }
       }
-      ctx.fmtTable(Nil,[Row(cols)],cols.map(fn(c){ c.cellAttrs }),attrs)
+      exfmtTable(Nil,[Row(cols)],cols.map(fn(c){ c.cellAttrs }),attrs)
     }
 
     Div(content,attrs) -> {
-      val txt = formatBlocksX(ctx,content)
+      val txt = formatBlocksX(content)
+      val fmt = getFormatter()
       // trace(txt)
       val rnd = attrs.input
       match (attrs.hasKey("bib-id")) {
@@ -254,18 +285,19 @@ pub fun formatBlock( ctx : formatContext, block : block ) : div string
         Nothing     -> ()
       }
       if ((attrs.classes.is-nil && attrs.keyvals.is-nil && attrs.name=="") || attrs.notag || rnd.isRaw ||
-            (ctx.fmt==FmtTex && rnd.isMathDefs))
+            (fmt==FmtTex && rnd.isMathDefs))
         then txt
-        else ctx.fmtEnv("div",txt,attrs.addInputClass)
+        else exfmtEnv("div",txt,attrs.addInputClass)
     }
 
     Special(name,value,attrs) -> {
-      val linfo = ctx.inlineContext.fmtLineInfo(attrs.hasKey("data-line").mbstring)
+      val fmt = getFormatter()
+      val linfo = exfmtLineInfo(attrs.hasKey("data-line").mbstring)
       if (name.toLower=="toc") then {
-        val blks = ctx.tocBlocks[value.toLower].maybe([],id)
-        linfo + formatBlocksX(ctx,blks)
+        val blks = getTocBlocks()[value.toLower].maybe([],id)
+        linfo + formatBlocksX(blks)
       }
-      elif (name.toLower=="footnotes" && ctx.fmt.isFmtHtml) then linfo + formatBlock(ctx,ctx.footnoteBlock)
+      elif (name.toLower=="footnotes" && fmt.isFmtHtml) then linfo + formatBlock(getFootNoteBlock())
       else "" // formatBlock(ctx,Para("[" + name + "]\n"))
     }
 
@@ -286,9 +318,11 @@ fun deriveMathAttrs( parentAttrs : attrs ) {
                         }))
 }
 
+
+
 fun formatRows( rows : list<row>,
-                      colstyles : list<attrs>, ctx : formatContext,
-                      attrs : attrs, isBody : bool ) : list<row>
+                      colstyles : list<attrs>,
+                      attrs : attrs, isBody : bool ) : <formatContext, inlineContext> list<row>
 {
   if (rows.is-nil) then return Nil
 
@@ -317,7 +351,8 @@ fun formatRows( rows : list<row>,
     kvs
   }
 
-  fun formatRow( colNum : int, row : list<cell>, cols : list<attrs>, rowstyle : attrs ) : list<cell> {
+  fun formatRow( colNum : int, row : list<cell>, cols : list<attrs>, rowstyle : attrs ) : <inlineContext> list<cell> {
+    
     match(row) {
       Cons(cell,rs) -> {
         match(cols) {
@@ -359,8 +394,8 @@ fun formatRows( rows : list<row>,
             val colstyle3 = colstyle2.addClasses(extraClasses)
                                       .addKeyval("data-col",colNum.show)
             val colstyle4 = colstyle3.addKeyvals(defaultCellKeyvals(colNum,rowstyle,isLast))
-            val colstyle5 = ctx.inlineContext.defaults.matchRules(elemName, colstyle4)
-            val elem = Cell(ctx.inlineContext.formatInline(txt2,colstyle5), colstyle5)
+            val colstyle5 = matchRules(getDefaults(),elemName, colstyle4)
+            val elem = Cell(formatInline(txt2,colstyle5), colstyle5)
             Cons(elem, formatRow( colNum+colspan, rs, cs1, rowstyle))
           }
           _ -> Nil
@@ -376,19 +411,6 @@ fun formatRows( rows : list<row>,
         match(attrs.hasKey(key)) {
           Nothing -> []
           Just(value) -> [(target,value)]
-        }
-      }
-  }
-
-  fun filterKeyvals( keyvals : list<(string,string)>, prefixes : list<string> ) : list<(string,string)> {
-      keyvals.filterMap fn(kv) {
-        val (key,value) = kv
-        match (prefixes.reverse.find(fn(pre) { key.startsWith(pre) })) {
-          Just(pre) -> {
-            val skey = key.substr(pre.length)
-            if (skey.find(rxSubSelect).is-just) then Nothing else Just((skey,value))
-          }
-          Nothing -> Nothing
         }
       }
   }
@@ -414,7 +436,7 @@ fun formatRows( rows : list<row>,
   var rowCount := 0
   val firstHasLine = rows.take(1).all(containsDashes)
   val lastHasLine  = rows.reverse.take(1).all(containsDashes)
-  val defaults = ctx.inlineContext.defaults
+  val defaults = getDefaults()
   rows.map fn(row) {
     rowCount := rowCount+1
     val hasLine = row.containsDashes

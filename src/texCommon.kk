@@ -16,6 +16,25 @@ import compat
 import common
 import stringcompat
 
+pub alias texRule = rule<string,<texContext>>
+
+pub effect texGrammar
+  fun getTexGrammar(): grammar<string, <texGrammar, texBstStyle, texIgnore, texName, texParseFun>>
+
+pub effect texBstStyle
+  fun getBstStyle(): string
+
+pub effect texIgnore
+  fun isIgnore(): bool
+
+pub effect texName  
+  fun getName(): string
+
+pub effect texParseFun  
+  fun tParse(input: string): string
+
+pub alias texContext = <texGrammar, texBstStyle, texIgnore, texName, texParseFun>
+
 pub val texAccents = [
   ("`","grave"),
   ("'","acute"),

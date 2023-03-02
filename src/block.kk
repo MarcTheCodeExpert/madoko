@@ -371,7 +371,7 @@ fun blockListX( text : string,
   val loose = text.contains(blankline)
   // we should merge any text blocks into a paragraph for a loose list
   // in sane mode, we only make text blocks paragraphs if they are followed by a blank line
-  setLoose(loose)
+  with setLoose(loose)
   /*val icontext = ctx(grammar = ctx.listGrammar,// context.grammar.filter( fn(r) { !(r.name.startsWith("paragraph")) }),
                          loose = loose) // if (ctx.sane) then False else loose)*/
 
@@ -404,7 +404,6 @@ fun blockListX( text : string,
 
   // if loose then add a blank at the end of the last item so it has a Blank
   val items = parseItems( txt + (if (loose) then "\n\n" else ""), getBlockContextStruct().lineNo )
-  setLoose(False)
   List(tag,items,attrs)
 }
 
@@ -503,8 +502,18 @@ fun columnStyle( style : string ) : attrs {
   }
 }
 
+fun setLoose(lo: bool, action: () -> <blockContext> a): <blockContext> a {
+  with handler
+    fun getBlockContextStruct() getBlockContextStruct()(loose = lo)
+  action()  
+}
 
 
+fun setLine(li: int, action: () -> <blockContext> a): <blockContext> a {
+  with handler
+    fun getBlockContextStruct() getBlockContextStruct()(lineNo = li)
+  action()  
+}
 /* --------------------------------------
   Parse a text into blocks
 ---------------------------------------- */
@@ -512,8 +521,6 @@ fun columnStyle( style : string ) : attrs {
 // declaration of bC effect operations
 pub effect blockContext
   fun getBlockContextStruct(): blockContextStruct
-  fun setLoose(new_loose: bool): ()
-  fun setLineNo(line: int): ()
 
 
 rec type blockContextStruct {
@@ -542,9 +549,6 @@ pub fun parseBlocks( src : string, lineNo : int, lineMap : lineMap,
   var bcontext := BlockContextStruct(blockGrammar, parseGrammar(), mdata, bench, pedantic, False, lineNo, lineMap)
   with handler
     fun getBlockContextStruct() bcontext
-    fun setLoose(new_loose: bool) bcontext := bcontext(loose = new_loose) 
-    fun setLineNo(line: int) bcontext := bcontext(lineNo = line)
-
   parseBlocks(src)
 }
 
@@ -574,7 +578,7 @@ fun parseBlocksAccLine(acc : list<block>, line : int, src : string, isList: bool
 {
   if (src=="") return acc;
   
-  setLineNo(line)
+  with setLine(line)
   val (block,next,matched) = matchRules(if(isList) then getBlockContextStruct().listGrammar else getBlockContextStruct().grammar,src,raw_) // ctx needs to be removec once common matchrules is changed
   val lines  = matched.count("\n")
 

@@ -360,7 +360,7 @@ fun blockListX( text : string,
   val loose = text.contains(blankline)
   // we should merge any text blocks into a paragraph for a loose list
   // in sane mode, we only make text blocks paragraphs if they are followed by a blank line
-  setLoose(loose)
+  with setLoose(loose)
   /*val icontext = ctx(grammar = ctx.listGrammar,// context.grammar.filter( fn(r) { !(r.name.startsWith("paragraph")) }),
                          loose = loose) // if (ctx.sane) then False else loose)*/
 
@@ -492,7 +492,33 @@ fun columnStyle( style : string ) : attrs {
 }
 
 
+fun setLoose(lo: bool, action: () -> <blockContext> a): <blockContext> a {
+  with handler
+    fun getBlockGrammar getBlockGrammar()
+    fun listGrammar listGrammar()
+    fun getBlockMetaData getBlockMetaData()
+    fun getBlockMetaDataEntry(name: string) getBlockMetaData()[name]
+    fun isBlockBench() isBlockBench()
+    fun isBlockPedantic() isBlockPedantic()
+    fun isBlockLoose() lo
+    fun getLineNo getLineNo()
+    fun getBlockLineMap getBlockLineMap()
+  action()  
+}
 
+fun setLine(li: int, action: () -> <blockContext> a): <blockContext> a {
+  with handler
+    fun getBlockGrammar getBlockGrammar()
+    fun listGrammar listGrammar()
+    fun getBlockMetaData getBlockMetaData()
+    fun getBlockMetaDataEntry(name: string) getBlockMetaData()[name]
+    fun isBlockBench() isBlockBench()
+    fun isBlockPedantic() isBlockPedantic()
+    fun isBlockLoose() isBlockLoose()
+    fun getLineNo li
+    fun getBlockLineMap getBlockLineMap()
+  action()  
+}
 /* --------------------------------------
   Parse a text into blocks
 ---------------------------------------- */
@@ -507,8 +533,6 @@ pub effect blockContext
   fun isBlockBench(): bool
   fun isBlockPedantic(): bool
   fun isBlockLoose(): bool 
-  fun setLoose(new_loose: bool): ()
-  fun setLineNo(num: int): ()
   fun getLineNo(): int
   fun getBlockLineMap(): lineMap 
 
@@ -519,9 +543,6 @@ pub fun parseBlocks( src : string, lineNo : int, lineMap : lineMap,
                              pedantic : bool = False
                              )  : list<block>
 { 
-  var lineNum := lineNo
-  var loose := False
-  // var bGrammar := blockGrammar
   with handler
     fun getBlockGrammar blockGrammar
     fun listGrammar parseGrammar()
@@ -529,10 +550,8 @@ pub fun parseBlocks( src : string, lineNo : int, lineMap : lineMap,
     fun getBlockMetaDataEntry(name: string) mdata[name]
     fun isBlockBench() bench
     fun isBlockPedantic() pedantic
-    fun isBlockLoose() loose
-    fun setLoose(new_loose) loose := new_loose
-    fun setLineNo(num) lineNum := num
-    fun getLineNo lineNum
+    fun isBlockLoose() False
+    fun getLineNo lineNo
     fun getBlockLineMap lineMap
   parseBlocks(src)
 
@@ -565,7 +584,7 @@ fun parseBlocksAcc( acc : list<block>, src : string, isList: bool ) : <blockCont
 fun parseBlocksAccLine(acc : list<block>, line : int, src : string, isList: bool ) : <blockContext> list<block>
 {
   if (src=="") return acc;
-  setLineNo(line)
+  with setLine(line)
   val (block,next,matched) = matchRules(if(isList) then listGrammar() else getBlockGrammar(),src,raw_) // ctx needs to be removec once common matchrules is changed
   val lines  = matched.count("\n")
 

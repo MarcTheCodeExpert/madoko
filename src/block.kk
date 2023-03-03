@@ -109,7 +109,7 @@ val rxtableBody   = r"((?: *(?:\||\+[-=]).*(?:\n|$))+)"
 
 // The main block grammar
 
-val blockGrammar : grammar<block, <blockContext>> = [
+val blockGrammar : grammar<block, <blockContext, lineContext>> = [
 
   Rule("lheading",   regex(r"^(?!    )([^ \n].*?)" + iattrs + r"\n *(===+|---+) *(?:\n+|$)"), blockHeadingLine ),
   Rule("deflist",    regex(deflist), blockDefList ),
@@ -143,7 +143,7 @@ val ruleLine = Rule("para-line",  regex(r"^.+(\n|$)"), blockLine)
 val ruleLineX= Rule("parax-line", regex(r"^" + notbspecial + r".*(\n|$)"), blockLine)
 
 // add fn --> val can not have effects
-fun parseGrammar(): grammar<block, <blockContext>> {blockGrammar.ruleReplace( True, ruleLineX ).ruleReplace( True, ruleLine  )}
+fun parseGrammar(): grammar<block, <blockContext, lineContext>> {blockGrammar.ruleReplace( True, ruleLineX ).ruleReplace( True, ruleLine  )}
 
 //val blockListGrammar = parseGrammar()
 /* --------------------------------------
@@ -155,16 +155,16 @@ fun parseGrammar(): grammar<block, <blockContext>> {blockGrammar.ruleReplace( Tr
 
 
 
-
 /* --------------------------------------
  Block element funs
 ---------------------------------------- */
 fun blockSpecial( cap : matched) : _ block {
   val ctx = getBlockContextStruct()
+  val ctx_line = getLineContextStruct()
   fun joinnl( lines : list<string> ) : string {
     lines.map(fn(line) { line + "\n" }).join
   }
-  fun mkblock( name, content : list<string>, lineno = ctx.lineNo ) : _ list<string> {
+  fun mkblock( name, content : list<string>, lineno = ctx_line.lineNo ) : _ list<string> {
     if (content.is-nil) then [] else ["~ Begin " + name + " { line-adjust:0; line:" + lineno.show + " }"] + content + ["~ End " + name]
   }
   
@@ -219,7 +219,7 @@ fun blockSpecial( cap : matched) : _ block {
   }
 }
 
-fun blockPara( cap : matched) : <blockContext> block {
+fun blockPara( cap : matched) : <blockContext, lineContext> block {
   val full = cap.groups[1]
   val (txt,attrTxt) = match(full.find(rxPattrs)) {
     Nothing   -> (full,"")
@@ -240,11 +240,11 @@ fun blockLine( cap : matched) : _ block {
   Line(cap.matched, getBlockContextStruct().loose )
 }
 
-fun blockBlank( cap : matched) : <blockContext> block {
+fun blockBlank( cap : matched) : <blockContext, lineContext> block {
   Blank(cap.matched)
 }
 
-fun blockHLine( cap : matched) : <blockContext> block {
+fun blockHLine( cap : matched) : <blockContext, lineContext> block {
   HLine(cap.groups[1].parseAttrs)
 }
 
@@ -323,7 +323,7 @@ fun blockDefList( cap : matched) : _ block {
                 }
                 
     val ddesc = Div(parseBlocks(item,line, True),
-                          if (line <= 0) then attrs else attrs.setLineNo(getBlockContextStruct().lineMap,line))
+                          if (line <= 0) then attrs else attrs.setLineNo(getLineContextStruct().lineMap,line))
     [ddesc] + dterm
   }
   
@@ -344,7 +344,7 @@ fun blockList( cap : matched) : _ block {
                                            
     val attrs = (extraAttrs + " ; " + icap.groups[3]).parseAttrs("li", item)
     [Item(parseBlocks(item,line, True),
-           if (line <= 0) then attrs else attrs.setLineNo(getBlockContextStruct().lineMap,line))]
+           if (line <= 0) then attrs else attrs.setLineNo(getLineContextStruct().lineMap,line))]
   }
 
   val bull = cap.groups[2].substr(0,1)
@@ -403,7 +403,7 @@ fun blockListX( text : string,
   }
 
   // if loose then add a blank at the end of the last item so it has a Blank
-  val items = parseItems( txt + (if (loose) then "\n\n" else ""), getBlockContextStruct().lineNo )
+  val items = parseItems( txt + (if (loose) then "\n\n" else ""), getLineContextStruct().lineNo )
   List(tag,items,attrs)
 }
 
@@ -428,7 +428,7 @@ val rxindent5x  = regex(r"^ {1,5}",multiline=True)
 // --------------------------------
 // Tables
 
-fun blockNpTable( cap : matched) : <blockContext> block {
+fun blockNpTable( cap : matched) : <blockContext, lineContext> block {
   
   val header = cap.groups[1].npcolumns(0)
   val cols   = cap.groups[2].npcolumns(1).cells.map(fn(c) { c.text_.columnStyle } )
@@ -437,7 +437,7 @@ fun blockNpTable( cap : matched) : <blockContext> block {
 }
 
 
-fun blockTable( cap : matched) : <blockContext> block {
+fun blockTable( cap : matched) : <blockContext, lineContext> block {
   
   val headers = if (cap.groups[1]=="") then [] else cap.groups[1].rows.map-indexed( fn(i,row) { columns(row,i) } )
   val cols    = cap.groups[2].columnStyles
@@ -466,8 +466,8 @@ fun columns( row : string, ofs: int ) : _ row {
   //val ctx = getCurrBlockContext()
   val cells = row.findAll(rxCell).list.map( fn(cap) { Cell(cap.groups[1]) })
   val attrs = row.find(rxRowAttr).maybe(attrsNone, fn(cap) { cap.groups[1].parseAttrs("tr")  })
-  val lineNo = getBlockContextStruct().lineNo
-  Row(cells, if(lineNo > 0) then attrs.setLineNo(getBlockContextStruct().lineMap, lineNo + ofs) else attrs)
+  val lineNo = getLineContextStruct().lineNo
+  Row(cells, if(lineNo > 0) then attrs.setLineNo(getLineContextStruct().lineMap, lineNo + ofs) else attrs)
 }
 
 val rxCellCodeInline = r"(?:``(?:[^`]|`(?!`))*``|`(?:[^`]|``)*`)"
@@ -503,16 +503,16 @@ fun columnStyle( style : string ) : attrs {
   }
 }
 
-fun setLoose(lo: bool, action: () -> <blockContext> a): <blockContext> a {
+fun setLoose(lo: bool, action: () -> <blockContext, lineContext> a): <blockContext, lineContext> a {
   with handler
     fun getBlockContextStruct() getBlockContextStruct()(loose = lo)
   action()  
 }
 
 
-fun setLine(li: int, action: () -> <blockContext> a): <blockContext> a {
+fun setLine(li: int, action: () -> <blockContext, lineContext> a): <blockContext, lineContext> a {
   with handler
-    fun getBlockContextStruct() getBlockContextStruct()(lineNo = li)
+    fun getLineContextStruct() getLineContextStruct()(lineNo = li)
   action()  
 }
 /* --------------------------------------
@@ -523,18 +523,23 @@ fun setLine(li: int, action: () -> <blockContext> a): <blockContext> a {
 pub effect blockContext
   fun getBlockContextStruct(): blockContextStruct
 
+pub effect lineContext
+  fun getLineContextStruct(): lineContextStruct  
+
+struct lineContextStruct(
+        lineNo  : int = 0,
+        lineMap : lineMap
+)
 
 rec type blockContextStruct {
   // The parse context for block elements. Contains the "parse" function,
   // and the current "grammar".
-  BlockContextStruct( grammar : grammar<block,<blockContext>>,
-                listGrammar : grammar<block,<blockContext>>,
+  BlockContextStruct( grammar : grammar<block,<blockContext, lineContext>>,
+                listGrammar : grammar<block,<blockContext, lineContext>>,
                 metadata : dict<string>,
                 bench   : bool,
                 pedantic : bool,
-                loose   : bool = False,
-                lineNo  : int = 0,
-                lineMap : lineMap
+                loose   : bool = False
               )
 }
 
@@ -546,22 +551,23 @@ pub fun parseBlocks( src : string, lineNo : int, lineMap : lineMap,
                              bench : bool = False,
                              pedantic : bool = False
                              )  : list<block>
-{ 
-  var bcontext := BlockContextStruct(blockGrammar, parseGrammar(), mdata, bench, pedantic, False, lineNo, lineMap)
+{  
   with handler
-    fun getBlockContextStruct() bcontext
+    fun getBlockContextStruct() BlockContextStruct(blockGrammar, parseGrammar(), mdata, bench, pedantic, False)
+  with handler
+    fun getLineContextStruct() LineContextStruct( lineNo, lineMap)  
   parseBlocks(src)
 }
 
 // Parse text into blocks
 // removed ctx
-fun parseBlocks(src : string, line : int = 0, isList: bool = False ) : <blockContext> list<block>
+fun parseBlocks(src : string, line : int = 0, isList: bool = False ) : <blockContext, lineContext> list<block>
 {
   //val ctx = getCurrBlockContext()
   val bs = if (line > 0)
             then parseBlocksAccLine(Nil, line, src, isList )
-           elif (getBlockContextStruct().lineNo > 0)
-            then parseBlocksAccLine(Nil, getBlockContextStruct().lineNo, src, isList)
+           elif (getLineContextStruct().lineNo > 0)
+            then parseBlocksAccLine(Nil, getLineContextStruct().lineNo, src, isList)
             else parseBlocksAcc(Nil, src, isList)
   bs.reverse
 }
@@ -586,7 +592,7 @@ fun parseBlocksAccLine(acc : list<block>, line : int, src : string, isList: bool
   // Adjust start and end line and exclude preceding and trailing empty lines
   val start = line + matched.linesMatching(rxPreWhite)
   val end   = line + lines - matched.linesMatching(rxPostWhite)
-  val lineMap1 = getBlockContextStruct().lineMap // get line map from Blcok Context effect
+  val lineMap1 = getLineContextStruct().lineMap // get line map from Blcok Context effect
   val block2 = block.adjustAttrs( fn(attrs:attrs) {
     //attrs.setLineNo(ctx.lineMap, start).setRange(ctx.lineMap, start, end)
     attrs.setLineNo(lineMap1, start).setRange(lineMap1, start, end)

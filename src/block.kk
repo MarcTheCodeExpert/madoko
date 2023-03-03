@@ -159,7 +159,7 @@ fun blockSpecial( cap : matched) : <blockContext> block {
   
   fun entry(name, className = name) {
     //val ctxe = getCurrBlockContext() ctxe.metadata[name]
-    match(getBlockMetaDataEntry(name)) {
+    match(getBlockMetaData()[name]) {
       Just(value) | value.trim != ""
         -> mkblock(className, ["&" + name + ";"])
       _ -> []
@@ -167,7 +167,7 @@ fun blockSpecial( cap : matched) : <blockContext> block {
   }
   // ctx.metadata[name]
   fun readInt(name,default = 0) {
-    match(getBlockMetaDataEntry(name)) {
+    match(getBlockMetaData()[name]) {
       Just(value) -> value.trim.parse-int-default(default)
       Nothing     -> default
     }
@@ -497,7 +497,6 @@ fun setLoose(lo: bool, action: () -> <blockContext> a): <blockContext> a {
     fun getBlockGrammar getBlockGrammar()
     fun listGrammar listGrammar()
     fun getBlockMetaData getBlockMetaData()
-    fun getBlockMetaDataEntry(name: string) getBlockMetaData()[name]
     fun isBlockBench() isBlockBench()
     fun isBlockPedantic() isBlockPedantic()
     fun isBlockLoose() lo
@@ -511,7 +510,6 @@ fun setLine(li: int, action: () -> <blockContext> a): <blockContext> a {
     fun getBlockGrammar getBlockGrammar()
     fun listGrammar listGrammar()
     fun getBlockMetaData getBlockMetaData()
-    fun getBlockMetaDataEntry(name: string) getBlockMetaData()[name]
     fun isBlockBench() isBlockBench()
     fun isBlockPedantic() isBlockPedantic()
     fun isBlockLoose() isBlockLoose()
@@ -529,7 +527,6 @@ pub effect blockContext
   fun getBlockGrammar() : grammar<block, <blockContext>>
   fun listGrammar(): grammar<block, <blockContext>>
   fun getBlockMetaData(): dict<string>
-  fun getBlockMetaDataEntry(name: string): maybe<string>
   fun isBlockBench(): bool
   fun isBlockPedantic(): bool
   fun isBlockLoose(): bool 
@@ -547,7 +544,6 @@ pub fun parseBlocks( src : string, lineNo : int, lineMap : lineMap,
     fun getBlockGrammar blockGrammar
     fun listGrammar parseGrammar()
     fun getBlockMetaData mdata
-    fun getBlockMetaDataEntry(name: string) mdata[name]
     fun isBlockBench() bench
     fun isBlockPedantic() pedantic
     fun isBlockLoose() False

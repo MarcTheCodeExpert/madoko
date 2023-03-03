@@ -109,7 +109,7 @@ val rxtableBody   = r"((?: *(?:\||\+[-=]).*(?:\n|$))+)"
 
 // The main block grammar
 
-val blockGrammar : grammar<block, <blockContext>> = [
+val blockGrammar : grammar<block, <blockContext, lineContext>> = [
 
   Rule("lheading",   regex(r"^(?!    )([^ \n].*?)" + iattrs + r"\n *(===+|---+) *(?:\n+|$)"), blockHeadingLine ),
   Rule("deflist",    regex(deflist), blockDefList ),
@@ -143,7 +143,7 @@ val ruleLine = Rule("para-line",  regex(r"^.+(\n|$)"), blockLine)
 val ruleLineX= Rule("parax-line", regex(r"^" + notbspecial + r".*(\n|$)"), blockLine)
 
 // add fn --> val can not have effects
-fun parseGrammar(): grammar<block, <blockContext>> {blockGrammar.ruleReplace( True, ruleLineX ).ruleReplace( True, ruleLine  )}
+fun parseGrammar(): grammar<block, <blockContext, lineContext>> {blockGrammar.ruleReplace( True, ruleLineX ).ruleReplace( True, ruleLine  )}
 
 
 /* --------------------------------------
@@ -229,11 +229,11 @@ fun blockLine( cap : matched) : _ block {
   Line(cap.matched, isBlockLoose() )
 }
 
-fun blockBlank( cap : matched) : <blockContext> block {
+fun blockBlank( cap : matched) : <blockContext, lineContext> block {
   Blank(cap.matched)
 }
 
-fun blockHLine( cap : matched) : <blockContext> block {
+fun blockHLine( cap : matched) : <blockContext, lineContext> block {
   HLine(cap.groups[1].parseAttrs)
 }
 
@@ -417,7 +417,7 @@ val rxindent5x  = regex(r"^ {1,5}",multiline=True)
 // --------------------------------
 // Tables
 
-fun blockNpTable( cap : matched) : <blockContext> block {
+fun blockNpTable( cap : matched) : <blockContext, lineContext> block {
   
   val header = cap.groups[1].npcolumns(0)
   val cols   = cap.groups[2].npcolumns(1).cells.map(fn(c) { c.text_.columnStyle } )
@@ -425,7 +425,7 @@ fun blockNpTable( cap : matched) : <blockContext> block {
   Table([header],cols,cells,cap.groups[4].parseAttrs)
 }
 
-fun blockTable( cap : matched) : <blockContext> block {
+fun blockTable( cap : matched) : <blockContext, lineContext> block {
   
   val headers = if (cap.groups[1]=="") then [] else cap.groups[1].rows.map-indexed( fn(i,row) { columns(row,i) } )
   val cols    = cap.groups[2].columnStyles
@@ -492,7 +492,7 @@ fun columnStyle( style : string ) : attrs {
 }
 
 
-fun setLoose(lo: bool, action: () -> <blockContext> a): <blockContext> a {
+fun setLoose(lo: bool, action: () -> <blockContext, lineContext> a): <blockContext, lineContext> a {
   with handler
     fun getBlockGrammar getBlockGrammar()
     fun listGrammar listGrammar()
@@ -501,20 +501,11 @@ fun setLoose(lo: bool, action: () -> <blockContext> a): <blockContext> a {
     fun isBlockBench() isBlockBench()
     fun isBlockPedantic() isBlockPedantic()
     fun isBlockLoose() lo
-    fun getLineNo getLineNo()
-    fun getBlockLineMap getBlockLineMap()
   action()  
 }
 
-fun setLine(li: int, action: () -> <blockContext> a): <blockContext> a {
+fun setLine(li: int, action: () -> <blockContext, lineContext> a): <blockContext, lineContext> a {
   with handler
-    fun getBlockGrammar getBlockGrammar()
-    fun listGrammar listGrammar()
-    fun getBlockMetaData getBlockMetaData()
-    fun getBlockMetaDataEntry(name: string) getBlockMetaData()[name]
-    fun isBlockBench() isBlockBench()
-    fun isBlockPedantic() isBlockPedantic()
-    fun isBlockLoose() isBlockLoose()
     fun getLineNo li
     fun getBlockLineMap getBlockLineMap()
   action()  
@@ -526,15 +517,19 @@ fun setLine(li: int, action: () -> <blockContext> a): <blockContext> a {
 
 // declaration of bC effect functions
 pub effect blockContext
-  fun getBlockGrammar() : grammar<block, <blockContext>>
-  fun listGrammar(): grammar<block, <blockContext>>
+  fun getBlockGrammar() : grammar<block, <blockContext, lineContext>>
+  fun listGrammar(): grammar<block, <blockContext, lineContext>>
   fun getBlockMetaData(): dict<string>
   fun getBlockMetaDataEntry(name: string): maybe<string>
   fun isBlockBench(): bool
   fun isBlockPedantic(): bool
   fun isBlockLoose(): bool 
+
+
+
+pub effect lineContext
   fun getLineNo(): int
-  fun getBlockLineMap(): lineMap 
+  fun getBlockLineMap(): lineMap
 
 
 pub fun parseBlocks( src : string, lineNo : int, lineMap : lineMap,
@@ -551,6 +546,7 @@ pub fun parseBlocks( src : string, lineNo : int, lineMap : lineMap,
     fun isBlockBench() bench
     fun isBlockPedantic() pedantic
     fun isBlockLoose() False
+  with handler  
     fun getLineNo lineNo
     fun getBlockLineMap lineMap
   parseBlocks(src)
@@ -559,7 +555,7 @@ pub fun parseBlocks( src : string, lineNo : int, lineMap : lineMap,
 
 // Parse text into blocks
 // removed ctx
-fun parseBlocks(src : string, line : int = 0, isList: bool = False ) : <blockContext> list<block>
+fun parseBlocks(src : string, line : int = 0, isList: bool = False ) : <blockContext, lineContext> list<block>
 {
 
   val bs = if (line > 0)

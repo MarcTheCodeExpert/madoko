@@ -70,7 +70,15 @@ pub struct rule<a,c>(
   action : (cap : matched, ctx : c) -> <> a
 )
 
+pub struct ruleBlock<a,c,d>(
+  name: string,
+  regex: regex,
+  action: (cap: matched, ctx: c, ctx2: d) -> <> a
+)
+
 pub alias grammar<a,c> = list<rule<a,c>>
+
+pub alias grammar2<a,c,d> = list<ruleBlock<a,c,d>>
 
 // Replace a rule in a grammar by another one, if the rule name is a prefix of the name of the new rule.
 pub fun ruleReplace( grammar : grammar<a,c>, pred : bool, rule : rule<a,c> ) : grammar<a,c> {
@@ -80,6 +88,15 @@ pub fun ruleReplace( grammar : grammar<a,c>, pred : bool, rule : rule<a,c> ) : g
      if (rule.name.startsWith(r.name)) then rule else r
    }
 }
+
+pub fun ruleReplace2( grammar : grammar2<a,c,d>, pred : bool, rule : ruleBlock<a,c,d> ) : grammar2<a,c,d> {
+  if (!pred)
+   then grammar
+   else grammar.map fn(r) {
+     if (rule.name.startsWith(r.name)) then rule else r
+   }
+}
+
 
 pub fun ruleRemove( grammar : grammar<a,c>, pred : bool, names : list<string> ) : grammar<a,c> {
   if (!pred) then return grammar
@@ -132,6 +149,33 @@ pub fun matchRules( rules : grammar<a,c>, ctx: c, src : string, def : string -> 
     }
   }
 }
+
+pub fun matchRules2( rules : grammar2<a,c,d>, ctx: c, ctx2:d , src : string, def : string -> a ) : (a,int,string)
+{
+  match(rules) {
+    Nil -> {
+      //trace("Unable to match any rule!")
+      val matched = src.substr(0,1)
+      (def(matched), 1, matched) //src.substr(1))
+    }
+    Cons(rule,rulesNext) -> {
+      match (src.find(rule.regex)) {
+        Just(cap) -> {
+          //if (rule.name[0] != '.') then trace("match: " + rule.name.fill(12) + ": " + cap.matched.show )
+          // Uncomment the next line to get a histogram of rule matches
+          // ruleInc(rule.name)
+          ((rule.action)(cap,ctx, ctx2), cap.next, cap.matched)//src.substr(cap.next))
+        }
+        Nothing -> {
+          //stat("fail-" + rule.name)
+          matchRules2(unsafe-decreasing(rulesNext),ctx,ctx2,src,def)
+        }
+      }
+    }
+  }
+}
+
+
 
 // This is just for statistics
 val ruleHist : mdict<global,int> = unsafe-total{ mdict() }

@@ -511,7 +511,6 @@ pub effect blockGram
 
 pub effect blockMetadata
   fun getBlockMetaData(): dict<string>
-  fun getBlockMetaDataEntry(name: string): maybe<string>
 
 pub effect blockBench
   fun isBlockBench(): bool
@@ -556,7 +555,6 @@ pub fun parseBlocks( src : string, lineNo : int, lineMap : lineMap,
     fun getBlockListGrammar blockListGrammar
   with handler
     fun getBlockMetaData mdata
-    fun getBlockMetaDataEntry(name: string) mdata[name]
   with handler  
     fun isBlockBench() bench
   with handler  
@@ -567,7 +565,6 @@ pub fun parseBlocks( src : string, lineNo : int, lineMap : lineMap,
     fun getLineNo lineNo
   with handler  
     fun getBlockLineMap lineMap
-  
   parseBlocks(src)
 
 }

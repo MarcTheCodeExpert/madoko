@@ -365,7 +365,7 @@ fun blockListX( text : string,
   // in sane mode, we only make text blocks paragraphs if they are followed by a blank line
   //setBlockGrammar(parseGrammar())
   //listGrammar()
-  setLoose(loose)
+  with setLoose(loose)
   /*val icontext = ctx(grammar = ctx.listGrammar,// context.grammar.filter( fn(r) { !(r.name.startsWith("paragraph")) }),
                          loose = loose) // if (ctx.sane) then False else loose)*/
 
@@ -521,14 +521,25 @@ pub effect blockPendatic
 
 pub effect blockLoose
   fun isBlockLoose(): bool 
-  fun setLoose(new_loose: bool): ()
 
 pub effect blockLineNo
-  fun setLineNo(num: int): ()
   fun getLineNo(): int
 
 pub effect blockLineMap
   fun getBlockLineMap(): lineMap
+
+fun setLoose(lo: bool, action: () -> <blockContext> a): <blockContext> a {
+  with handler
+    fun isBlockLoose lo
+  action()  
+}  
+
+
+fun setLine(li: int, action: () -> <blockContext> a): <blockContext> a {
+  with handler
+    fun getLineNo li
+  action()  
+}  
 
 
 pub alias blockContext = <blockGram, blockBench, blockLineMap, blockLineNo, blockLoose, blockPendatic, blockMetadata>
@@ -540,9 +551,6 @@ pub fun parseBlocks( src : string, lineNo : int, lineMap : lineMap,
                              pedantic : bool = False
                              )  : list<block>
 { 
-  var lineNum := lineNo
-  var loose := False
-  
   with handler
     fun getBlockGrammar blockGrammar
     fun getBlockListGrammar blockListGrammar
@@ -554,11 +562,9 @@ pub fun parseBlocks( src : string, lineNo : int, lineMap : lineMap,
   with handler  
     fun isBlockPedantic() pedantic
   with handler  
-    fun isBlockLoose() loose
-    fun setLoose(new_loose) loose := new_loose
+    fun isBlockLoose() False
   with handler  
-    fun setLineNo(num) lineNum := num
-    fun getLineNo lineNum
+    fun getLineNo lineNo
   with handler  
     fun getBlockLineMap lineMap
   
@@ -592,7 +598,7 @@ fun parseBlocksAccLine(acc : list<block>, line : int, src : string, isList: bool
 {
   if (src=="") return acc;
   //val ctx = getBlockContexte()
-  setLineNo(line)
+  with setLine(line)
   val (block,next,matched) = matchRules(if(isList) then getBlockListGrammar() else getBlockGrammar(),src,raw_)
   
   

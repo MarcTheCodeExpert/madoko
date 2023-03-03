@@ -168,7 +168,7 @@ rec type blockContext {
 /* --------------------------------------
  Block element funs
 ---------------------------------------- */
-fun blockSpecial( cap : matched, ctx : blockContext ) : block {
+fun blockSpecial( cap : matched, ctx: blockContext) : block {
   fun joinnl( lines : list<string> ) : string {
     lines.map(fn(line) { line + "\n" }).join
   }
@@ -224,7 +224,7 @@ fun blockSpecial( cap : matched, ctx : blockContext ) : block {
   }
 }
 
-fun blockPara( cap : matched, _context ) : block {
+fun blockPara( cap : matched, _context: blockContext ) : block {
   val full = cap.groups[1]
   val (txt,attrTxt) = match(full.find(rxPattrs)) {
     Nothing   -> (full,"")
@@ -234,32 +234,32 @@ fun blockPara( cap : matched, _context ) : block {
 }
 val rxPattrs = regex(r"\n {0,3}" + xattrs + r"\s*$")
 
-fun blockDefLink( cap : matched, ctx : blockContext ) : block {
+fun blockDefLink( cap : matched, ctx ) : block {
   val id = cap.groups[1].definitionId
   DefLink(id, newLink(cap.groups[2].joinLines, cap.groups[3].joinLines, cap.groups[4].parseAttrs, id, ctx.bench ))
 }
 
-fun blockLine( cap : matched, ctx : blockContext ) : block {
+fun blockLine( cap : matched, ctx) : block {
   Line(cap.matched, ctx.loose )
 }
 
-fun blockBlank( cap : matched, _context ) : block {
+fun blockBlank( cap : matched, _context: blockContext ) : block {
   Blank(cap.matched)
 }
 
-fun blockHLine( cap : matched, _context ) : block {
+fun blockHLine( cap : matched, _context: blockContext ) : block {
   HLine(cap.groups[1].parseAttrs)
 }
 
-fun blockHtml( cap : matched, ctx : blockContext ) :  block  {
+fun blockHtml( cap : matched, ctx ) :  block  {
   Source(cap.matched,Raw(Just(FmtHtml)),attrsNone)
 }
 
-fun blockHeading( cap : matched, ctx : blockContext ) : block  {
+fun blockHeading( cap : matched, ctx ) : block  {
   makeHeading(if (cap.groups[2]=="0") then 0 else cap.groups[1].length,cap.groups[3],cap.groups[4])
 }
 
-fun blockHeadingLine( cap : matched, ctx : blockContext ) : block {
+fun blockHeadingLine( cap : matched, ctx ) : block {
   makeHeading( (if (cap.groups[3].substr(0,1) == "=") then 1 else 2), cap.groups[1], cap.groups[2] )
 }
 
@@ -268,13 +268,13 @@ fun makeHeading(depth:int, source:string, attrStr : string) {
   Heading(depth, source, attrStr.parseAttrs(elem,source))
 }
 
-fun blockCode( cap : matched, ctx : blockContext ) : block  {
+fun blockCode( cap : matched, ctx ) : block  {
   val source = cap.groups[1].replaceAll(rxindent4,"")
   Code(source, "",
           if (!(ctx.pedantic || ctx.bench)) then attrsNone.addClass("pre-indented") else attrsNone)
 }
 
-fun blockFencedCode( cap : matched, ctx : blockContext ) {
+fun blockFencedCode( cap : matched, ctx ) {
   val attrs = cap.groups[3].parseAttrs
   Code(cap.groups[4], cap.groups[2],
         if (!(ctx.pedantic || ctx.bench))
@@ -282,7 +282,7 @@ fun blockFencedCode( cap : matched, ctx : blockContext ) {
           else attrs)
 }
 
-fun blockQuote( cap : matched, ctx : blockContext ) : block {
+fun blockQuote( cap : matched, ctx ) : block {
   val text = cap.groups[1].replaceAll(rxquotePrefix,"")
   //mtrace("---")
   val content = parseBlocks(ctx,text)
@@ -291,14 +291,14 @@ fun blockQuote( cap : matched, ctx : blockContext ) : block {
 }
 val rxquotePrefix = regex(r"^ *> ?",multiline=True)
 
-fun blockDiv( cap : matched, ctx : blockContext ) : block {
+fun blockDiv( cap : matched, ctx ) : block {
   val cname = cap.groups[2].definitionId
   log("customs","{ \"name\":" + cname.json  + ", \"display\":" + cap.groups[2].json + "}");
   val attrs = cap.groups[3].parseAttrs(cname,source=cap.groups[4].substr(1))
   Div( [], attrs )
 }
 
-fun blockDefFootnote( cap : matched, ctx : blockContext ) : block {
+fun blockDefFootnote( cap : matched, ctx ) : block {
   val id  = cap.groups[1].definitionId
   val txt = "~ Begin Footnote { id='fn-" + id + "' }\n" +
                cap.groups[2].replaceAll(rxindent4,"") + "\n" +
@@ -309,8 +309,8 @@ fun blockDefFootnote( cap : matched, ctx : blockContext ) : block {
 // --------------------------------
 // Definition Lists
 
-fun blockDefList( cap : matched, ctx : blockContext ) : block {
-  fun parseItem( extraAttrs : string, icap : matched, line : int, icontext : blockContext ) : list<block> {
+fun blockDefList( cap : matched, ctx ) : block {
+  fun parseItem( extraAttrs : string, icap : matched, line : int, icontext ) : list<block> {
     //trace("item:\n" + icap.matched)
     val item = icap.groups[4].replaceAll(rxindent4,"")
     val attrs = icap.groups[3].parseAttrs("dd",source=item)
@@ -331,10 +331,10 @@ val rxDefItem = regex( r"^(?:" + defitem + r")?" + defstart + "(?:" + iattrs + r
 // --------------------------------
 // Lists
 
-fun blockList( cap : matched, ctx : blockContext ) : block {
+fun blockList( cap : matched, ctx ) : block {
   val tag  = if (cap.groups[2].length > 1) then "ol" else "ul"
 
-  fun parseItem( extraAttrs : string, icap : matched, line : int, icontext : blockContext ) : list<block> {
+  fun parseItem( extraAttrs : string, icap : matched, line : int, icontext ) : list<block> {
     val item = icap.groups[4].replaceAll(if (icontext.pedantic)
                                            then rxindent4
                                            else rxindent(icap.groups[1].length) ,"")
@@ -421,14 +421,14 @@ val rxindent5x  = regex(r"^ {1,5}",multiline=True)
 // --------------------------------
 // Tables
 
-fun blockNpTable( cap : matched, ctx ) : block {
+fun blockNpTable( cap : matched, ctx: blockContext ) : block {
   val header = cap.groups[1].npcolumns(ctx,0)
   val cols   = cap.groups[2].npcolumns(ctx,1).cells.map(fn(c) { c.text_.columnStyle } )
   val cells  = cap.groups[3].rows.map-indexed( fn(i,row) { npcolumns(row,ctx,i+2) } )
   Table([header],cols,cells,cap.groups[4].parseAttrs)
 }
 
-fun blockTable( cap : matched, ctx ) : block {
+fun blockTable( cap : matched, ctx: blockContext ) : block {
   val headers = if (cap.groups[1]=="") then [] else cap.groups[1].rows.map-indexed( fn(i,row) { columns(row,ctx,i) } )
   val cols    = cap.groups[2].columnStyles
   val ofs     = headers.length + 1;
@@ -439,7 +439,7 @@ fun blockTable( cap : matched, ctx ) : block {
   Table(headers,cols,hline+cells,cap.groups[5].parseAttrs)
 }
 
-fun npcolumns( row : string, ctx : blockContext, ofs : int ) : row {
+fun npcolumns( row : string, ctx , ofs : int ) : row {
   ("|" + row + "|").columns(ctx,ofs)
 }
 
@@ -448,7 +448,7 @@ fun rows( body : string ) : list<string> {
 }
 
 // Split a row into cells, keeping final separators ("|" or "+") at the end of each cell.
-fun columns( row : string, ctx : blockContext, ofs: int ) : row {
+fun columns( row : string, ctx: blockContext , ofs: int ) : row {
   // Note: we allow "+" to separate for dashed lines. So we carefully split on "+" too
   // as long as such "+" is followed by dashes or double-dash.
   val cells = row.findAll(rxCell).list.map( fn(cap) { Cell(cap.groups[1]) })
@@ -518,7 +518,7 @@ fun parseBlocks( ctx : blockContext, src : string, line : int = 0 ) : list<block
 }
 
 
-fun parseBlocksAcc( ctx : blockContext,  acc : list<block>, src : string ) : list<block>
+fun parseBlocksAcc( ctx,  acc : list<block>, src : string ) : list<block>
 {
   if (src=="") return acc;
   val (block,next,_) = matchRules(ctx.grammar,ctx,src,raw_)

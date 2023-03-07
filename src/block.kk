@@ -168,7 +168,7 @@ rec type blockContext {
 /* --------------------------------------
  Block element funs
 ---------------------------------------- */
-fun blockSpecial( cap : matched, ctx: blockContext) : block {
+fun blockSpecial( cap : matched, ctx) : block {
   fun joinnl( lines : list<string> ) : string {
     lines.map(fn(line) { line + "\n" }).join
   }
@@ -224,7 +224,7 @@ fun blockSpecial( cap : matched, ctx: blockContext) : block {
   }
 }
 
-fun blockPara( cap : matched, _context: blockContext ) : block {
+fun blockPara( cap : matched, _context ) : block {
   val full = cap.groups[1]
   val (txt,attrTxt) = match(full.find(rxPattrs)) {
     Nothing   -> (full,"")
@@ -243,11 +243,11 @@ fun blockLine( cap : matched, ctx) : block {
   Line(cap.matched, ctx.loose )
 }
 
-fun blockBlank( cap : matched, _context: blockContext ) : block {
+fun blockBlank( cap : matched, _context ) : block {
   Blank(cap.matched)
 }
 
-fun blockHLine( cap : matched, _context: blockContext ) : block {
+fun blockHLine( cap : matched, _context ) : block {
   HLine(cap.groups[1].parseAttrs)
 }
 
@@ -421,14 +421,14 @@ val rxindent5x  = regex(r"^ {1,5}",multiline=True)
 // --------------------------------
 // Tables
 
-fun blockNpTable( cap : matched, ctx: blockContext ) : block {
+fun blockNpTable( cap : matched, ctx ) : block {
   val header = cap.groups[1].npcolumns(ctx,0)
   val cols   = cap.groups[2].npcolumns(ctx,1).cells.map(fn(c) { c.text_.columnStyle } )
   val cells  = cap.groups[3].rows.map-indexed( fn(i,row) { npcolumns(row,ctx,i+2) } )
   Table([header],cols,cells,cap.groups[4].parseAttrs)
 }
 
-fun blockTable( cap : matched, ctx: blockContext ) : block {
+fun blockTable( cap : matched, ctx) : block {
   val headers = if (cap.groups[1]=="") then [] else cap.groups[1].rows.map-indexed( fn(i,row) { columns(row,ctx,i) } )
   val cols    = cap.groups[2].columnStyles
   val ofs     = headers.length + 1;
@@ -448,7 +448,7 @@ fun rows( body : string ) : list<string> {
 }
 
 // Split a row into cells, keeping final separators ("|" or "+") at the end of each cell.
-fun columns( row : string, ctx: blockContext , ofs: int ) : row {
+fun columns( row : string, ctx , ofs: int ) : row {
   // Note: we allow "+" to separate for dashed lines. So we carefully split on "+" too
   // as long as such "+" is followed by dashes or double-dash.
   val cells = row.findAll(rxCell).list.map( fn(cap) { Cell(cap.groups[1]) })

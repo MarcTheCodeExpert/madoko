@@ -228,7 +228,7 @@ fun blockSpecial( cap : matched, ctx : blockContext, ctx2: lineContext ) : block
   }
 }
 
-fun blockPara( cap : matched, _context, ctx2 ) : block {
+fun blockPara( cap : matched, _context: blockContext, ctx2: lineContext ) : block {
   val full = cap.groups[1]
   val (txt,attrTxt) = match(full.find(rxPattrs)) {
     Nothing   -> (full,"")
@@ -247,11 +247,11 @@ fun blockLine( cap : matched, ctx : blockContext, ctx2: lineContext ) : block {
   Line(cap.matched, ctx.loose )
 }
 
-fun blockBlank( cap : matched, _context, ctx2 ) : block {
+fun blockBlank( cap : matched, _context: blockContext, ctx2: lineContext ) : block {
   Blank(cap.matched)
 }
 
-fun blockHLine( cap : matched, _context, ctx2 ) : block {
+fun blockHLine( cap : matched, _context: blockContext, ctx2: lineContext ) : block {
   HLine(cap.groups[1].parseAttrs)
 }
 
@@ -425,14 +425,14 @@ val rxindent5x  = regex(r"^ {1,5}",multiline=True)
 // --------------------------------
 // Tables
 
-fun blockNpTable( cap : matched, ctx, ctx2 ) : block {
+fun blockNpTable( cap : matched, ctx: blockContext, ctx2: lineContext ) : block {
   val header = cap.groups[1].npcolumns(ctx,ctx2,0)
   val cols   = cap.groups[2].npcolumns(ctx,ctx2,1).cells.map(fn(c) { c.text_.columnStyle } )
   val cells  = cap.groups[3].rows.map-indexed( fn(i,row) { npcolumns(row,ctx,ctx2,i+2) } )
   Table([header],cols,cells,cap.groups[4].parseAttrs)
 }
 
-fun blockTable( cap : matched, ctx, ctx2 ) : block {
+fun blockTable( cap : matched, ctx: blockContext, ctx2: lineContext ) : block {
   val headers = if (cap.groups[1]=="") then [] else cap.groups[1].rows.map-indexed( fn(i,row) { columns(row,ctx,ctx2,i) } )
   val cols    = cap.groups[2].columnStyles
   val ofs     = headers.length + 1;

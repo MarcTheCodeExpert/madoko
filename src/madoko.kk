@@ -252,11 +252,7 @@ pub fun inlineContext( fmt : formatter,
                   Just(value) -> value.toLower == "true"
                   _ -> False
                 }
-  var links := dict()
-  var labels := dict()
-  var footnotes := dict()
-  var defaults := emptyRules
-  var incontext := InlineContextStruct( inlineGrammar(fmt,bench), links, labels, footnotes,
+  var incontext := InlineContextStruct( inlineGrammar(fmt,bench), dict(), dict(), dict(),
                  emptyRules,
                  metadata, embedinfos,
                  sanitize, bench, verbose, highlight, starBold, sandbox, prettyAlign,
@@ -276,10 +272,6 @@ pub fun inlineContext( fmt : formatter,
                )                 
   with handler
     fun getInlineContext incontext
-    fun setLinks(new_links) incontext := incontext(links = new_links)
-    fun setLabels(new_labels) incontext := incontext(labels = new_labels)
-    fun setFootnotes(footn) incontext := incontext(footnotes = footn)
-    fun setDefaults(new_defaults) incontext := incontext(defaults = new_defaults)
     
   action()          
 }

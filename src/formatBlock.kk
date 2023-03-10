@@ -28,17 +28,21 @@ import stringcompat
 // abstracted Handler for formatContext
 pub fun initialFormatContext( lineMap: lineMap,
                                       headingBase : int, pedantic : bool, fmt : formatter, action: () -> <formatContext|e> a): e a  {
-  var tocBlocks := dict()
-  var footnoteBlock := Empty
-  var fcontext := FormatContextStruct(tocBlocks,footnoteBlock,headingBase,"language-",pedantic, lineMap, fmt)
   with handler 
-    fun getFormatContext fcontext
-    fun setTocBlocks(tocs) fcontext := fcontext(tocBlocks = tocs)
-    fun setFootnoteBlock(fnBlock) fcontext := fcontext(footnoteBlock = fnBlock)
+    fun getFormatContext FormatContextStruct(dict(),Empty,headingBase,"language-",pedantic, lineMap, fmt)
   action()
 }
-
-
+/*
+pub fun setTocBlocks(tocs: dict<list<block>>, action: () -> <formatContext> a): <formatContext> a {
+  with handler
+    fun getFormatContext() getFormatContext()(tocBlocks = tocs)
+  action()
+}
+pub fun setFootnoteBlock(fnBlock: block, action: () -> <formatContext> a): <formatContext> a {
+  with handler
+    fun getFormatContext() getFormatContext()(footnoteBlock = fnBlock)
+  action()
+}*/
 /*
 fun fmtEnv( ctx : formatContext, env : string, txt : string, attrs : attrs = attrsNone ) : string {
   ctx.inlineContext.fmtEnv(env,txt,attrs)

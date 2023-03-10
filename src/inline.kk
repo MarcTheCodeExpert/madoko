@@ -40,16 +40,46 @@ pub struct formatContextStruct(
 
 pub effect inlineContext
   fun getInlineContext(): inlineContextStruct
-  fun setLinks(links: dict<link>): ()
-  fun setLabels(labels: dict<label>): ()
-  fun setFootnotes(footn: dict<footnote>): ()
-  fun setDefaults(defaults: rules): ()
 
 pub effect formatContext
   fun getFormatContext(): formatContextStruct
-  fun setTocBlocks(tocBlock: dict<list<block>>): ()
-  fun setFootnoteBlock(fnBlock: block): ()
 
+
+pub fun setLinksLaFootDefBlock(li: dict<link>,la: dict<label>,f: dict<footnote>,r: rules, fblocks: block, toc: dict<list<block>>, action: () -> <inlineContext, formatContext> a): <inlineContext, formatContext> a {
+  with handler
+    fun getInlineContext() getInlineContext()(links = li, labels = la, footnotes = f, defaults = r)
+  with handler
+    fun getFormatContext() getFormatContext()(tocBlocks = toc, footnoteBlock = fblocks)  
+  action()
+}
+
+pub fun setLinksTocAndFoot(li: dict<link>,fblocks: block, toc: dict<list<block>>, action: () -> <inlineContext, formatContext> a): <inlineContext, formatContext> a {
+  with handler
+    fun getInlineContext() getInlineContext()(links = li)
+  with handler
+    fun getFormatContext() getFormatContext()(tocBlocks = toc, footnoteBlock = fblocks)  
+  action()
+}
+
+/*
+pub fun setLabels(la: dict<label>, action: () -> <inlineContext|e> a): <inlineContext|e> a {
+  with handler
+    fun getInlineContext() getInlineContext()(labels = la)
+  action()
+}
+
+pub fun setFootnotes(f: dict<footnote>, action: () -> <inlineContext|e> a): <inlineContext|e> a {
+  with handler
+    fun getInlineContext() getInlineContext()(footnotes = f)
+  action()
+}
+
+pub fun setDefaults(r: rules, action: () -> <inlineContext|e> a): <inlineContext|e> a {
+  with handler
+    fun getInlineContext() getInlineContext()(defaults = r)
+  action()
+}
+*/
 
 pub rec type inlineContextStruct {
   // The parse ctx for inline elements.

@@ -11,9 +11,9 @@ import * as $compat_path from './compat_path.mjs';
 import * as $compat_dict from './compat_dict.mjs';
 import * as $compat_log from './compat_log.mjs';
 import * as $common from './common.mjs';
-import * as $stringcompat from './stringcompat.mjs';
 import * as $std_text_parse from './std_text_parse.mjs';
 import * as $std_os_path from './std_os_path.mjs';
+import * as $stringcompat from './stringcompat.mjs';
 import * as $std_os_flags from './std_os_flags.mjs';
 import * as $compat_env from './compat_env.mjs';
 import * as $options from './options.mjs';
@@ -39,9 +39,9 @@ import * as $texParserBase from './texParserBase.mjs';
 import * as $texParserItems from './texParserItems.mjs';
 import * as $texParser from './texParser.mjs';
 import * as $definitions from './definitions.mjs';
-import * as $version from './version.mjs';
 import * as $madoko from './madoko.mjs';
 import * as $driver from './driver.mjs';
+import * as $version from './version.mjs';
  
 // externals
  

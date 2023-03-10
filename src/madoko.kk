@@ -253,21 +253,13 @@ pub fun inlineContext( fmt : formatter,
   val isTex2  = match(metadata["tex2"]) {
                   Just(value) -> value.toLower == "true"
                   _ -> False
-                }
-  var links := dict()
-  var labels := dict()
-  var footnotes := dict()
-  var defaults := emptyRules                
+                }                
   with handler
     fun getGrammar inlineGrammar(fmt, bench)
-    fun getLinks links
-    fun setLinks(new_links) links := new_links
-    fun getLabels labels
-    fun setLabels(new_labels) labels := new_labels
-    fun getFootnotes footnotes
-    fun setFootnotes(footn) footnotes := footn
-    fun getDefaults defaults
-    fun setDefaults(new_defaults) defaults := new_defaults
+    fun getLinks dict()
+    fun getLabels dict()
+    fun getFootnotes dict()
+    fun getDefaults emptyRules
     fun getInlineMetadata metadata
     fun getEmbedinfos embedinfos
     fun isSanitize sanitize

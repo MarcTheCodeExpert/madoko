@@ -71,9 +71,11 @@ fun parseDefinitionsBench(
       _ -> ()
     }
   }
+  with setLinksTocAndFoot(links.freeze, Empty, dict())
+  /*
   setLinks(links.freeze)
   setFootnoteBlock(Empty)
-  setTocBlocks(dict())
+  setTocBlocks(dict())*/
   // fcontext( fcontext.inlineContext.copy( links=links.freeze ), dict(), Empty)
   (blocks)
 }
@@ -273,12 +275,14 @@ fun parseDefinitionsFull(
                              }
 
   val secblocks = fblocks.sections(secInit(secBase=secBase,secMax=secDepth,secDefaults=fn(a){ defaultAttrs.matchRules("section",a) }))
+  with setLinksLaFootDefBlock(links.freeze, labelsDict, footnotes.freeze, defaultAttrs, footnoteBlock, tocBlocks)
+  /*
   setDefaults(defaultAttrs)
   setFootnotes(footnotes.freeze)
   setLinks(links.freeze)
   setLabels(labelsDict)
   setTocBlocks(tocBlocks)
-  setFootnoteBlock(footnoteBlock)
+  setFootnoteBlock(footnoteBlock)*/
   /*
   (secblocks,
    fcontext( fcontext.inlineContext.copy( links=links.freeze, labels=labelsDict,

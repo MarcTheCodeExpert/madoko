@@ -31,13 +31,9 @@ pub alias cells = list<list<(string,attrs)>>
 pub effect inlineContext
   fun getGrammar(): grammar<string, <inlineContext>> //,inlineContext
   fun getLinks(): dict<link>
-  fun setLinks(links: dict<link>): ()
   fun getLabels(): dict<label>
-  fun setLabels(labels: dict<label>): ()
   fun getFootnotes()  : dict<footnote>
-  fun setFootnotes(footn: dict<footnote>): ()
   fun getDefaults()   : rules
-  fun setDefaults(defaults: rules): ()
   fun getInlineMetadata()   : dict<string>
   fun getEmbedinfos() : dict<embedinfo>
   fun isSanitize()  : bool
@@ -67,14 +63,105 @@ pub effect inlineContext
 
 pub effect formatContext
   fun getTocBlocks(): dict<list<block>>
-  fun setTocBlocks(tocBlock: dict<list<block>>): ()
   fun getFootNoteBlock(): block
-  fun setFootnoteBlock(fnBlock: block): ()
   fun getLangPrefix(): string
   fun getHeadingBase(): int
   fun isPedantic(): bool
   fun getLineMap(): lineMap
   fun getFormatter(): formatter
+
+pub fun setLinksLaFootDefBlock(li: dict<link>,la: dict<label>,f: dict<footnote>,r: rules, fblocks: block, toc: dict<list<block>>, action: () -> <inlineContext, formatContext> a): <inlineContext, formatContext> a {
+  with handler
+    fun getGrammar getGrammar()
+    fun getLinks li
+    fun getLabels la
+    fun getFootnotes f
+    fun getDefaults r
+    fun getInlineMetadata getInlineMetadata()
+    fun getEmbedinfos getEmbedinfos()
+    fun isSanitize isSanitize()
+    fun isBench isBench()
+    fun getVerbose getVerbose()
+    fun isHighlight isHighlight()
+    fun isStarBold isStarBold()
+    fun isSandbox isSandbox()
+    fun getPrettyAlign getPrettyAlign()
+    fun exfmtCmd(cmd, body, attrs) exfmtCmd(cmd, body, attrs)
+    fun exfmtText(txt) exfmtText(txt)
+    fun exfmtEscape(body) exfmtEscape(body)
+    fun exfmtEscapePre(body) exfmtEscapePre(body)
+    fun exfmtLink(isImage, link, content) exfmtLink(isImage, link, content)
+    fun exfmtFootnote(id, ftn) exfmtFootnote(id, ftn)
+    fun exfmtTable(head, body, colattrs, attrs) exfmtTable(head, body, colattrs, attrs)
+    fun exfmtEnv(env, txt, attrs) exfmtEnv(env, txt, attrs)
+    fun exfmtCodePlain(txt, startline) exfmtCodePlain(txt, startline)
+                  // xfmtCodeHilite : (ctx : inlineContext, txt : string, startLine: bool ) -> (string),
+    fun exfmtCodeToken(classes, txt, lang, attrs) exfmtCodeToken(classes, txt, lang, attrs)
+    fun exfmtLineInfo(lineInfo) exfmtLineInfo(lineInfo)
+    fun exfmtCodeTable(ct, attrs) exfmtCodeTable(ct, attrs)
+    fun exfmtMathCmd(cmd, body, attrs) exfmtMathCmd(cmd, body, attrs)
+    fun exfmtMathEnv(env, txt, attrs) exfmtMathEnv(env, txt, attrs)
+    fun efmt efmt()
+
+  with handler
+    fun getTocBlocks toc
+    fun getFootNoteBlock fblocks
+    fun getHeadingBase getHeadingBase()
+    fun getLangPrefix getLangPrefix()
+    fun isPedantic isPedantic()
+    fun getLineMap getLineMap()
+    fun getFormatter getFormatter()
+  action()
+}
+
+
+pub fun setLinksTocAndFoot(li: dict<link>,fblocks: block, toc: dict<list<block>>, action: () -> <inlineContext, formatContext> a): <inlineContext, formatContext> a {
+  with handler
+    fun getGrammar getGrammar()
+    fun getLinks li
+    fun getLabels getLabels()
+    fun getFootnotes getFootnotes()
+    fun getDefaults getDefaults()
+    fun getInlineMetadata getInlineMetadata()
+    fun getEmbedinfos getEmbedinfos()
+    fun isSanitize isSanitize()
+    fun isBench isBench()
+    fun getVerbose getVerbose()
+    fun isHighlight isHighlight()
+    fun isStarBold isStarBold()
+    fun isSandbox isSandbox()
+    fun getPrettyAlign getPrettyAlign()
+    fun exfmtCmd(cmd, body, attrs) exfmtCmd(cmd, body, attrs)
+    fun exfmtText(txt) exfmtText(txt)
+    fun exfmtEscape(body) exfmtEscape(body)
+    fun exfmtEscapePre(body) exfmtEscapePre(body)
+    fun exfmtLink(isImage, link, content) exfmtLink(isImage, link, content)
+    fun exfmtFootnote(id, ftn) exfmtFootnote(id, ftn)
+    fun exfmtTable(head, body, colattrs, attrs) exfmtTable(head, body, colattrs, attrs)
+    fun exfmtEnv(env, txt, attrs) exfmtEnv(env, txt, attrs)
+    fun exfmtCodePlain(txt, startline) exfmtCodePlain(txt, startline)
+                  // xfmtCodeHilite : (ctx : inlineContext, txt : string, startLine: bool ) -> (string),
+    fun exfmtCodeToken(classes, txt, lang, attrs) exfmtCodeToken(classes, txt, lang, attrs)
+    fun exfmtLineInfo(lineInfo) exfmtLineInfo(lineInfo)
+    fun exfmtCodeTable(ct, attrs) exfmtCodeTable(ct, attrs)
+    fun exfmtMathCmd(cmd, body, attrs) exfmtMathCmd(cmd, body, attrs)
+    fun exfmtMathEnv(env, txt, attrs) exfmtMathEnv(env, txt, attrs)
+    fun efmt efmt()
+
+  with handler
+    fun getTocBlocks toc
+    fun getFootNoteBlock fblocks
+    fun getHeadingBase getHeadingBase()
+    fun getLangPrefix getLangPrefix()
+    fun isPedantic isPedantic()
+    fun getLineMap getLineMap()
+    fun getFormatter getFormatter()
+  action()
+}
+
+
+
+
 
 pub struct titleinfo (
   title : string,

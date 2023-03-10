@@ -27,13 +27,9 @@ import stringcompat
 
 pub fun initialFormatContext( lineMap: lineMap,
                                       headingBase : int, pedantic : bool, fmt : formatter, action: () -> <formatContext|e> a): e a{
-  var tocBlocks := dict()
-  var footnoteBlock := Empty
   with handler 
-    fun getTocBlocks tocBlocks
-    fun setTocBlocks(tocs) tocBlocks := tocs
+    fun getTocBlocks dict()
     fun getFootNoteBlock Empty
-    fun setFootnoteBlock(fnBlock) footnoteBlock := fnBlock
     fun getHeadingBase headingBase
     fun getLangPrefix "language-"
     fun isPedantic pedantic

@@ -1,0 +1,53 @@
+Date : 2023-03-10 11:39:54
+Directory : /home/marc/MA-Medieninformatik/Masterarbeit/madoko-fork-anal/src
+Total : 29 files,  8682 codes, 1160 comments, 1684 blanks, all 11526 lines
+
+Languages
++----------+------------+------------+------------+------------+------------+
+| language | files      | code       | comment    | blank      | total      |
++----------+------------+------------+------------+------------+------------+
+| Koka     |         29 |      8,682 |      1,160 |      1,684 |     11,526 |
++----------+------------+------------+------------+------------+------------+
+
+Directories
++------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                               | files      | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                  |         29 |      8,682 |      1,160 |      1,684 |     11,526 |
++------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| filename                                                                           | language | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| /home/marc/MA-Medieninformatik/Masterarbeit/madoko-fork-anal/src/attributes.kk     | Koka     |        548 |         55 |         64 |        667 |
+| /home/marc/MA-Medieninformatik/Masterarbeit/madoko-fork-anal/src/backports.kk      | Koka     |         21 |          5 |          7 |         33 |
+| /home/marc/MA-Medieninformatik/Masterarbeit/madoko-fork-anal/src/block.kk          | Koka     |        474 |         74 |         98 |        646 |
+| /home/marc/MA-Medieninformatik/Masterarbeit/madoko-fork-anal/src/codeAlign.kk      | Koka     |        180 |         18 |         35 |        233 |
+| /home/marc/MA-Medieninformatik/Masterarbeit/madoko-fork-anal/src/common.kk         | Koka     |        412 |         70 |         99 |        581 |
+| /home/marc/MA-Medieninformatik/Masterarbeit/madoko-fork-anal/src/compat.kk         | Koka     |        358 |         90 |         97 |        545 |
+| /home/marc/MA-Medieninformatik/Masterarbeit/madoko-fork-anal/src/cssFormatter.kk   | Koka     |        412 |         26 |         47 |        485 |
+| /home/marc/MA-Medieninformatik/Masterarbeit/madoko-fork-anal/src/definitions.kk    | Koka     |        665 |         88 |         97 |        850 |
+| /home/marc/MA-Medieninformatik/Masterarbeit/madoko-fork-anal/src/driver.kk         | Koka     |        172 |         22 |         34 |        228 |
+| /home/marc/MA-Medieninformatik/Masterarbeit/madoko-fork-anal/src/entity.kk         | Koka     |        522 |         24 |         33 |        579 |
+| /home/marc/MA-Medieninformatik/Masterarbeit/madoko-fork-anal/src/expression.kk     | Koka     |        325 |         27 |         62 |        414 |
+| /home/marc/MA-Medieninformatik/Masterarbeit/madoko-fork-anal/src/formatBlock.kk    | Koka     |        352 |         53 |         68 |        473 |
+| /home/marc/MA-Medieninformatik/Masterarbeit/madoko-fork-anal/src/formatInline.kk   | Koka     |        571 |         80 |        151 |        802 |
+| /home/marc/MA-Medieninformatik/Masterarbeit/madoko-fork-anal/src/hilite.kk         | Koka     |         55 |         16 |         15 |         86 |
+| /home/marc/MA-Medieninformatik/Masterarbeit/madoko-fork-anal/src/includes.kk       | Koka     |        259 |         31 |         33 |        323 |
+| /home/marc/MA-Medieninformatik/Masterarbeit/madoko-fork-anal/src/inline.kk         | Koka     |        208 |         20 |         36 |        264 |
+| /home/marc/MA-Medieninformatik/Masterarbeit/madoko-fork-anal/src/latexFormatter.kk | Koka     |        967 |         68 |        162 |      1,197 |
+| /home/marc/MA-Medieninformatik/Masterarbeit/madoko-fork-anal/src/madoko.kk         | Koka     |        217 |        110 |         49 |        376 |
+| /home/marc/MA-Medieninformatik/Masterarbeit/madoko-fork-anal/src/main.kk           | Koka     |         36 |         42 |          5 |         83 |
+| /home/marc/MA-Medieninformatik/Masterarbeit/madoko-fork-anal/src/metadata.kk       | Koka     |        244 |         45 |         37 |        326 |
+| /home/marc/MA-Medieninformatik/Masterarbeit/madoko-fork-anal/src/options.kk        | Koka     |        181 |         13 |         33 |        227 |
+| /home/marc/MA-Medieninformatik/Masterarbeit/madoko-fork-anal/src/optionsMeta.kk    | Koka     |         66 |          8 |         12 |         86 |
+| /home/marc/MA-Medieninformatik/Masterarbeit/madoko-fork-anal/src/storage.kk        | Koka     |        243 |         46 |         66 |        355 |
+| /home/marc/MA-Medieninformatik/Masterarbeit/madoko-fork-anal/src/stringcompat.kk   | Koka     |          6 |          7 |          3 |         16 |
+| /home/marc/MA-Medieninformatik/Masterarbeit/madoko-fork-anal/src/texCommon.kk      | Koka     |         48 |         10 |         13 |         71 |
+| /home/marc/MA-Medieninformatik/Masterarbeit/madoko-fork-anal/src/texParser.kk      | Koka     |        176 |         33 |         55 |        264 |
+| /home/marc/MA-Medieninformatik/Masterarbeit/madoko-fork-anal/src/texParserBase.kk  | Koka     |        165 |         23 |         45 |        233 |
+| /home/marc/MA-Medieninformatik/Masterarbeit/madoko-fork-anal/src/texParserItems.kk | Koka     |        797 |         47 |        226 |      1,070 |
+| /home/marc/MA-Medieninformatik/Masterarbeit/madoko-fork-anal/src/version.kk        | Koka     |          2 |          9 |          2 |         13 |
+| Total                                                                              |          |      8,682 |      1,160 |      1,684 |     11,526 |
++------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+

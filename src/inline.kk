@@ -30,19 +30,17 @@ pub effect inlineGrammar
 
 pub effect inlineLinks  
   fun getLinks(): dict<link>
-  fun setLinks(links: dict<link>): ()
 
 pub effect inlineLabels
   fun getLabels(): dict<label>
-  fun setLabels(labels: dict<label>): ()
+
 
 pub effect inlineFoot
   fun getFootnotes(): dict<footnote>
-  fun setFootnotes(footn: dict<footnote>): ()
+  
 
 pub effect inlineDefaults
   fun getDefaults()   : rules
-  fun setDefaults(defaults: rules): ()
 
 pub effect inlineMetaData
   fun getInlineMetadata()   : dict<string>
@@ -92,11 +90,9 @@ pub alias inlineContext =  <inlineGrammar, inlineLinks, inlineLabels, inlineFoot
 
 pub effect tocBlock
   fun getTocBlocks(): dict<list<block>>
-  fun setTocBlocks(tocBlock: dict<list<block>>): ()
 
 pub effect footnoteBlock  
   fun getFootNoteBlock(): block
-  fun setFootnoteBlock(fnBlock: block): ()
 
 pub effect languagePrefix  
   fun getLangPrefix(): string
@@ -115,6 +111,56 @@ pub effect blockFormatter
 
 pub alias formatContext = <tocBlock, footnoteBlock, languagePrefix, headingBase, blockPedantic, fblockLineMap, blockFormatter>
 
+
+
+pub fun setLinksLaFootDefBlock(li: dict<link>,la: dict<label>,f: dict<footnote>,r: rules, fblocks: block, toc: dict<list<block>>, action: () -> <inlineContext, formatContext> a): <inlineContext, formatContext> a {
+  with handler
+    fun getLinks li
+  with handler
+    fun getLabels la
+  with handler
+    fun getFootnotes f
+  with handler
+    fun getDefaults r
+  with handler
+    fun getFootNoteBlock fblocks
+  with handler
+    fun getTocBlocks toc
+  action()
+}
+
+
+pub fun setLinksTocAndFoot(li: dict<link>,fblocks: block, toc: dict<list<block>>, action: () -> <inlineContext, formatContext> a): <inlineContext, formatContext> a {
+  with handler
+    fun getLinks() return li
+  with handler
+    fun getFootNoteBlock() return fblocks
+  with handler
+    fun getTocBlocks() return toc
+  action()
+}
+/*
+
+pub fun setDefaultsAndLabels(def: rules, labels: dict<label>, action: () -> <inlineContext, formatContext, st<h>> a): <inlineContext, formatContext, st<h>> a {
+  with handler
+    fun getDefaults def
+  with handler
+    fun getLabels labels
+  action()
+}
+
+pub fun setInlineFoot(foot: dict<footnote>, action: () -> <inlineContext, formatContext, st<h>> a): <inlineContext, formatContext, st<h>> a {
+  with handler
+    fun getFootnotes foot
+  action()
+}
+
+pub fun setInlineLinks(links: dict<link>, action: () -> <inlineContext, formatContext, st<h>> a): <st<h>, inlineContext, formatContext, st<h>> a {
+  with handler
+    fun getLinks links
+  action()
+}
+*/
 pub struct titleinfo (
   title : string,
   subtitle : string,
@@ -128,6 +174,8 @@ pub struct authorinfo (
   email : string,
   note : string
 )
+
+
 
 pub rec type footnote {
   Footnote( footnoteNum : string,

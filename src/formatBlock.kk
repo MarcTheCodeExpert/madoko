@@ -27,14 +27,10 @@ import stringcompat
 
 pub fun initialFormatContext( lineMap: lineMap,
                                       headingBase : int, pedantic : bool, fmt : formatter, action: () -> <formatContext|e> a): e a {
-  var tocBlocks := dict()
-  var footnoteBlock := Empty
   with handler 
-    fun getTocBlocks tocBlocks
-    fun setTocBlocks(tocs) tocBlocks := tocs
+    fun getTocBlocks dict()
   with handler   
     fun getFootNoteBlock Empty
-    fun setFootnoteBlock(fnBlock) footnoteBlock := fnBlock
   with handler   
     fun getHeadingBase headingBase
   with handler   
@@ -47,6 +43,40 @@ pub fun initialFormatContext( lineMap: lineMap,
     fun getFormatter fmt
   action()
 }
+/*
+pub fun setTOC(toc: dict<list<block>>, action: () -> <formatContext, inlineContext, st<h>> a): <formatContext, inlineContext, st<h>> a {
+  with handler
+    fun getTocBlocks toc
+  action()  
+}
+
+pub fun setFoot(foot: block, action: () -> <formatContext, inlineContext, st<h>> a): <formatContext, inlineContext, st<h>> a {
+  with handler
+    fun getFootNoteBlock foot
+  action()  
+}
+*/
+
+
+/*
+pub fun setToCAndFootnoteBlock(toc: dict<list<block>>, footnote: block, action: () -> <formatContext> a): <formatContext> a {
+  with handler 
+    fun getTocBlocks tocBlocks
+  with handler   
+    fun getFootNoteBlock Empty
+  with handler   
+    fun getHeadingBase headingBase
+  with handler   
+    fun getLangPrefix "language-"
+  with handler   
+    fun isPedantic pedantic
+  with handler   
+    fun getLineMap lineMap
+  with handler   
+    fun getFormatter fmt
+  action()
+}
+*/
 
 
 

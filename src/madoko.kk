@@ -253,25 +253,17 @@ pub fun inlineContext( fmt : formatter,
   val isTex2  = match(metadata["tex2"]) {
                   Just(value) -> value.toLower == "true"
                   _ -> False
-                }
-  var links := dict()
-  var labels := dict()
-  var footnotes := dict()
-  var defaults := emptyRules                
+                }               
   with handler
     fun getGrammar inlineGrammar(fmt, bench)
   with handler  
-    fun getLinks links
-    fun setLinks(new_links) links := new_links
+    fun getLinks dict()
   with handler  
-    fun getLabels labels
-    fun setLabels(new_labels) labels := new_labels
+    fun getLabels dict()
   with handler  
-    fun getFootnotes footnotes
-    fun setFootnotes(footn) footnotes := footn
+    fun getFootnotes dict()
   with handler  
-    fun getDefaults defaults
-    fun setDefaults(new_defaults) defaults := new_defaults
+    fun getDefaults emptyRules
   with handler  
     fun getInlineMetadata metadata
   with handler    
@@ -309,6 +301,8 @@ pub fun inlineContext( fmt : formatter,
     fun efmt fmt
   action()        
 }
+
+
 
 
 /* --------------------------------------
